@@ -1,0 +1,33 @@
+<div class="engine-container">
+
+    <div class="engine-view-container">
+        <router-outlet></router-outlet>
+    </div>
+    
+    
+    <div class="btn-container">
+        <button *ngIf="ws.isSetStarted()" mat-fab color="warn" (click)="nextEvent()">Next</button>
+    </div>
+
+    <mat-toolbar color="secondary" class="engine-action-bar">
+        <div class="engine-nav-btn-container">
+
+            <button mat-button routerLink="/engine/setlist">Setlist</button>
+            <button mat-button routerLink="/engine/lyrics">Lyrics</button>
+            <button mat-button routerLink="/engine/buttons">Control</button>
+            <button mat-button routerLink="/engine/status">Status</button>
+            <button mat-button routerLink="/engine/debug">Debug</button>
+
+            <!-- <mat-nav-list>
+                <a mat-list-item routerLink="/engine">Setlist</a>
+                <a mat-list-item routerLink="/setlist/create">Lyrics</a>
+                <a mat-list-item routerLink="/settings">Control</a>
+                <a mat-list-item routerLink="/devices">DeviStatusces</a>
+                <a mat-list-item routerLink="/logs">Debug</a>
+            </mat-nav-list> -->
+
+        </div>
+        
+    </mat-toolbar>
+    
+</div>

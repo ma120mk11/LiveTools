@@ -1,0 +1,38 @@
+<mat-card *ngFor="let device of ws.devices">
+    <mat-card-header>
+        <mat-card-title>
+            {{device.name}}
+        </mat-card-title>
+        <div >
+            <mat-icon 
+                [ngStyle]="{'color': getConnectionColour(device.state)}"
+            >
+                {{getConnectionIcon(device.state)}}
+            </mat-icon>
+            {{device.state}}
+        </div>
+        <!-- <mat-card-subtitle>{{device.description}}</mat-card-subtitle> -->
+    </mat-card-header>
+    
+    <mat-card-content>
+        <table>
+            <tr>
+                <th>Device IP:</th><td>{{device.ip}}</td>
+            </tr>
+            <tr>
+                <th>Receive port:</th><td>{{device.receive_port}}</td>
+            </tr>
+        </table>
+    </mat-card-content>
+
+    <mat-card-actions align="end">
+        <!-- <mat-slide-toggle color="warn" checked="{{true}}">Enable</mat-slide-toggle> -->
+        <!-- <button mat-raised-button color="accent" disabled="{{false}}">Sync</button> -->
+        <button mat-raised-button color="primary" (click)="onConfigure(device)">Configure</button>
+    </mat-card-actions>
+
+    <mat-card-footer>
+        <mat-progress-bar mode="indeterminate" *ngIf="false"></mat-progress-bar>
+    </mat-card-footer>
+
+</mat-card>

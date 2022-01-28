@@ -1,0 +1,91 @@
+{
+    "id": 2,
+    "metadata": {
+        "gig_name": "AfterEight",
+        "set_nbr": 2,
+        "date": "20.04.2022",
+        "name": "Set1"
+    },
+    "name": "Set 1",
+    "actions": [
+        {
+            "nbr": 0,
+            "type": "start",
+            "execution": {
+                "lights": {
+                    "cuelist": ["start_cuelist"]
+                }
+            }
+        },
+        {
+            "nbr": 1,
+            "type": "song",
+            "title": "Runaway",
+            "song_id": 1,
+            "execution":{
+                "lights": {
+                    "blackout": true,
+                    "cuelist": ["high_intensity"],
+                    "buttons": {
+                        "btn1": "osc-command",
+                        "btn2": "osc-command",
+                        "btn3": "osc-command",
+                        "btn4": "osc-command"
+                    }
+                }
+            }
+        },
+        {
+            "nbr": 2,
+            "type": "speech",
+            "duration": 5,
+            "execution":{
+                "lights": {
+                    "cuelist": ["speaking"]
+                }
+            }
+        },
+        {
+            "nbr": 3,
+            "type": "song",
+            "title": "Bourbon Street",
+            "song_id": 5,
+            "execution":{
+                "lights": {
+                    "cuelist": ["slow_ballad"]
+                }
+            }
+        },
+        
+        {
+            "nbr": 4,
+            "type": "song",
+            "title": "Born to Run",
+            "execution":{
+                "lights": {
+                    "cuelist": ["par_red_blue_fx", "side_par_red"]
+                }
+            }
+        },
+        {
+            "nbr": 5,
+            "type": "song",
+            "title": "Jailhouse Rock",
+            "execution":{
+                "lights": {
+                    "cuelist": ["par_red_blue_fx"]
+                }
+            }
+        },
+        {
+            "nbr": 6,
+            "type": "song",
+            "title": "Tush",
+            "execution":{
+                "lights": {
+                    "cuelist": ["side_par_red"]
+                }
+            }
+        }
+    ]
+}

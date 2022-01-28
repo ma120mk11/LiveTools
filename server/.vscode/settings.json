@@ -1,0 +1,12 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "LiveToolsDB",
+            "group": "live-tools",
+            "database": "${workspaceFolder:server}/.database.db"
+        }
+    ],
+    "sqltools.useNodeRuntime": true
+}

@@ -1,0 +1,17 @@
+<h1>{{data.name}}</h1>
+<!-- <mat-divider></mat-divider> -->
+
+<form [formGroup]="deviceEditForm" (ngSubmit)="onSubmit()">
+
+    <mat-form-field appearance="outline">
+        <mat-label>Ip address</mat-label>
+        <input matInput [value]="data.ip" formControlName="ip">
+    </mat-form-field>
+    <br>
+    <mat-form-field appearance="outline">
+        <mat-label>Device recieve port</mat-label>
+        <input matInput [value]="data.receive_port" formControlName="receive_port">
+    </mat-form-field>
+    <br>
+    <button mat-raised-button color="primary" type="submit" mat-dialog-close>Save</button>
+</form>

@@ -1,0 +1,39 @@
+.sidenav-container {
+  height: 100%;
+}
+
+.sidenav {
+  width: fit-content;
+}
+
+.sidenav .mat-toolbar {
+  background: inherit;
+}
+
+.mat-toolbar.mat-primary {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  /* width: 100%; */
+}
+
+.set-loaded-container {
+  width: 100%;
+  text-align: center;
+}
+
+.right {
+  /* display: block; */
+  margin-left: auto;
+  float:right;
+
+}
+
+.next-event {
+  float: right;
+  margin: 0px;
+  border: 1px gray solid;
+  border-radius: 5px;
+  padding: 3px 10px;
+  /* margin-left: auto; */
+}

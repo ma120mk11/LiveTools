@@ -1,0 +1,49 @@
+<div *ngIf="ws.isLoaded; else noSetLoaded" class="">
+    <div class="set-container mat-elevation-z8">
+
+            <div *ngFor="let action of ws.setlist.actions" class="actions">
+                
+                <div [ngClass]="getClass(action.nbr)">
+                    <div *ngIf="action.type=='song'; else otherAction" class="song">
+                        <h1>{{getSongNbr(action.nbr)}}. {{action.title}}</h1>
+                        <!-- <div *ngIf="action.execution?.lights?.blackout" class="blackout-indicator">Blackout</div> -->
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+</div>
+
+
+<ng-template #noSetLoaded>
+    <div class="no-set-container">
+        <h1>No setlist loaded</h1>
+    </div>
+</ng-template>
+
+
+<!-- <div *ngIf="ws.isLoaded; else noSetLoaded" class="set-container">
+    <mat-selection-list #songs [multiple]="false">
+        <mat-list-option *ngFor="let action of ws.setlist.actions" [value]="ws.activeSetlistActionId">
+
+            <div [ngClass]="getClass(action.nbr)" >
+                <div *ngIf="action.type=='song'; else otherAction" class="song">
+                    <h1>{{action.title}}</h1>
+                    
+                    <div *ngIf="action.execution?.lights?.blackout" class="blackout-indicator">Blackout</div>
+                </div>
+            </div>
+
+        </mat-list-option>
+    </mat-selection-list>
+<div> -->
+
+
+
+
+<ng-template #otherAction>
+    Some action
+</ng-template>
+
+
+

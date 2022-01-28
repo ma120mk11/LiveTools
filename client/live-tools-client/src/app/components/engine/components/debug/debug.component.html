@@ -1,0 +1,23 @@
+<div>
+    <h1>WebSocket</h1>
+    <h2>Your ID: {{wsService.id}}</h2>
+    <button mat-raised-button disabled color="primary" (click)="connectWebSocket()">Connect</button>
+    <button mat-raised-button color="primary" (click)="clearLog()">Clear log</button>
+
+</div>
+
+
+<mat-card *ngFor="let msg of wsService.messages" class="msg">
+    <mat-card-subtitle>{{msg.msg_type}}
+        <h5 class="timestamp">{{msg.timestamp}}</h5>
+    </mat-card-subtitle>
+    <mat-card-content>
+        <pre>{{msg.data}}</pre>
+    </mat-card-content>
+    <!-- <div class="msg-container">
+        
+        
+        <h3>{{msg.msg_type}}</h3>
+        <pre>{{msg.data}}</pre>
+    </div> -->
+</mat-card>
