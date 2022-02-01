@@ -32,7 +32,8 @@ export class ConfigureDeviceComponent implements OnInit {
     console.log(this.deviceEditForm.controls['ip'].value)
     console.log(this.deviceEditForm.controls['receive_port'].value)
 
-    const url = `http://localhost:8000/devices/${this.data.id}`
+    // const url = `http://localhost:8000/devices/${this.data.id}`
+    const url = `http://192.168.43.249:8000/devices/${this.data.id}`
     this.http.patch(url, {
       ip: this.deviceEditForm.controls['ip'].value,
       receive_port: this.deviceEditForm.controls['receive_port'].value

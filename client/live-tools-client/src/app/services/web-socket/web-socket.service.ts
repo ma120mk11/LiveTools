@@ -3,7 +3,8 @@ import {webSocket, WebSocketSubject } from 'rxjs/webSocket'
 import { of, Observable, Subject, Observer } from 'rxjs'
 
 // export const WS_ENDPOINT = "ws://localhost:8000/ws/"
-export const WS_ENDPOINT = "ws://192.168.0.24:8000/ws/"
+// export const WS_ENDPOINT = "ws://192.168.0.24:8000/ws/"
+export const WS_ENDPOINT = "ws://192.168.43.249:8000/ws/"
 
 export interface IWsMsg {
   msg_type: string;
@@ -36,6 +37,7 @@ export interface IAction {
   nbr: number;
   type: string;
   title?: string;
+  playback?: boolean;
   song_id?: number;
   duration? : number;
   execution: IExecution;
@@ -209,6 +211,7 @@ export class WebSocketService {
   public isSetStarted() {
     return this.activeSetlistActionId > -1
   }
+
   private messageHandler(){}
 
   private browserDetect(){
