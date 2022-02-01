@@ -19,6 +19,10 @@ class Engine():
         self.playback = OSCPlayback()
 
     async def start_osc(self):
+        # Check if engine is running
+        if self._current_id > -1:
+            return
+        logger.info("Connecting all OSC devices...")
         await self.lights.connect("192.168.43.120", 8887)
         await self.recording.connect("192.168.43.120", 3819)
         await self.playback.connect("192.168.43.121", 3819)
@@ -64,7 +68,7 @@ class Engine():
 
         self._current_id = 0            # First action
         self._status = "set_running"
-        self.recording.record()
+        await self.recording.record()
 
         # Set frontlights an leave them on for rest of the set
         self.lights.start_cuelist(["frontlights"], persistent=True)
