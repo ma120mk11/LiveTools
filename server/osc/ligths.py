@@ -10,7 +10,7 @@ class OSCLights(OSCBase):
     cuelists = {
         "frontlights": "/Mx/playback/page5/50/",
         "generic_rock": "/Mx/playback/page1/2/",
-        "runaway": "/Mx/playback/page6/0/",
+        "runaway": "/Mx/playback/page10/0/",
         "speaking": "/Mx/playback/page1/1/",
         "pause": "/Mx/playback/page1/3/",
         "slow_ballad": "/Mx/playback/page3/0/",
