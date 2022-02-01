@@ -26,13 +26,14 @@ class OSCRecoding(OSCBase):
         logger.debug("Creating marker in Ardour")
         self.send_osc_msg(self._add_marker)
 
-    def record(self) -> bool:
+    async def record(self) -> bool:
         logger.debug("Starting recording via OSC")
         self.send_osc_msg(self._toggle_record_enable)
         self.send_osc_msg(self._play)
 
+        # coro = 
+        # await self.status(self._RECORDING)
         self.status = self._RECORDING
-
         return True
 
     async def stop_recording(self) -> bool:
