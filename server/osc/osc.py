@@ -1,3 +1,4 @@
+import asyncio
 import socket
 import argparse
 import random
@@ -5,13 +6,15 @@ import time
 import math
 import threading
 import logging
-from typing import Union
+from typing import Callable, List, Union
 from pythonosc import udp_client
 from pythonosc import dispatcher
 from pythonosc import osc_server
 from ipaddress import IPv4Address
 from schemas import OSCDevice
-from device_manager import device_mgr, DeviceManager
+from device_manager import device_mgr
+from pydantic import BaseModel
+from time import monotonic as time, sleep
 
 logger = logging.getLogger(__name__)
 
@@ -22,10 +25,12 @@ class OSCBase():
     client: udp_client.SimpleUDPClient = None
     
     # Statuses
+    _CONNECTED = "connected"
     _NOT_CONNECTED = "not_connected"
+    _NO_HEARTBEAT = "no_heartbeat"
+    _CONNECTION_NOT_KNOWN = "connection_not_known"
     _DISABLED = "disabled"
     _READY = "ready"
-    _CONNECTED = "connected"
     _INITIALIZED = "initialized"
 
     _type: str = "undefined"
@@ -46,6 +51,13 @@ class OSCBase():
         await device_mgr.set_status(self._device_id, self.status)
         return self._status
 
+    async def set_status(self, new_status):
+        self._status = new_status
+        await device_mgr.set_status(self._device_id, self.status)
+        return self._status
+
+    
+
     async def connect(self, ip: IPv4Address, port: int) -> bool:
         logger.debug("Connecting %s to %s:%i", __name__, ip, port)
         self.client_ip = ip
@@ -60,24 +72,32 @@ class OSCBase():
         """
         return device_mgr.get_ip(self._device_id)
 
+    def get_name(self):
+        """
+        Returns the name of the device
+        """
+        return device_mgr.get_name(self._device_id)
 
     def get_port(self):
+        """
+        Returns the configured port for the device
+        """
         return device_mgr.get_port(self._device_id)
 
 
-    def start_osc_client(self):
-        logger.info("Starting OSC client...")
-
-        # client = udp_client.SimpleUDPClient(self.client_ip, self.client_port)
-        # thread = threading.Thread()
-        # thread.start()
-
-    def stop_osc_client(self):
-        logger.info("Stopping OSC client...")
+    def test_connection(self) -> bool:
+        """
+        Method should be implemented by classes inheriting osc.
+        Should send an osc message and listen for feedback.
+        """
+        logger.debug("Testing OSC connection for: %s", self.get_name())
 
 
     def send_osc_msg(self, osc_address: str, value: Union[float, str] =1 ):
-        logger.debug("Send msg to: " + self.get_ip())
+        """
+        Sends a message to the osc device. Value is optional.
+        """
+
         self.client = udp_client.SimpleUDPClient(self.get_ip(), self.get_port())
         logger.debug("SEND %s:%i - %s  VALUE: %s", self.client._address, self.client._port, osc_address, value)
         try:
@@ -88,7 +108,13 @@ class OSCBase():
 
 
 
-
+class Heartbeat(BaseModel):
+    last_heartbeat: float
+    route: str
+    is_connected: bool
+    device_mgr_id: int
+    timeout: int
+    error_callback: Callable
 
 
 
@@ -100,6 +126,8 @@ class OSCServer:
     dispatch: dispatcher.Dispatcher = None
     _status: str = ""
 
+    _heartbeats: List[Heartbeat] = []
+    _heartbeat_thread = None
 
     def getServerIP(self) -> IPv4Address:
         hostname = socket.gethostname()
@@ -127,18 +155,73 @@ class OSCServer:
             self.server = osc_server.ThreadingOSCUDPServer(
                 (self.server_ip, self.server_port), self.dispatch)
 
-            print("Serving on {}".format(self.server.server_address))
+            logger.info("Serving on {}".format(self.server.server_address))
 
             self.thread = threading.Thread(target=self.server.serve_forever)
             self.thread.start()
+
+            # self._heartbeat_thread = threading.Thread(target=self.heartbeat_check)
+            asyncio.create_task(self.heartbeat_check())
+            # self._heartbeat_thread.start()
             return 1
-        except Exception:
-            logger.error("Error starting OSC server")
+        except Exception as e:
+            logger.error("Error starting OSC server: ")
             return 0
 
+
     def addMap(self, route:str):
-        print("Adding map to dispatcher...")
+        logger.debug("Adding map '%s' to dispatcher...", route)
         if self.dispatch is None:
-            print("dispatcher not initialized")
+            logger.error("dispatcher not initialized")
         else:
             self.dispatch.map(route, print)
+
+    def add_map(self, route:str, callback, id):
+        logger.debug("Adding map '%s' to dispatcher...", route)
+        if self.dispatch is None:
+            logger.error("dispatcher not initialized")
+        else:
+            self.dispatch.map(route, callback, id, needs_reply_address=True)
+
+
+    async def heartbeat_check(self):
+        logger.debug("heartbeat function started")
+        while True:
+            current_time = time()
+            for device in self._heartbeats:
+                if current_time - device.last_heartbeat > device.timeout:
+                    if device.is_connected:
+                        await device.error_callback(connected=False)
+                        device.is_connected = False
+                else:
+                    if not device.is_connected:
+                        await device.error_callback(connected=True)
+                        device.is_connected = True
+
+            await asyncio.sleep(1)
+
+
+    def add_heartbeat(self, route: str, timeout: int, callback: Callable, device_id):
+        logger.debug("Adding heartbeat to listener")
+        heartbeat: Heartbeat = Heartbeat(
+            last_heartbeat=time(),
+            route=route,
+            device_mgr_id = device_id,
+            is_connected=False,
+            timeout=timeout,
+            error_callback=callback
+        )        
+        self._heartbeats.append(heartbeat)
+        id = len(self._heartbeats) -1
+        self.add_map(route, self.set_last_time, id)
+
+
+    def set_last_time(self, *args, **kwargs):
+        sender_ip_address: str = args[0][0]
+        id: int = args[2][0]
+
+        if sender_ip_address == device_mgr.get_ip(self._heartbeats[id].device_mgr_id):
+            self._heartbeats[id].last_heartbeat=time()
+
+
+server = OSCServer()

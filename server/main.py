@@ -12,7 +12,7 @@ from logging.config import dictConfig
 import LogConfig
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.encoders import jsonable_encoder
-
+from osc.osc import server
 
 # dictConfig(LogConfig)
 logging.basicConfig(level=logging.DEBUG)
@@ -22,6 +22,7 @@ models.Base.metadata.create_all(bind=db_engine)
 
 app = FastAPI(debug=True)
 engine = live_engine.Engine()
+server.start_osc_server()
 
 # engine.start_osc()
 # devices = DeviceManager()
@@ -150,7 +151,7 @@ def get_artists(db: Session = Depends(get_db)):
 @app.post("/osc/maps/add/", status_code=status.HTTP_202_ACCEPTED, tags=["engine"])
 def add_map(map: str):
     print("Trying to add " + map)
-    engine.osc.addMap(map)
+    server.addMap(map)
     return
 
 
@@ -209,13 +210,13 @@ async def device_config(id:int, request: schemas.OSCDeviceUpdate ):
     if request.receive_port:
         await device_mgr.set_receive_port(device_id=id, port=request.receive_port)
 
-@app.post("/devices/connect", status_code=status.HTTP_202_ACCEPTED, tags=["devices"])
-def connect_device(device: schemas.OSCDeviceBase):
-    
-    if not device_mgr.connect(device):
-        raise HTTPException(detail="Error connecting device")
-    return
 
+@app.get("/devices/test/{id}", tags=["devices"])
+async def test_device_connection(id:int):
+    is_connected = engine.recording.test_connection()
+    return await is_connected
+    
+    
 
 
 @app.put('/songs/{id}', 
@@ -314,7 +315,6 @@ html = """
 @app.get("/")
 async def get():
     return HTMLResponse(html)
-
 
 
 @app.websocket("/ws/{client_id}")
