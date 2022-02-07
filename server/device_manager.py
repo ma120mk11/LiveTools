@@ -24,7 +24,6 @@ class DeviceManager():
 
     def __init__(self) -> None:
         logger.debug("Initializing OSC Device Manager")
-        # self._connected.append(x_air)
 
     def add_device(self, device_name: str, type: str,) -> int:
         id = len(self._connected)
@@ -56,10 +55,11 @@ class DeviceManager():
     def get_port(self, id:int):
         return self._connected[id].receive_port
 
-    def set_status(self, device_id: int, status: str):
-        pass
-        # if device_id >= 0:
-            # self._connected[device_id].state = status            
+    async def set_status(self, device_id: int, status: str):
+        if device_id >= 0:
+            self._connected[device_id].state = status
+        await self.notify_change()
+
 
     def get_status(self, device_id: int):
         return self._connected[device_id].state
@@ -68,19 +68,17 @@ class DeviceManager():
         
         return self._connected
     
+    def get_name(self, device_id: int) ->str:
+        return self._connected[device_id].name
 
     async def connect(self, id:int, ip: IPv4Address, port:int):
 
         self._connected[id].ip = ip
         self._connected[id].receive_port = port
-        self._connected[id].state = "connected"
+        self._connected[id].state = ""
         await self.notify_change()
         return len(self._connected)
 
-    # def edit_connection(self, device_id: int, ip: IPv4Address, port: int):
-    #     self._connected[device_id].ip = ip
-    #     self._connected[device_id].receive_port = port
-    #     return self.
 
     async def notify_change(self):
         """

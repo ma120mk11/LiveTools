@@ -1,3 +1,6 @@
+import asyncio
+from ipaddress import IPv4Address
+import socket
 from typing import List
 from fastapi import FastAPI, HTTPException, Depends, status, Response, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
@@ -12,7 +15,7 @@ from logging.config import dictConfig
 import LogConfig
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.encoders import jsonable_encoder
-
+from osc.osc_server import server
 
 # dictConfig(LogConfig)
 logging.basicConfig(level=logging.DEBUG)
@@ -22,9 +25,11 @@ models.Base.metadata.create_all(bind=db_engine)
 
 app = FastAPI(debug=True)
 engine = live_engine.Engine()
+server.start_osc_server()
 
-# engine.start_osc()
-# devices = DeviceManager()
+async def start_osc():
+    await engine.start_osc()
+asyncio.create_task(start_osc())
 
 origins = [
     "http://localhost",
@@ -150,7 +155,7 @@ def get_artists(db: Session = Depends(get_db)):
 @app.post("/osc/maps/add/", status_code=status.HTTP_202_ACCEPTED, tags=["engine"])
 def add_map(map: str):
     print("Trying to add " + map)
-    engine.osc.addMap(map)
+    server.addMap(map)
     return
 
 
@@ -162,7 +167,10 @@ def send_osc_msg(osc_address: str,value: float):
 
 @app.get("/osc/server_ip", tags=["engine"])
 def get_server_ip():
-    return engine.osc.getServerIP()
+    hostname = socket.gethostname()
+    server_ip: IPv4Address = IPv4Address(socket.gethostbyname(hostname))
+
+    return server_ip
 
 
 @app.post("/engine/set/load", status_code=status.HTTP_202_ACCEPTED, tags=["engine"])
@@ -209,13 +217,13 @@ async def device_config(id:int, request: schemas.OSCDeviceUpdate ):
     if request.receive_port:
         await device_mgr.set_receive_port(device_id=id, port=request.receive_port)
 
-@app.post("/devices/connect", status_code=status.HTTP_202_ACCEPTED, tags=["devices"])
-def connect_device(device: schemas.OSCDeviceBase):
-    
-    if not device_mgr.connect(device):
-        raise HTTPException(detail="Error connecting device")
-    return
 
+@app.get("/devices/test/{id}", tags=["devices"])
+async def test_device_connection(id:int):
+    is_connected = engine.recording.test_connection()
+    return await is_connected
+    
+    
 
 
 @app.put('/songs/{id}', 
@@ -316,15 +324,15 @@ async def get():
     return HTMLResponse(html)
 
 
-
 @app.websocket("/ws/{client_id}")
 async def websocket_endpoint(websocket: WebSocket, client_id: str):
-    await engine.start_osc()
+    # await engine.start_osc()
     await manager.connect(websocket, client_id)
     try:
         # send engine status to connected client:
         await manager.send_personal_message(websocket, engine.get_engine_state(), "engine-state")
         await manager.send_personal_message(websocket, jsonable_encoder(device_mgr.get_status()), "device-state")
+        
         while True:
             data = await websocket.receive_text()
             if data == "next-song":

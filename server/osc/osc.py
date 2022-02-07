@@ -1,17 +1,8 @@
-import socket
-import argparse
-import random
-import time
-import math
-import threading
 import logging
-from typing import Union
+from typing import Callable, List, Union
 from pythonosc import udp_client
-from pythonosc import dispatcher
-from pythonosc import osc_server
 from ipaddress import IPv4Address
-from schemas import OSCDevice
-from device_manager import device_mgr, DeviceManager
+from device_manager import device_mgr
 
 logger = logging.getLogger(__name__)
 
@@ -22,12 +13,15 @@ class OSCBase():
     client: udp_client.SimpleUDPClient = None
     
     # Statuses
+    _CONNECTED = "connected"
     _NOT_CONNECTED = "not_connected"
+    _NO_HEARTBEAT = "no_heartbeat"
+    _CONNECTION_NOT_KNOWN = "connection_not_known"
     _DISABLED = "disabled"
     _READY = "ready"
-    _CONNECTED = "connected"
     _INITIALIZED = "initialized"
 
+    _enabled = True
     _type: str = "undefined"
     _name: str = "undefined"
     _status: str = "disconnected"
@@ -46,6 +40,13 @@ class OSCBase():
         await device_mgr.set_status(self._device_id, self.status)
         return self._status
 
+    async def set_status(self, new_status):
+        self._status = new_status
+        await device_mgr.set_status(self._device_id, self.status)
+        return self._status
+
+    
+
     async def connect(self, ip: IPv4Address, port: int) -> bool:
         logger.debug("Connecting %s to %s:%i", __name__, ip, port)
         self.client_ip = ip
@@ -60,24 +61,32 @@ class OSCBase():
         """
         return device_mgr.get_ip(self._device_id)
 
+    def get_name(self):
+        """
+        Returns the name of the device
+        """
+        return device_mgr.get_name(self._device_id)
 
     def get_port(self):
+        """
+        Returns the configured port for the device
+        """
         return device_mgr.get_port(self._device_id)
 
 
-    def start_osc_client(self):
-        logger.info("Starting OSC client...")
-
-        # client = udp_client.SimpleUDPClient(self.client_ip, self.client_port)
-        # thread = threading.Thread()
-        # thread.start()
-
-    def stop_osc_client(self):
-        logger.info("Stopping OSC client...")
+    def test_connection(self) -> bool:
+        """
+        Method should be implemented by classes inheriting osc.
+        Should send an osc message and listen for feedback.
+        """
+        logger.debug("Testing OSC connection for: %s", self.get_name())
 
 
     def send_osc_msg(self, osc_address: str, value: Union[float, str] =1 ):
-        logger.debug("Send msg to: " + self.get_ip())
+        """
+        Sends a message to the osc device. Value is optional.
+        """
+
         self.client = udp_client.SimpleUDPClient(self.get_ip(), self.get_port())
         logger.debug("SEND %s:%i - %s  VALUE: %s", self.client._address, self.client._port, osc_address, value)
         try:
@@ -88,57 +97,3 @@ class OSCBase():
 
 
 
-
-
-
-
-class OSCServer:
-
-    server_ip: IPv4Address = "192.168.43.249"
-    server_port = 8000
-    server: osc_server.ThreadingOSCUDPServer = None
-    dispatch: dispatcher.Dispatcher = None
-    _status: str = ""
-
-
-    def getServerIP(self) -> IPv4Address:
-        hostname = socket.gethostname()
-        server_ip: IPv4Address = IPv4Address(socket.gethostbyname(hostname))
-        return server_ip
-
-    def stop_osc_server(self):
-        logger.debug("Shutting down osc server...")
-        self.server.shutdown()
-        return
-
-
-
-    def start_osc_server(self) -> bool:
-
-        if not self.server_ip:
-            self.server_ip = self.getServerIP()
-
-        logger.info("Starting OSC Server...")
-        self.dispatch = dispatcher.Dispatcher()
-
-        # self.addMap("/1/toggle1")
-
-        try:
-            self.server = osc_server.ThreadingOSCUDPServer(
-                (self.server_ip, self.server_port), self.dispatch)
-
-            print("Serving on {}".format(self.server.server_address))
-
-            self.thread = threading.Thread(target=self.server.serve_forever)
-            self.thread.start()
-            return 1
-        except Exception:
-            logger.error("Error starting OSC server")
-            return 0
-
-    def addMap(self, route:str):
-        print("Adding map to dispatcher...")
-        if self.dispatch is None:
-            print("dispatcher not initialized")
-        else:
-            self.dispatch.map(route, print)
