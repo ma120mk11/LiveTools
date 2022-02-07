@@ -1,6 +1,4 @@
-from ipaddress import IPv4Address
 from osc.ardour_osc import ArdourOSC
-from osc.osc import OSCBase
 import logging
 
 logger = logging.getLogger(__name__)
