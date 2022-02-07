@@ -1,4 +1,6 @@
 import asyncio
+from ipaddress import IPv4Address
+import socket
 from typing import List
 from fastapi import FastAPI, HTTPException, Depends, status, Response, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
@@ -165,7 +167,10 @@ def send_osc_msg(osc_address: str,value: float):
 
 @app.get("/osc/server_ip", tags=["engine"])
 def get_server_ip():
-    return engine.osc.getServerIP()
+    hostname = socket.gethostname()
+    server_ip: IPv4Address = IPv4Address(socket.gethostbyname(hostname))
+
+    return server_ip
 
 
 @app.post("/engine/set/load", status_code=status.HTTP_202_ACCEPTED, tags=["engine"])
