@@ -1,9 +1,4 @@
-import asyncio
-from ipaddress import IPv4Address
-
 from osc.ardour_osc import ArdourOSC
-from .osc import OSCBase, server
-from device_manager import device_mgr
 
 import logging
 
@@ -24,13 +19,12 @@ class OSCRecoding(ArdourOSC):
         self._name = "Ardour recording"
         super().__init__()
         logger.debug("Initializing recording")
-    
-    # def _init_heartbeat(self):
-    #     self.send_osc_msg(self._set_surface, 8)
+
 
     def create_marker(self):
         logger.debug("Creating marker in Ardour")
         self.send_osc_msg(self._add_marker)
+
 
     async def record(self) -> bool:
         logger.debug("Starting recording via OSC")
@@ -38,6 +32,7 @@ class OSCRecoding(ArdourOSC):
         self.send_osc_msg(self._play)
 
         return True
+
 
     async def stop_recording(self) -> bool:
         logger.debug("Stopping recording")
