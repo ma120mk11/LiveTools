@@ -43,6 +43,7 @@ import { HttpErrorHandler } from './services/http-error-handler.service';
 import { CreateSongComponent } from './components/song-book/create-song/create-song.component';
 import { ConfigureDeviceComponent } from './components/devices/configure-device/configure-device.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { WsDisconnectedModalComponent } from './ws-disconnected-modal/ws-disconnected-modal.component';
 
 @NgModule({
   declarations: [
@@ -61,7 +62,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     ToggleFullScreenDirective,
     SongBookComponent,
     CreateSongComponent,
-    ConfigureDeviceComponent
+    ConfigureDeviceComponent,
+    WsDisconnectedModalComponent
   ],
   imports: [
     BrowserModule,
