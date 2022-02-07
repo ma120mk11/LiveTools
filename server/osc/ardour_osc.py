@@ -45,7 +45,7 @@ class ArdourOSC(OSCBase):
         """
         Automaticly try to re-connect
         """
-        while self.status != self._CONNECTED or self._enabled:
+        while self.status != self._CONNECTED and self._enabled:
             self._init_heartbeat()
             await asyncio.sleep(5)
 
