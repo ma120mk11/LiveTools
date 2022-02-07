@@ -1,14 +1,13 @@
 from ipaddress import IPv4Address
+from osc.ardour_osc import ArdourOSC
 from osc.osc import OSCBase
 import logging
 
 logger = logging.getLogger(__name__)
 
-class OSCPlayback(OSCBase):
+class OSCPlayback(ArdourOSC):
 
     #Osc commands
-    _start = "/transport_play"
-    _stop = "/transport_stop"
     _save = "/save_state"
 
 
@@ -25,7 +24,7 @@ class OSCPlayback(OSCBase):
         logger.debug("Starting audio playback from %s", marker)
         self._is_playing = True
         self.send_osc_msg("/marker", marker)
-        self.send_osc_msg(self._start)
+        self.send_osc_msg(self._play)
 
 
     def stop(self, force_send=False):
