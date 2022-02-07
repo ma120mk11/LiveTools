@@ -19,9 +19,6 @@ class Engine():
         self.playback = OSCPlayback()
 
     async def start_osc(self):
-        # Check if engine is running
-        if self._current_id > -1:
-            return
         logger.info("Connecting all OSC devices...")
         await self.lights.connect("192.168.43.120", 8887)
         await self.recording.connect("192.168.43.120", 3819)
