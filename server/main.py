@@ -12,7 +12,7 @@ from logging.config import dictConfig
 import LogConfig
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.encoders import jsonable_encoder
-from osc.osc import server
+from osc.osc_server import server
 
 # dictConfig(LogConfig)
 logging.basicConfig(level=logging.DEBUG)

@@ -1,7 +1,8 @@
 import asyncio
 from ipaddress import IPv4Address
 import logging
-from .osc import OSCBase, server
+from .osc import OSCBase
+from .osc_server import server
 
 logger = logging.getLogger(__name__)
 
