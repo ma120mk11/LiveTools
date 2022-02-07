@@ -1,3 +1,4 @@
+import asyncio
 from typing import List
 from fastapi import FastAPI, HTTPException, Depends, status, Response, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
@@ -24,8 +25,9 @@ app = FastAPI(debug=True)
 engine = live_engine.Engine()
 server.start_osc_server()
 
-# engine.start_osc()
-# devices = DeviceManager()
+async def start_osc():
+    await engine.start_osc()
+asyncio.create_task(start_osc())
 
 origins = [
     "http://localhost",
@@ -319,12 +321,13 @@ async def get():
 
 @app.websocket("/ws/{client_id}")
 async def websocket_endpoint(websocket: WebSocket, client_id: str):
-    await engine.start_osc()
+    # await engine.start_osc()
     await manager.connect(websocket, client_id)
     try:
         # send engine status to connected client:
         await manager.send_personal_message(websocket, engine.get_engine_state(), "engine-state")
         await manager.send_personal_message(websocket, jsonable_encoder(device_mgr.get_status()), "device-state")
+        
         while True:
             data = await websocket.receive_text()
             if data == "next-song":
