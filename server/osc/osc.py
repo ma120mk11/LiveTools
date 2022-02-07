@@ -33,6 +33,7 @@ class OSCBase():
     _READY = "ready"
     _INITIALIZED = "initialized"
 
+    _enabled = True
     _type: str = "undefined"
     _name: str = "undefined"
     _status: str = "disconnected"
@@ -114,7 +115,7 @@ class Heartbeat(BaseModel):
     is_connected: bool
     device_mgr_id: int
     timeout: int
-    error_callback: Callable
+    on_status_change_callback: Callable
 
 
 
@@ -129,7 +130,7 @@ class OSCServer:
     _heartbeats: List[Heartbeat] = []
     _heartbeat_thread = None
 
-    def getServerIP(self) -> IPv4Address:
+    def get_server_ip(self) -> IPv4Address:
         hostname = socket.gethostname()
         server_ip: IPv4Address = IPv4Address(socket.gethostbyname(hostname))
         return server_ip
@@ -144,7 +145,7 @@ class OSCServer:
     def start_osc_server(self) -> bool:
 
         if not self.server_ip:
-            self.server_ip = self.getServerIP()
+            self.server_ip = self.get_server_ip()
 
         logger.info("Starting OSC Server...")
         self.dispatch = dispatcher.Dispatcher()
@@ -160,9 +161,8 @@ class OSCServer:
             self.thread = threading.Thread(target=self.server.serve_forever)
             self.thread.start()
 
-            # self._heartbeat_thread = threading.Thread(target=self.heartbeat_check)
-            asyncio.create_task(self.heartbeat_check())
-            # self._heartbeat_thread.start()
+            asyncio.create_task(self.heartbeat_listener())
+
             return 1
         except Exception as e:
             logger.error("Error starting OSC server: ")
@@ -176,7 +176,11 @@ class OSCServer:
         else:
             self.dispatch.map(route, print)
 
-    def add_map(self, route:str, callback, id):
+    def add_map(self, route:str, callback: Callable, id: int):
+        """
+        Adds a map with a callback function to the Dispatcher.
+        """
+
         logger.debug("Adding map '%s' to dispatcher...", route)
         if self.dispatch is None:
             logger.error("dispatcher not initialized")
@@ -184,18 +188,23 @@ class OSCServer:
             self.dispatch.map(route, callback, id, needs_reply_address=True)
 
 
-    async def heartbeat_check(self):
-        logger.debug("heartbeat function started")
+    async def heartbeat_listener(self):
+        """
+        Listens to heartbeats and executes the heartbeat callback
+        function on connection change.
+        """
+        logger.debug("Heartbeat listener started")
+
         while True:
-            current_time = time()
             for device in self._heartbeats:
+                current_time = time()
                 if current_time - device.last_heartbeat > device.timeout:
                     if device.is_connected:
-                        await device.error_callback(connected=False)
+                        await device.on_status_change_callback(connected=False)
                         device.is_connected = False
                 else:
                     if not device.is_connected:
-                        await device.error_callback(connected=True)
+                        await device.on_status_change_callback(connected=True)
                         device.is_connected = True
 
             await asyncio.sleep(1)
@@ -209,14 +218,17 @@ class OSCServer:
             device_mgr_id = device_id,
             is_connected=False,
             timeout=timeout,
-            error_callback=callback
+            on_status_change_callback=callback
         )        
         self._heartbeats.append(heartbeat)
         id = len(self._heartbeats) -1
-        self.add_map(route, self.set_last_time, id)
+        self.add_map(route, self._on_heartbeat_received, id)
 
 
-    def set_last_time(self, *args, **kwargs):
+    def _on_heartbeat_received(self, *args, **kwargs):
+        """
+        Callback function for a received heartbeat
+        """
         sender_ip_address: str = args[0][0]
         id: int = args[2][0]
 
