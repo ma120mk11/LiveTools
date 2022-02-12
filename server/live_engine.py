@@ -147,6 +147,29 @@ class Engine():
     def action_btn_pressed(self, btn_id:int, btn_initiator=""):
         logger.info(f"Executing song button {btn_id}")
 
+    def get_next_song_id(self) -> int:
+        """
+        Returns song current song id. If no set is loaded -1
+        """
+        if not self._setlist:
+            return -1
+
+        action_arr = self._setlist['actions']
+
+        search_id: int
+        if self._current_id >= 0:
+            search_id = self._current_id
+        else: search_id = 0
+
+        while True:
+            logger.debug(f"Current: {self._current_id}, search: {search_id}")
+            if len(action_arr) <= search_id:
+                return -1
+            elif action_arr[search_id].get("song_id"):
+                return action_arr[search_id].get("song_id")
+            else:
+                search_id = search_id + 1
+        
 
     def _reset_engine(self) -> None:
         """

@@ -5,7 +5,11 @@ export class Song {
   title: string;
   artist: string;
   lead_singer: string;
-  duration: number
+  duration: number;
+  tempo?: number;
+  lyrics?: string;
+  key?: string;
+  id?: number;
 }
 
 

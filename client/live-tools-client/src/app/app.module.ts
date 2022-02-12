@@ -19,6 +19,7 @@ import {MatStepperModule} from '@angular/material/stepper';
 import { MatCardModule } from '@angular/material/card';
 import {MatFormFieldModule, MAT_FORM_FIELD_DEFAULT_OPTIONS} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import { MatTableModule } from '@angular/material/table';
 import {MatMenuModule} from '@angular/material/menu';
@@ -82,6 +83,7 @@ import { WsDisconnectedModalComponent } from './ws-disconnected-modal/ws-disconn
     MatDialogModule,
     MatCardModule,
     MatFormFieldModule,
+    MatProgressSpinnerModule,
     MatInputModule,
     MatAutocompleteModule,
     MatChipsModule,

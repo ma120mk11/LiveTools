@@ -91,6 +91,8 @@ export class WebSocketService {
   public engineStatus: string;
   public devices: IDevice[]
 
+  public event: Subject<any> = new Subject()
+
   getMessages(){
     return this.messages
   }
@@ -103,10 +105,11 @@ export class WebSocketService {
       switch (msg_obj.msg_type) {
         case "load-set":
 
-          console.log("Loading set")
+          console.log("Loading set...")
           try {
             this.setlist=msg_obj.data;
             this.isLoaded = true;
+            this.event.next(null);
             console.log(`Loaded set: ${this.setlist.name}`)
           } catch (error){
             console.error("Unable to load setlist");
@@ -122,6 +125,7 @@ export class WebSocketService {
         case "executing-action-nbr":
           try {
             this.activeSetlistActionId = msg_obj.data;
+            this.event.next(null)
           } catch (error) {
             console.error("Unable to set executing action id");
           }

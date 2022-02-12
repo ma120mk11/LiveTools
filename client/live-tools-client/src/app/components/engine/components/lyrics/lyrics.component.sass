@@ -1,11 +1,24 @@
 .container
-    overflow-y: scroll
+    // overflow-y: scroll
     width: 100%
-    // height: 90%
+    // overflow-x: clip
+    // max-width: 100%
+    // overflow-wrap: break-word
 
-    pre
-        font-size: 120%
+    .lyrics
+        padding-left: 15px
+
+        // pre doesn't break by default
+        // white-space: pre-wrap       /* Since CSS 2.1 */
+        // white-space: -moz-pre-wrap  /* Mozilla, since 1999 */
+        // white-space: -pre-wrap      /* Opera 4-6 */
+        // white-space: -o-pre-wrap    /* Opera 7 */
+        // word-wrap: break-word       /* Internet Explorer 5.5+ */
+
+        font-size: 220%
+        line-height: 1.3
         word-wrap: break-word
+
 
 ::-webkit-scrollbar 
     width: 0px  /* Remove scrollbar space */

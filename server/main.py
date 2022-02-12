@@ -202,6 +202,23 @@ def get_active_cuelists():
 def get_engine_status():
     return engine.get_status()
 
+
+@app.get("/engine/next-lyrics", tags=["engine", "lyrics"])
+def get_lyrics_for_next_song(lookahead: int=3, db: Session = Depends(get_db)):
+    
+    song_id = engine.get_next_song_id()
+    logger.debug("Next song id: " + str(song_id))
+    if song_id >= 0:
+        song = crud.get_song(db, song_id)
+        if song is None:
+            return "No lyrics available"
+        else: 
+
+            if song.lyrics:
+                return song.lyrics
+
+    return "No lyrics available"
+
 #////////////////////////////////////////////////////////////////
 #//                        DEVICES                             //
 #////////////////////////////////////////////////////////////////
