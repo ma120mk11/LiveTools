@@ -4,6 +4,20 @@ from typing import List, Optional, Union
 from pydantic import BaseModel
 from enum import Enum
 
+class Execution(BaseModel):
+    playback: dict
+    lights: dict
+    mixer: dict
+
+class SongAction(BaseModel):
+    song_id: int
+    type: str
+    title: str
+    artist: str
+    version: int
+    playback: bool
+    execution: Execution
+
 class SetlistMetadata(BaseModel):
     gig_name: str
     set_nbr: int
