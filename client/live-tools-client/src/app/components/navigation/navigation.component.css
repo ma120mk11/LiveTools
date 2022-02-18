@@ -16,7 +16,12 @@
   z-index: 1;
   /* width: 100%; */
 }
-
+.mat-toolbar.mat-secondary {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  /* width: 100%; */
+}
 .set-loaded-container {
   width: 100%;
   text-align: center;
