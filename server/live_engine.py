@@ -67,7 +67,7 @@ class Engine():
         self._status = "set_running"
         await self.recording.record()
 
-        # Set frontlights an leave them on for rest of the set
+        # Set frontlights and leave them on for rest of the set
         self.lights.start_cuelist(["frontlights"], persistent=True)
 
         # Automatically start action 0
