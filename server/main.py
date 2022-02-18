@@ -1,4 +1,5 @@
 import asyncio
+import uvicorn
 from ipaddress import IPv4Address
 import socket
 from typing import List
@@ -9,10 +10,7 @@ from device_manager import DeviceManager, device_mgr
 from websocket.connection_manager import manager
 from database import SessionLocal, db_engine
 from sqlalchemy.orm import Session
-from sqlalchemy import func
 import logging
-from logging.config import dictConfig
-import LogConfig
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.encoders import jsonable_encoder
 from osc.osc_server import server
@@ -31,9 +29,12 @@ async def start_osc():
     await engine.start_osc()
 asyncio.create_task(start_osc())
 
+
 origins = [
+    "*"
     "http://localhost",
     "http://localhost:4200",
+    "http://192.168.43.249:4200",
 ]
 
 app.add_middleware(
@@ -261,86 +262,6 @@ def update_song(
     return
 
 
-
-html = """
-    <!DOCTYPE html>
-    <html>
-        <head>
-            <title>LiveTools</title>
-        </head>
-        <body>
-            <h1>LiveTools Websocket</h1>
-            <h2>Your ID: <span id="ws-id"></span></h2>
-            <button onclick="next('start-set')">Start set</button>
-            <button onclick="next('next-song')">Next</button>
-            <form action="" onsubmit="sendMessage(event)">
-                <input type="text" id="messageText" autocomplete="off"/>
-                <button>Send</button>
-            </form>
-            <ul id='messages'>
-            </ul>
-            <script>
-                var client_id = browserDetect() + "-" + getRandomInt(1,99);
-                document.querySelector("#ws-id").textContent = client_id;
-                var ws = new WebSocket(`ws://localhost:8000/ws/${client_id}`);
-                ws.onmessage = function(event) {
-                    var messages = document.getElementById('messages')
-                    var message = document.createElement('li')
-                    var content = document.createTextNode(event.data)
-                    message.appendChild(content)
-                    messages.appendChild(message)
-                };
-                function sendMessage(event) {
-                    var input = document.getElementById("messageText")
-                    ws.send(input.value)
-                    input.value = ''
-                    event.preventDefault()
-                }
-                function next(command){
-                    ws.send(command)
-                }
-                function browserDetect(){
-                 
-                    let userAgent = navigator.userAgent;
-                    let browserName;
-                    
-                    if(userAgent.match(/chrome|chromium|crios/i)){
-                        browserName = "chrome";
-                    }else if(userAgent.match(/firefox|fxios/i)){
-                        browserName = "firefox";
-                    }  else if(userAgent.match(/safari/i)){
-                        browserName = "safari";
-                    }else if(userAgent.match(/opr\//i)){
-                        browserName = "opera";
-                    } else if(userAgent.match(/edg/i)){
-                        browserName = "edge";
-                    }else{
-                        browserName="No browser detection";
-                    }
-                    return browserName
-                }
-                function getRandomInt(min, max) {
-                    min = Math.ceil(min);
-                    max = Math.floor(max);
-                    return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
-                }
-            </script>
-        </body>
-    </html>
-"""
-
-
-
-
-
-# manager = ConnectionManager()
-
-
-@app.get("/")
-async def get():
-    return HTMLResponse(html)
-
-
 @app.websocket("/ws/{client_id}")
 async def websocket_endpoint(websocket: WebSocket, client_id: str):
     # await engine.start_osc()
@@ -368,3 +289,6 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
         manager.disconnect(websocket)
         await manager.broadcast(f"Client {client_id} disconnected", "notification")
 
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
