@@ -19,6 +19,7 @@ import {MatStepperModule} from '@angular/material/stepper';
 import { MatCardModule } from '@angular/material/card';
 import {MatFormFieldModule, MAT_FORM_FIELD_DEFAULT_OPTIONS} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import { MatTableModule } from '@angular/material/table';
 import {MatMenuModule} from '@angular/material/menu';
@@ -43,6 +44,7 @@ import { HttpErrorHandler } from './services/http-error-handler.service';
 import { CreateSongComponent } from './components/song-book/create-song/create-song.component';
 import { ConfigureDeviceComponent } from './components/devices/configure-device/configure-device.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { WsDisconnectedModalComponent } from './ws-disconnected-modal/ws-disconnected-modal.component';
 
 @NgModule({
   declarations: [
@@ -61,7 +63,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     ToggleFullScreenDirective,
     SongBookComponent,
     CreateSongComponent,
-    ConfigureDeviceComponent
+    ConfigureDeviceComponent,
+    WsDisconnectedModalComponent
   ],
   imports: [
     BrowserModule,
@@ -80,6 +83,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     MatDialogModule,
     MatCardModule,
     MatFormFieldModule,
+    MatProgressSpinnerModule,
     MatInputModule,
     MatAutocompleteModule,
     MatChipsModule,

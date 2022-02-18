@@ -3,6 +3,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import { IDevice } from 'src/app/services/web-socket/web-socket.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-configure-device',
@@ -32,8 +33,7 @@ export class ConfigureDeviceComponent implements OnInit {
     console.log(this.deviceEditForm.controls['ip'].value)
     console.log(this.deviceEditForm.controls['receive_port'].value)
 
-    // const url = `http://localhost:8000/devices/${this.data.id}`
-    const url = `http://192.168.43.249:8000/devices/${this.data.id}`
+    const url = `${environment.apiEndpoint}/devices/${this.data.id}`
     this.http.patch(url, {
       ip: this.deviceEditForm.controls['ip'].value,
       receive_port: this.deviceEditForm.controls['receive_port'].value

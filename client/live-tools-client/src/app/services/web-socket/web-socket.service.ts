@@ -1,10 +1,13 @@
 import { Injectable } from '@angular/core';
 import {webSocket, WebSocketSubject } from 'rxjs/webSocket'
 import { of, Observable, Subject, Observer } from 'rxjs'
+import { MatDialog } from '@angular/material/dialog';
+import { WsDisconnectedModalComponent } from 'src/app/ws-disconnected-modal/ws-disconnected-modal.component';
 
 // export const WS_ENDPOINT = "ws://localhost:8000/ws/"
 // export const WS_ENDPOINT = "ws://192.168.0.24:8000/ws/"
 export const WS_ENDPOINT = "ws://192.168.43.249:8000/ws/"
+export const BACKED_URL = "192.168.0.249:8000"
 
 export interface IWsMsg {
   msg_type: string;
@@ -88,11 +91,13 @@ export class WebSocketService {
   public engineStatus: string;
   public devices: IDevice[]
 
+  public event: Subject<any> = new Subject()
+
   getMessages(){
     return this.messages
   }
 
-  constructor() {
+  constructor(private dialog: MatDialog) {
     this.ws.onmessage = (event) => {
       console.log(event.data)
       let msg_obj = JSON.parse(event.data);
@@ -100,10 +105,11 @@ export class WebSocketService {
       switch (msg_obj.msg_type) {
         case "load-set":
 
-          console.log("Loading set")
+          console.log("Loading set...")
           try {
             this.setlist=msg_obj.data;
             this.isLoaded = true;
+            this.event.next(null);
             console.log(`Loaded set: ${this.setlist.name}`)
           } catch (error){
             console.error("Unable to load setlist");
@@ -119,6 +125,7 @@ export class WebSocketService {
         case "executing-action-nbr":
           try {
             this.activeSetlistActionId = msg_obj.data;
+            this.event.next(null)
           } catch (error) {
             console.error("Unable to set executing action id");
           }
@@ -179,8 +186,14 @@ export class WebSocketService {
       this.messages.unshift(msg_obj)
 
     }
+    this.ws.onclose = () => {
+      console.error("WebSocket disconnected!")
+      const dialogRef = this.dialog.open(WsDisconnectedModalComponent)
+
+    }
   }
-  
+
+
   get URL(): string {
     return WS_ENDPOINT + this.Id
   }
