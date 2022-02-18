@@ -154,15 +154,15 @@ def add_map(map: str):
     return
 
 
-@app.post("/osc/send/", status_code=status.HTTP_202_ACCEPTED, tags=["engine"])
-def send_osc_msg(osc_address: str,value: float):
-    logging.debug("Sending OSC msg: %s . %f", osc_address, value)
-    engine.osc.send_osc_msg(osc_address,value)
-    return
+# @app.post("/osc/send/", status_code=status.HTTP_202_ACCEPTED, tags=["engine"])
+# def send_osc_msg(osc_address: str,value: float):
+#     logging.debug("Sending OSC msg: %s . %f", osc_address, value)
+#     engine.osc.send_osc_msg(osc_address,value)
+#     return
 
-@app.get("/osc/server_ip", tags=["engine"])
-def get_server_ip():
-    return engine.osc.getServerIP()
+# @app.get("/osc/server_ip", tags=["engine"])
+# def get_server_ip():
+#     return engine.osc.getServerIP()
 
 
 @app.post("/engine/set/load", status_code=status.HTTP_202_ACCEPTED, tags=["engine"])
@@ -181,8 +181,17 @@ def start_set():
 
 @app.post("/engine/set/next", status_code=status.HTTP_202_ACCEPTED, tags=["engine"])
 def next_song():
-    engine.end_set()
+    engine.next_event()
     return
+
+@app.post("/engine/action/preview", status_code=status.HTTP_202_ACCEPTED, tags=["engine"])
+async def test_action(action: dict):
+    await engine.preview_action(action)
+
+@app.post("/engine/action/preview/release", status_code=status.HTTP_202_ACCEPTED, tags=["engine"])
+async def release_preview():
+    await engine.release_preview()
+
 
 
 @app.get("/engine/lights/active", tags=["engine", "lights"])

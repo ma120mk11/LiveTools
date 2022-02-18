@@ -2,6 +2,7 @@ import logging
 from sqlite3 import connect
 from osc.ligths import OSCLights
 from osc.playback import OSCPlayback
+from schemas import SongAction
 from websocket.connection_manager import manager, MsgType
 from osc.recording import OSCRecoding
 # import json
@@ -11,6 +12,9 @@ class Engine():
     _setlist = {}
     _status = "stopped"
     _current_id = -1
+    _current_action: dict = {}
+    _state_savepoint: dict
+    _in_preview: bool = False
 
     def __init__(self):
         logger.info("Engine initializing")
@@ -39,9 +43,16 @@ class Engine():
             status:
         """
 
+        action_id = int
+        if self._in_preview:
+            action_id = -2
+        else:
+            action_id = self._current_id
+
         return {
             "setlist": self._setlist,
-            "action_id": self._current_id,
+            "action_id": action_id,
+            "current_action": self._current_action,
             "status": self._status
         }
 
@@ -89,7 +100,42 @@ class Engine():
         self.recording.stop_recording()
 
         self._reset_engine()
+
+
+    async def _execute_action(self, action:dict, preview=False):
+        logger.debug(action)
+        self._current_action = action
+        self.playback.stop()    # Stop playback if active
+
+        await manager.broadcast(action, "action-config")
+        await manager.broadcast(str(action.get('nbr',-2)), "executing-action-nbr")
+
+        cuelist: list(str) = []
+        try:
+            cuelist = self._setlist['actions'][self._current_id]['execution']['lights']['cuelist']
+        except Exception:
+            pass
         
+        if action['type'] == "song": 
+            if not preview:
+                #Create marker to easily identify where songs start
+                self.recording.create_marker()
+
+            if action.get('playback'):
+                try:
+                    self.playback.start(action['execution']['playback']['marker_name'])
+                except Exception as e:
+                    logger.error("Unable to start playback")
+                    logger.debug(e)
+                
+        # Only release and start if cuelist differs from currently active
+        if set(self.lights.get_active()) != set(cuelist):
+            self.lights.release_active_cuelists()
+            self.lights.start_cuelist(cuelist)
+
+        return
+
+
 
     async def next_event(self, event_initiator:str = ""):
         logger.info("Next event triggered by %s", event_initiator)
@@ -102,41 +148,13 @@ class Engine():
         if self._current_id >= len(self._setlist['actions']):
             await self.end_set()
             return
-        
-        self.playback.stop()    # Stop playback if active
 
         action = self._setlist['actions'][self._current_id]
-        logger.info(action)
-
-        await manager.broadcast(action, "action-config")
-        await manager.broadcast(str(action['nbr']), "executing-action-nbr")
-
-        cuelist: list(str) = []
-        try:
-            cuelist = self._setlist['actions'][self._current_id]['execution']['lights']['cuelist']
-        except Exception:
-            pass
         
-        if action['type'] == "song": 
-            #Create marker to easily identify where songs start
-            self.recording.create_marker()
-
-            if action.get('playback'):
-                try:
-                    self.playback.start(action['execution']['playback']['marker_name'])
-                except Exception as e:
-                    logger.error("Unable to start playback")
-                    logger.debug(e)
-                
-
-        # Only release and start if cuelist differs from currently active
-        if set(self.lights.get_active()) != set(cuelist):
-            self.lights.release_active_cuelists()
-            self.lights.start_cuelist(cuelist)
-
-
+        await self._execute_action(action, preview=False)
 
         self._current_id += 1
+
         return
 
 
@@ -150,6 +168,31 @@ class Engine():
     def action_btn_pressed(self, btn_id:int, btn_initiator=""):
         logger.info(f"Executing song button {btn_id}")
 
+
+    async def preview_action(self, action: dict):
+        """
+        Overrides current engine state
+        """
+        logger.info("Action preview initiated")
+        self._in_preview = True
+        self._state_savepoint = self.get_engine_state()
+        await self._execute_action(action, preview=True)
+
+
+    async def release_preview(self):
+        """
+        Releses current preview (if any)
+        Sets engine state to the state before priview was initiated
+        """
+        logger.info("Action preview release initiated")
+
+        self._in_preview = False
+
+        if self._setlist and self._current_id > -1:
+            await self.next_event()
+        else:
+            self._reset_engine()
+        
 
     def _reset_engine(self) -> None:
         """
