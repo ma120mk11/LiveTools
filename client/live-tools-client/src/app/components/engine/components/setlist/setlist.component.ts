@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { IAction, WebSocketService } from 'src/app/services/web-socket/web-socket.service';
 import { ISetlist } from 'src/app/services/web-socket/web-socket.service';
@@ -83,7 +84,7 @@ export class SetlistComponent implements OnInit {
 
   executingAction: number = 0;
 
-  constructor(public ws: WebSocketService) { }
+  constructor(public ws: WebSocketService, private http: HttpClient) { }
 
   getSetlistName(): string {
     console.log("Evaluating..")
@@ -119,6 +120,10 @@ export class SetlistComponent implements OnInit {
       if (action.nbr == action_nbr) nbr = counter
     })
     return nbr
+  }
+
+  releasePreview(): void{
+    this.http.post("http://192.168.43.249:8000/"+"/engine/action/preview/release", {})
   }
 
 }

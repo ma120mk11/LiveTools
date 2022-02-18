@@ -118,14 +118,19 @@ export class WebSocketService {
           break;
 
         case "action-config":
-          // TODO
+          this.activeAction = msg_obj.data
           break;
 
 
         case "executing-action-nbr":
           try {
-            this.activeSetlistActionId = msg_obj.data;
-            this.event.next(null)
+            const action_id = msg_obj.data;
+            if (action_id == -2) {
+              // TODO: ACTION PREVEW
+              this.activeSetlistActionId = action_id
+            } else {
+              this.activeSetlistActionId = action_id;
+            }
           } catch (error) {
             console.error("Unable to set executing action id");
           }
@@ -141,12 +146,20 @@ export class WebSocketService {
         case "engine-state":
           console.debug("Engine state received")
           try {
+
             try {
-              if (msg_obj.data.setlist.actions[0]['nbr'] !== 0) {
-                console.error("Setlist IF check failed")
+              if (msg_obj.data.setlist.lenght >= 1) {
+                this.setlist = msg_obj.data?.setlist
+                this.isLoaded = true
+              } else {
+                this.isLoaded = false;
               }
-              this.setlist = msg_obj.data.setlist;
-              this.isLoaded = true;
+              // if (msg_obj.data.setlist.actions[0]['nbr'] !== 0) {
+              //   console.error("Setlist IF check failed")
+              // }
+              this.activeSetlistActionId = msg_obj.data.action_id
+              this.activeAction = msg_obj.data.current_action
+
             } catch (error) {
               this.isLoaded = false;
               console.error("Setlist format error")
@@ -161,7 +174,7 @@ export class WebSocketService {
           break;
 
         case "notification-warning":
-          console.warn("Set is not started")
+          console.warn(msg_obj.data)
 
           break;
 
