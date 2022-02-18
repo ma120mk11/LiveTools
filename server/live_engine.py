@@ -214,6 +214,31 @@ class Engine():
             self._reset_engine()
         
 
+    async def preview_action(self, action: dict):
+        """
+        Overrides current engine state
+        """
+        logger.info("Action preview initiated")
+        self._in_preview = True
+        self._state_savepoint = self.get_engine_state()
+        await self._execute_action(action, preview=True)
+
+
+    async def release_preview(self):
+        """
+        Releses current preview (if any)
+        Sets engine state to the state before priview was initiated
+        """
+        logger.info("Action preview release initiated")
+
+        self._in_preview = False
+
+        if self._setlist and self._current_id > -1:
+            await self.next_event()
+        else:
+            self._reset_engine()
+        
+
     def _reset_engine(self) -> None:
         """
         Resets engine state
