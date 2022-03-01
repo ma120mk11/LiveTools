@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { IAction, WebSocketService } from 'src/app/services/web-socket/web-socket.service';
 import { ISetlist } from 'src/app/services/web-socket/web-socket.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-setlist',
@@ -123,7 +124,7 @@ export class SetlistComponent implements OnInit {
   }
 
   releasePreview(): void{
-    this.http.post("http://192.168.43.249:8000/"+"/engine/action/preview/release", {})
+    this.http.post(environment.apiEndpoint+"/engine/action/preview/release", {}).subscribe()
   }
 
 }
