@@ -36,7 +36,9 @@ class Engine():
         """
         Returns current engine state
             setlist:
-            action_id: Current executing action. -1: engine is stopped
+            action_id: Current executing action. 
+                -1: engine is stopped
+                -2: action preview mode
             status:
         """
 
@@ -137,7 +139,8 @@ class Engine():
     async def next_event(self, event_initiator:str = ""):
         logger.info("Next event triggered by %s", event_initiator)
 
-        if self.get_status() != "set_running":
+        # if self.get_status() != "set_running":
+        if self._current_id == -1:
             await manager.broadcast("Set is not started", "notification-warning")
             logger.info("Set is not started")
             return
@@ -195,6 +198,7 @@ class Engine():
         """
         logger.info("Action preview initiated")
         self._in_preview = True
+        self._status = "preview"
         self._state_savepoint = self.get_engine_state()
         await self._execute_action(action, preview=True)
 
@@ -208,35 +212,16 @@ class Engine():
 
         self._in_preview = False
 
-        if self._setlist and self._current_id > -1:
-            await self.next_event()
+        #Started set
+        if self._current_id > -1:
+            self._status = "set_running"
+            await self.next_event("Preview release")
+        #Set loaded, but not started
+        elif self._setlist:
+            await manager.broadcast(self._current_id, "executing-action-nbr")
         else:
             self._reset_engine()
-        
-
-    async def preview_action(self, action: dict):
-        """
-        Overrides current engine state
-        """
-        logger.info("Action preview initiated")
-        self._in_preview = True
-        self._state_savepoint = self.get_engine_state()
-        await self._execute_action(action, preview=True)
-
-
-    async def release_preview(self):
-        """
-        Releses current preview (if any)
-        Sets engine state to the state before priview was initiated
-        """
-        logger.info("Action preview release initiated")
-
-        self._in_preview = False
-
-        if self._setlist and self._current_id > -1:
-            await self.next_event()
-        else:
-            self._reset_engine()
+            await manager.broadcast(self._current_id, "executing-action-nbr")
         
 
     def _reset_engine(self) -> None:
