@@ -2,8 +2,10 @@ import { Component } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
-import { Router } from '@angular/router';
 import { WebSocketService } from 'src/app/services/web-socket/web-socket.service';
+import { HttpClient } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
+
 
 @Component({
   selector: 'app-navigation',
@@ -20,6 +22,10 @@ export class NavigationComponent {
     
   constructor(
     private breakpointObserver: BreakpointObserver,
-    public ws: WebSocketService) {}
+    public ws: WebSocketService,
+    private http: HttpClient) {}
 
+  releasePreview(): void{
+    this.http.post(environment.apiEndpoint+"/engine/action/preview/release", {}).subscribe()
+  }
 }
