@@ -1,12 +1,10 @@
 import asyncio
 import uvicorn
-from ipaddress import IPv4Address
-import socket
 from typing import List
-from fastapi import FastAPI, HTTPException, Depends, status, Response, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, HTTPException, Depends, status, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
 import schemas, models, crud, live_engine
-from device_manager import DeviceManager, device_mgr
+from device_manager import device_mgr
 from websocket.connection_manager import manager
 from database import SessionLocal, db_engine
 from sqlalchemy.orm import Session

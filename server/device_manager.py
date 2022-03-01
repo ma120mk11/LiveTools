@@ -1,9 +1,7 @@
 from ipaddress import IPv4Address
 import logging
-from os import name
-from typing import List, Union
-from fastapi import status
-from schemas import DeviceState, OSCDevice
+from typing import List
+from schemas import OSCDevice
 from websocket.connection_manager import manager
 from fastapi.encoders import jsonable_encoder
 

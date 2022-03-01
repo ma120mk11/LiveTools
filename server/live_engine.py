@@ -1,11 +1,9 @@
 import logging
-from sqlite3 import connect
 from osc.ligths import OSCLights
 from osc.playback import OSCPlayback
-from schemas import SongAction
-from websocket.connection_manager import manager, MsgType
+from websocket.connection_manager import manager
 from osc.recording import OSCRecoding
-# import json
+
 logger = logging.getLogger(__name__)
 
 class Engine():

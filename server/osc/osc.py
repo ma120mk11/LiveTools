@@ -1,5 +1,5 @@
 import logging
-from typing import Callable, List, Union
+from typing import Union
 from pythonosc import udp_client
 from ipaddress import IPv4Address
 from device_manager import device_mgr
