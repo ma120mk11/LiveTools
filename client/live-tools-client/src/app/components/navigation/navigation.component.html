@@ -24,23 +24,24 @@
         <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
       </button>
 
+
+
+
       <!-- Song loaded -->
-      <span *ngIf="ws.isLoaded; else logo" class="set-loaded-container">
+      <span *ngIf="ws.isLoaded && ws.activeSetlistActionId != -2; else logo" class="set-loaded-container">
         {{ws.setlist.name}}
 
         <!-- When set is not started -->
-        <span *ngIf="!ws.isSetStarted()">
-          <button mat-raised-button color="primary"  (click)="ws.startSet()">
+        <span *ngIf="!ws.isSetStarted() && ws.activeSetlistActionId != -2">
+          <button mat-raised-button color="primary" (click)="ws.startSet()">
             Start set
           </button>
         </span>
-
 
         <!-- When set is running -->
         <div *ngIf="ws.isSetStarted()" class="next-event">
           Next: {{ws.getNextAction()}}
         </div>
-
 
       </span>
 
@@ -48,6 +49,17 @@
       <ng-template #logo>
         <span>LiveTools</span>
       </ng-template>
+
+      <!-- When preview is active -->
+      <span  *ngIf="ws.activeSetlistActionId == -2" class="set-loaded-container">
+        {{ws.activeAction.title}}
+        <span>
+          <button mat-raised-button color="secondary"  (click)="this.releasePreview()">
+            Release preview
+          </button>
+        </span>
+      </span>
+
 
       <!-- Fullscreen btn -->
       <div class="right">

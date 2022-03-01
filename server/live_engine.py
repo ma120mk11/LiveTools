@@ -2,6 +2,7 @@ import logging
 from sqlite3 import connect
 from osc.ligths import OSCLights
 from osc.playback import OSCPlayback
+from schemas import SongAction
 from websocket.connection_manager import manager, MsgType
 from osc.recording import OSCRecoding
 # import json
@@ -11,6 +12,9 @@ class Engine():
     _setlist = {}
     _status = "stopped"
     _current_id = -1
+    _current_action: dict = {}
+    _state_savepoint: dict
+    _in_preview: bool = False
 
     def __init__(self):
         logger.info("Engine initializing")
@@ -32,13 +36,22 @@ class Engine():
         """
         Returns current engine state
             setlist:
-            action_id: Current executing action. -1: engine is stopped
+            action_id: Current executing action. 
+                -1: engine is stopped
+                -2: action preview mode
             status:
         """
 
+        action_id = int
+        if self._in_preview:
+            action_id = -2
+        else:
+            action_id = self._current_id
+
         return {
             "setlist": self._setlist,
-            "action_id": self._current_id,
+            "action_id": action_id,
+            "current_action": self._current_action,
             "status": self._status
         }
 
@@ -86,27 +99,15 @@ class Engine():
         self.recording.stop_recording()
 
         self._reset_engine()
-        
 
-    async def next_event(self, event_initiator:str = ""):
-        logger.info("Next event triggered by %s", event_initiator)
 
-        if self.get_status() != "set_running":
-            await manager.broadcast("Set is not started", "notification-warning")
-            logger.info("Set is not started")
-            return
-        
-        if self._current_id >= len(self._setlist['actions']):
-            await self.end_set()
-            return
-        
+    async def _execute_action(self, action:dict, preview=False):
+        logger.debug(action)
+        self._current_action = action
         self.playback.stop()    # Stop playback if active
 
-        action = self._setlist['actions'][self._current_id]
-        logger.info(action)
-
         await manager.broadcast(action, "action-config")
-        await manager.broadcast(str(action['nbr']), "executing-action-nbr")
+        await manager.broadcast(str(action.get('nbr',-2)), "executing-action-nbr")
 
         cuelist: list(str) = []
         try:
@@ -115,8 +116,9 @@ class Engine():
             pass
         
         if action['type'] == "song": 
-            #Create marker to easily identify where songs start
-            self.recording.create_marker()
+            if not preview:
+                #Create marker to easily identify where songs start
+                self.recording.create_marker()
 
             if action.get('playback'):
                 try:
@@ -125,15 +127,34 @@ class Engine():
                     logger.error("Unable to start playback")
                     logger.debug(e)
                 
-
         # Only release and start if cuelist differs from currently active
         if set(self.lights.get_active()) != set(cuelist):
             self.lights.release_active_cuelists()
             self.lights.start_cuelist(cuelist)
 
+        return
 
+
+
+    async def next_event(self, event_initiator:str = ""):
+        logger.info("Next event triggered by %s", event_initiator)
+
+        # if self.get_status() != "set_running":
+        if self._current_id == -1:
+            await manager.broadcast("Set is not started", "notification-warning")
+            logger.info("Set is not started")
+            return
+        
+        if self._current_id >= len(self._setlist['actions']):
+            await self.end_set()
+            return
+
+        action = self._setlist['actions'][self._current_id]
+        
+        await self._execute_action(action, preview=False)
 
         self._current_id += 1
+
         return
 
 
@@ -169,6 +190,38 @@ class Engine():
                 return action_arr[search_id].get("song_id")
             else:
                 search_id = search_id + 1
+        
+
+    async def preview_action(self, action: dict):
+        """
+        Overrides current engine state
+        """
+        logger.info("Action preview initiated")
+        self._in_preview = True
+        self._status = "preview"
+        self._state_savepoint = self.get_engine_state()
+        await self._execute_action(action, preview=True)
+
+
+    async def release_preview(self):
+        """
+        Releses current preview (if any)
+        Sets engine state to the state before priview was initiated
+        """
+        logger.info("Action preview release initiated")
+
+        self._in_preview = False
+
+        #Started set
+        if self._current_id > -1:
+            self._status = "set_running"
+            await self.next_event("Preview release")
+        #Set loaded, but not started
+        elif self._setlist:
+            await manager.broadcast(self._current_id, "executing-action-nbr")
+        else:
+            self._reset_engine()
+            await manager.broadcast(self._current_id, "executing-action-nbr")
         
 
     def _reset_engine(self) -> None:

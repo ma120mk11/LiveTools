@@ -1,4 +1,4 @@
-<div *ngIf="ws.isLoaded; else noSetLoaded" class="">
+<div *ngIf="ws.isLoaded && ws.activeSetlistActionId >= -1;" class="">
     <div class="set-container mat-elevation-z8">
 
             <div *ngFor="let action of ws.setlist.actions" class="actions">
@@ -15,12 +15,20 @@
         </div>
 </div>
 
+<div *ngIf="ws.activeSetlistActionId == -2">
+    <div class="action-preview">
+        <h1>{{ws.activeAction.title}}</h1>
+        <br>
+        <h2>Action preview</h2>
+        <button mat-raised-button color="primary" (click)="releasePreview()">Release</button>
+    </div>
+</div>
 
-<ng-template #noSetLoaded>
+<div *ngIf="!ws.isLoaded && ws.activeSetlistActionId != -2">
     <div class="no-set-container">
         <h1>No setlist loaded</h1>
     </div>
-</ng-template>
+</div>
 
 
 <!-- <div *ngIf="ws.isLoaded; else noSetLoaded" class="set-container">
