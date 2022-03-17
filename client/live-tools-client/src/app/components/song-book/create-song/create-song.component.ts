@@ -15,7 +15,8 @@ export class CreateSongComponent implements OnInit {
   tagCtrl = new FormControl();
   filteredTags: Observable<string[]>;
   allTags: string[] = ["ballad"]
-  
+  songKeyes: string[] = ["C","D","E","F","G","A","B"]
+  leadOptions: string[] = ["Philip", "Jennifer", "Mick"]
   @ViewChild('tagInput') tagInput: ElementRef<HTMLInputElement>;
 
   constructor() { 

@@ -1,0 +1,55 @@
+{
+    "id": 1,
+    "title": "Bourbon Street",
+    "artist": "Hurriganes",
+    "version": 1,
+    "lead": ["Philip"],
+    "hidden": false,
+    "metadata": {
+        "song_key": "C",
+        "tempo": 120,
+        "duration": 182,
+        "tags": ["yeboi", "anothertag"],
+        "description": "",
+        "created_on_version": "1",
+        "created": "4.5.2022"
+    },
+    "lyrics": "",
+    "execution": {
+        "playback": {
+            "marker_name": "runaway"
+        },
+        "audio": {
+            "fx1": {
+                "enabled": false
+            },
+            "fx2": {
+                "enabled": false
+            },
+            "fx3": {
+                "enabled": true,
+                "dly_time": 421
+            },
+            "fx4": {
+                "enabled": true
+            },
+            "channel_mutes": [1,3]
+        },
+        "lights": {
+            "blackout": true,
+            "cuelist": ["generic_rock"],
+            "buttons": [{
+                    "name": "",
+                    "osc": "osc-command",
+                    "type": "toggle"
+                },
+                {
+                    "name": "",
+                    "osc": "osc-command",
+                    "type": "toggle"
+                }
+            ]
+        }
+        
+    } 
+}

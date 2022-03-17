@@ -18,45 +18,68 @@
             </mat-form-field>
             
             <mat-divider></mat-divider>
-            
+
             
             
             <mat-form-field class="example-chip-list" appearance="outline">
                 <mat-label>Song tags</mat-label>
                 <mat-chip-list #chipList aria-label="Tag selection">
                     <mat-chip
-                    *ngFor="let tag of tags"
-                    [selectable]="true"
-                    [removable]="true"
-                    (removed)="tagRemove(tag)">
-                    {{tag}}
-                    <button matChipRemove>
-                        <mat-icon>cancel</mat-icon>
-                    </button>
-                </mat-chip>
+                        *ngFor="let tag of tags"
+                        [selectable]="true"
+                        [removable]="true"
+                        (removed)="tagRemove(tag)"
+                    >
+                        {{tag}}
+                        <button matChipRemove>
+                            <mat-icon>cancel</mat-icon>
+                        </button>
+                    </mat-chip>
                 <input
-                placeholder="New tag..."
-                #tagInput
-                
-                [matAutocomplete]="auto"
-                [matChipInputFor]="chipList"
-                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                (matChipInputTokenEnd)="tagAdd($event)">
-            </mat-chip-list>
-            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
-                <mat-option *ngFor="let tag of filteredTags | async" [value]="tag">
-                    {{tag}}
-                </mat-option>
-            </mat-autocomplete>
-        </mat-form-field>
+                    placeholder="New tag..."
+                    #tagInput
+                    [matAutocomplete]="auto"
+                    [matChipInputFor]="chipList"
+                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                    (matChipInputTokenEnd)="tagAdd($event)">
+                </mat-chip-list>
+                <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
+                    <mat-option *ngFor="let tag of filteredTags | async" [value]="tag">
+                        {{tag}}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
         
+            <mat-form-field appearance="outline">
+                <mat-label>Lead Vocals</mat-label>
+                <mat-select multiple>
+                    <mat-option *ngFor="let lead of leadOptions" [value]="lead">{{lead}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline">
+                <mat-label>Song Key</mat-label>
+                <mat-select>
+                    <mat-option *ngFor="let key of songKeyes" [value]="key">{{key}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Description</mat-label>
+                <input matInput>
+            </mat-form-field>
         
-    </mat-step>
+        </mat-step>
     
-    <mat-step>
-        Step 2 here
-    </mat-step>
+        <mat-step>
+            <h2>Execution</h2>
+            <mat-form-field appearance="outline">
+                <mat-label>Title</mat-label>
+                <input matInput>
+            </mat-form-field>
+
+        </mat-step>
     
     
-</mat-stepper>
+    </mat-stepper>
 </div>

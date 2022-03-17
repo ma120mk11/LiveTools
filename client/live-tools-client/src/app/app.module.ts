@@ -14,17 +14,18 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
-import {MatDialogModule} from '@angular/material/dialog';
-import {MatStepperModule} from '@angular/material/stepper';
+import { MatDialogModule} from '@angular/material/dialog';
+import { MatStepperModule} from '@angular/material/stepper';
 import { MatCardModule } from '@angular/material/card';
-import {MatFormFieldModule, MAT_FORM_FIELD_DEFAULT_OPTIONS} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import { MatFormFieldModule, MAT_FORM_FIELD_DEFAULT_OPTIONS} from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatTableModule } from '@angular/material/table';
-import {MatMenuModule} from '@angular/material/menu';
+import { MatSelectModule} from '@angular/material/select';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatChipsModule } from '@angular/material/chips';
-import {MatPaginatorModule} from '@angular/material/paginator';
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { SetlistCreatorComponent } from './components/setlist-creator/setlist-creator.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -85,6 +86,7 @@ import { WsDisconnectedModalComponent } from './ws-disconnected-modal/ws-disconn
     MatFormFieldModule,
     MatProgressSpinnerModule,
     MatInputModule,
+    MatSelectModule,
     MatAutocompleteModule,
     MatChipsModule,
     MatPaginatorModule,
