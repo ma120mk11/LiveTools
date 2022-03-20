@@ -1,6 +1,7 @@
 import logging
 from osc.ligths import OSCLights
 from osc.playback import OSCPlayback
+from osc.mixer import OSCMixer
 from websocket.connection_manager import manager
 from osc.recording import OSCRecoding
 
@@ -19,9 +20,11 @@ class Engine():
         self.recording = OSCRecoding()
         self.lights = OSCLights()
         self.playback = OSCPlayback()
+        self.mixer = OSCMixer()
 
     async def start_osc(self):
         logger.info("Connecting all OSC devices...")
+        await self.mixer.connect("192.168.43.226", 10024)
         await self.lights.connect("192.168.43.120", 8887)
         await self.recording.connect("192.168.43.120", 3819)
         await self.playback.connect("192.168.43.121", 3819)
@@ -76,6 +79,9 @@ class Engine():
 
         self._current_id = 0            # First action
         self._status = "set_running"
+
+        self.mixer.mute_all_fx()        # Mute when starting set
+
         await self.recording.record()
 
         # Set frontlights and leave them on for rest of the set
@@ -125,6 +131,12 @@ class Engine():
                     logger.error("Unable to start playback")
                     logger.debug(e)
                 
+        if action['type'] == "speech":
+            self.mixer.mute_all_fx()
+
+        if action["execution"].get('audio'):
+            self.mixer.set_fx_mutes(action["execution"]['audio'])
+
         # Only release and start if cuelist differs from currently active
         if set(self.lights.get_active()) != set(cuelist):
             self.lights.release_active_cuelists()
@@ -230,5 +242,6 @@ class Engine():
         self._setlist = {}
         self._status = "idle"
         self._current_id = -1
+        self.mixer.mute_all_fx()
         self.lights.release_active_cuelists(persistent=True)
         self.playback.stop(force_send=True)    # Send playback stop 
