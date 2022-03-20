@@ -86,7 +86,9 @@ class OSCBase():
         """
         Sends a message to the osc device. Value is optional.
         """
-
+        if not osc_address.startswith("/"):
+            logger.warning("Osc message doesn't start with /")
+            
         self.client = udp_client.SimpleUDPClient(self.get_ip(), self.get_port())
         logger.debug("SEND %s:%i - %s  VALUE: %s", self.client._address, self.client._port, osc_address, value)
         try:
