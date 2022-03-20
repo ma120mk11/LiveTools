@@ -148,15 +148,13 @@ export class WebSocketService {
           try {
 
             try {
-              if (msg_obj.data.setlist.lenght >= 1) {
+              if (msg_obj.data.setlist) {
                 this.setlist = msg_obj.data?.setlist
                 this.isLoaded = true
               } else {
+                console.log("no set")
                 this.isLoaded = false;
               }
-              // if (msg_obj.data.setlist.actions[0]['nbr'] !== 0) {
-              //   console.error("Setlist IF check failed")
-              // }
               this.activeSetlistActionId = msg_obj.data.action_id
               this.activeAction = msg_obj.data.current_action
 
@@ -171,6 +169,7 @@ export class WebSocketService {
           } catch (error) {
             console.error("Unable to parse engine state");
           }
+          console.log(this.setlist)
           break;
 
         case "notification-warning":
