@@ -148,7 +148,7 @@ export class WebSocketService {
           try {
 
             try {
-              if (msg_obj.data.setlist) {
+              if (msg_obj.data.setlist?.name) {
                 this.setlist = msg_obj.data?.setlist
                 this.isLoaded = true
               } else {
