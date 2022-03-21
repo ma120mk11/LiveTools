@@ -100,7 +100,7 @@ class Engine():
         await manager.broadcast("end-set", "end-set")
 
         self.lights.release_active_cuelists()
-        self.recording.stop_recording()
+        await self.recording.stop_recording()
 
         self._reset_engine()
 
