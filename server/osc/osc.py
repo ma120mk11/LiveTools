@@ -27,6 +27,8 @@ class OSCBase():
     _status: str = "disconnected"
     _device_id: int = 100
 
+    _max_retries = 3
+
     def __init__(self):
         self._device_id = device_mgr.add_device(self._name, self._type)
 
@@ -82,7 +84,7 @@ class OSCBase():
         logger.debug("Testing OSC connection for: %s", self.get_name())
 
 
-    def send_osc_msg(self, osc_address: str, value: Union[float, str] =1 ):
+    def send_osc_msg(self, osc_address: str, value: Union[float, str] = 1, retry_count: int = 0, retry: bool = True):
         """
         Sends a message to the osc device. Value is optional.
         """
@@ -94,8 +96,10 @@ class OSCBase():
         try:
             self.client.send_message(osc_address, value)
         except:
-            logger.error("Error sending OSC message: %s:%i - %s  VALUE: %s", self.client._address, self.client._port, osc_address, value)
-
+            logger.error("Error sending OSC msg to %s %s:%i - %s  VALUE: %s", self._name, self.client._address, self.client._port, osc_address, value)
+            #Retry
+            if retry and retry_count <= self._max_retries:
+                self.send_osc_msg(osc_address, value, retry_count=retry_count +1)
 
 
 
