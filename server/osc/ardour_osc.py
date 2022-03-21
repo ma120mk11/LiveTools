@@ -20,11 +20,11 @@ class ArdourOSC(OSCBase):
         super().__init__()
 
     def _init_heartbeat(self):
-        self.send_osc_msg(self._set_surface, 8)
+        self.send_osc_msg(self._set_surface, 8, retry=False)
 
     async def connect(self, ip: IPv4Address, port: int):
         await super().connect(ip, port)
-        server.add_heartbeat("/heartbeat", 3, self.connection_change_handler, self._device_id)
+        server.add_heartbeat("/heartbeat", 5, self.connection_change_handler, self._device_id)
         self._init_heartbeat()
 
     async def connection_change_handler(self, *args, **kwargs):
