@@ -12,6 +12,16 @@
       <a mat-list-item routerLink="/settings">Settings</a>
       <a mat-list-item routerLink="/devices">Devices</a>
       <a mat-list-item routerLink="/logs">Logs</a>
+      <mat-divider></mat-divider>
+      <!-- Fullscreen btn -->
+      <div mat-list-item>
+        <a mat-icon-button appToggleFullScreen>
+          <mat-icon>
+            fullscreen
+          </mat-icon>
+          Fullscreen
+        </a>
+      </div>
     </mat-nav-list>
   </mat-sidenav>
 
@@ -30,19 +40,25 @@
 
       <!-- Song loaded -->
       <span *ngIf="ws.isLoaded && ws.activeSetlistActionId != -2; else logo" class="set-loaded-container">
-        {{ws.setlist.name}}
+        <span>
+          {{ws.setlist.name}} -  
+        </span>
 
+        <!-- When set is started -->
+        <span *ngIf="ws.isSetStarted() && ws.activeSetlistActionId != -2" class="center">
+          {{ws.activeAction.title ? ws.activeAction.title : ws.activeAction.type}}
+        </span>
         <!-- When set is not started -->
-        <span *ngIf="!ws.isSetStarted() && ws.activeSetlistActionId != -2">
+        <span *ngIf="!ws.isSetStarted() && ws.activeSetlistActionId != -2" class="center">
           <button mat-raised-button color="primary" (click)="ws.startSet()">
             Start set
           </button>
         </span>
 
         <!-- When set is running -->
-        <div *ngIf="ws.isSetStarted()" class="next-event">
+        <button mat-stroked-button *ngIf="ws.isSetStarted() && ws.activeSetlistActionId > 0" class="next-event" (click)="ws.send('next-song')">
           Next: {{ws.getNextAction()}}
-        </div>
+        </button>
 
       </span>
 
@@ -60,16 +76,6 @@
           </button>
         </span>
       </span>
-
-
-      <!-- Fullscreen btn -->
-      <div class="right">
-        <button mat-icon-button appToggleFullScreen>
-          <mat-icon>
-            fullscreen
-          </mat-icon>
-        </button>
-      </div>
 
     </mat-toolbar>
 
