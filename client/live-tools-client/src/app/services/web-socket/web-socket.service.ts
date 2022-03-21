@@ -222,10 +222,13 @@ export class WebSocketService {
     let action = "";
     try {
       if (this.setlist.actions[this.activeSetlistActionId].title) {
-        action = this.setlist.actions[this.activeSetlistActionId+1].title || "ERROR"
+        action = this.setlist.actions[this.activeSetlistActionId].title || "ERROR"
+      }
+      else {
+        action = this.setlist.actions[this.activeSetlistActionId].type
       }
     } catch (error) {
-
+      console.log(error)
     }
     return action
   }
