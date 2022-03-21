@@ -2,11 +2,11 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, Observable, tap } from 'rxjs';
 import { HandleError, HttpErrorHandler } from 'src/app/services/http-error-handler.service';
+import { environment } from 'src/environments/environment';
 import { ISong } from './song';
 
 @Injectable()
 export class SongsService {
-  songsUrl = "http://localhost:8000/songs"
   private handleError: HandleError;
 
   constructor(
@@ -19,7 +19,7 @@ export class SongsService {
     
     
     console.log("getting songs...")
-    return this.http.get<ISong[]>(this.songsUrl)
+    return this.http.get<ISong[]>(`${environment.apiEndpoint}/songs`)
     .pipe(
       tap(
         data => console.log(data)
