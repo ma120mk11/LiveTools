@@ -1,0 +1,30 @@
+{
+    "type": "song",
+    "title": "Born to Run",
+    "artist": "Bruce Springsteen",
+    "song_id": 8,
+    "version": 1,
+    "playback": false,
+    "execution":{
+        "playback": {},
+        "lights": {
+            "cuelist": ["runaway"]
+        },
+        "audio": {
+            "fx1": {
+                "enabled": false
+            },
+            "fx2": {
+                "enabled": false
+            },
+            "fx3": {
+                "enabled": true,
+                "dly_time": 421
+            },
+            "fx4": {
+                "enabled": true
+            },
+            "channel_mutes": [1,3]
+        }
+    }
+}
