@@ -45,6 +45,7 @@ class DeviceState(str, Enum):
 class OSCDeviceUpdate(BaseModel):
     ip: Optional[str]
     receive_port: Optional[int]
+    enabled: Optional[bool]
 
 
 class OSCDeviceBase(BaseModel):
@@ -53,6 +54,7 @@ class OSCDeviceBase(BaseModel):
     ip:  str
     send_port: Optional[int]
     receive_port: Union[int, None]
+    enabled: Optional[bool]
 
 class OSCDevice(OSCDeviceBase):
     state: str
