@@ -243,7 +243,8 @@ async def device_config(id:int, request: schemas.OSCDeviceUpdate ):
         await device_mgr.set_ip(device_id=id, ip= request.ip)
     if request.receive_port:
         await device_mgr.set_receive_port(device_id=id, port=request.receive_port)
-
+    if request.enabled is not None:
+        await device_mgr.set_enabled(id, request.enabled)
 
 # @app.get("/devices/test/{id}", tags=["devices"])
 # async def test_device_connection(id:int):
