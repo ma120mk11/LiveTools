@@ -3,6 +3,7 @@ import {webSocket, WebSocketSubject } from 'rxjs/webSocket'
 import { of, Observable, Subject, Observer } from 'rxjs'
 import { MatDialog } from '@angular/material/dialog';
 import { WsDisconnectedModalComponent } from 'src/app/ws-disconnected-modal/ws-disconnected-modal.component';
+import { environment } from 'src/environments/environment';
 
 // export const WS_ENDPOINT = "ws://localhost:8000/ws/"
 // export const WS_ENDPOINT = "ws://192.168.0.24:8000/ws/"
@@ -207,7 +208,7 @@ export class WebSocketService {
 
 
   get URL(): string {
-    return WS_ENDPOINT + this.Id
+    return environment.wsEndpoint + this.Id
   }
 
   get Id(): string {
