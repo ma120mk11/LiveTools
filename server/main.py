@@ -33,6 +33,7 @@ origins = [
     "http://localhost",
     "http://localhost:4200",
     "http://192.168.43.249:4200",
+    "http://192.168.1.40:4200",
 ]
 
 app.add_middleware(
@@ -228,6 +229,11 @@ def get_lyrics_for_next_song(lookahead: int=3, db: Session = Depends(get_db)):
 #//                        DEVICES                             //
 #////////////////////////////////////////////////////////////////
 
+@app.get("/mixer/search")
+def search_for_mixer():
+    """Returns the IP of the first found mixer"""
+    return engine.mixer.find_mixer()
+
 @app.get("/devices/", response_model=List[schemas.OSCDevice], tags=["devices"])
 def get_connected_devices():
     return device_mgr.get_connected()
@@ -238,13 +244,13 @@ async def device_config(id:int, request: schemas.OSCDeviceUpdate ):
         await device_mgr.set_ip(device_id=id, ip= request.ip)
     if request.receive_port:
         await device_mgr.set_receive_port(device_id=id, port=request.receive_port)
+    if request.enabled is not None:
+        await device_mgr.set_enabled(id, request.enabled)
 
-
-@app.get("/devices/test/{id}", tags=["devices"])
-async def test_device_connection(id:int):
-    is_connected = engine.recording.test_connection()
-    return await is_connected
-    
+# @app.get("/devices/test/{id}", tags=["devices"])
+# async def test_device_connection(id:int):
+#     is_connected = engine.recording.test_connection()
+#     return await is_connected
     
 
 

@@ -3,6 +3,7 @@ import {webSocket, WebSocketSubject } from 'rxjs/webSocket'
 import { of, Observable, Subject, Observer } from 'rxjs'
 import { MatDialog } from '@angular/material/dialog';
 import { WsDisconnectedModalComponent } from 'src/app/ws-disconnected-modal/ws-disconnected-modal.component';
+import { environment } from 'src/environments/environment';
 
 // export const WS_ENDPOINT = "ws://localhost:8000/ws/"
 // export const WS_ENDPOINT = "ws://192.168.0.24:8000/ws/"
@@ -148,15 +149,13 @@ export class WebSocketService {
           try {
 
             try {
-              if (msg_obj.data.setlist.lenght >= 1) {
+              if (msg_obj.data.setlist?.name) {
                 this.setlist = msg_obj.data?.setlist
                 this.isLoaded = true
               } else {
+                console.log("no set")
                 this.isLoaded = false;
               }
-              // if (msg_obj.data.setlist.actions[0]['nbr'] !== 0) {
-              //   console.error("Setlist IF check failed")
-              // }
               this.activeSetlistActionId = msg_obj.data.action_id
               this.activeAction = msg_obj.data.current_action
 
@@ -171,6 +170,7 @@ export class WebSocketService {
           } catch (error) {
             console.error("Unable to parse engine state");
           }
+          console.log(this.setlist)
           break;
 
         case "notification-warning":
@@ -208,7 +208,7 @@ export class WebSocketService {
 
 
   get URL(): string {
-    return WS_ENDPOINT + this.Id
+    return environment.wsEndpoint + this.Id
   }
 
   get Id(): string {
@@ -223,10 +223,13 @@ export class WebSocketService {
     let action = "";
     try {
       if (this.setlist.actions[this.activeSetlistActionId].title) {
-        action = this.setlist.actions[this.activeSetlistActionId+1].title || "ERROR"
+        action = this.setlist.actions[this.activeSetlistActionId].title || "ERROR"
+      }
+      else {
+        action = this.setlist.actions[this.activeSetlistActionId].type
       }
     } catch (error) {
-
+      console.log(error)
     }
     return action
   }

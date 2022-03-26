@@ -5,16 +5,6 @@ from schemas import OSCDevice
 from websocket.connection_manager import manager
 from fastapi.encoders import jsonable_encoder
 
-# x_air: OSCDevice = OSCDevice(
-#     id=1,
-#     name="XAIR-18",
-#     ip="192.168.43.20",
-#     send_port=7300,
-#     receive_port=7301,
-#     state="connected"
-# )
-
-
 logger = logging.getLogger(__name__)
 
 class DeviceManager():
@@ -31,6 +21,7 @@ class DeviceManager():
             type=type, ip = "", 
             receive_port= -1, 
             state="disconnected",
+            enabled=True,
             id=len(self._connected))
 
         self._connected.append(device)
@@ -56,6 +47,12 @@ class DeviceManager():
     async def set_status(self, device_id: int, status: str):
         if device_id >= 0:
             self._connected[device_id].state = status
+        await self.notify_change()
+
+    async def set_enabled(self, device_id: int, status: bool):
+        logger.debug("Setting device enabled status")
+        if device_id >= 0:
+            self._connected[device_id].enabled = status
         await self.notify_change()
 
 

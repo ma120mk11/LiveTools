@@ -22,8 +22,9 @@ logger = logging.getLogger(__name__)
 
 
 class OSCServer:
-
+    # TODO: GET IP
     server_ip: IPv4Address = "192.168.43.249"
+    server_ip: IPv4Address = "192.168.1.40"
     server_port = 8000
     server: osc_server.ThreadingOSCUDPServer = None
     dispatch: dispatcher.Dispatcher = None

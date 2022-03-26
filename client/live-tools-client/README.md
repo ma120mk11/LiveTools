@@ -1,7 +1,8 @@
 # TODO
-* Enable fullscreen with screenfull library
-
-ng serve --host 0.0.0.0 --disable-host-check
+Local/Dev:
+ng serve --host 192.168.43.249 --disable-host-check --configuration development
+Production:
+ng serve --host 192.168.1.40 --disable-host-check --configuration production
 
 # Ngrok
 `./ngrok http 4200 -host-header="localhost:4200"`

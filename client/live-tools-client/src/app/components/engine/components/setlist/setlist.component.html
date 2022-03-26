@@ -4,10 +4,16 @@
             <div *ngFor="let action of ws.setlist.actions" class="actions">
                 
                 <div [ngClass]="getClass(action.nbr)">
-                    <div *ngIf="action.type=='song'; else otherAction" class="song">
+                    <div *ngIf="action.type=='song'" class="song">
                         <div *ngIf="action.playback" class="blackout-indicator">Playback</div>
                         <h1>{{getSongNbr(action.nbr)}}. {{action.title}}</h1>
                         <!-- <div *ngIf="action.execution?.lights?.blackout" class="blackout-indicator">Blackout</div> -->
+                    </div>
+                    <div *ngIf="action.type=='speech'" class="speech">
+                        Speech
+                    </div>
+                    <div *ngIf="action.type=='start'" class="start">
+                        Start
                     </div>
                 </div>
                 
@@ -49,10 +55,6 @@
 
 
 
-
-<ng-template #otherAction>
-    Some action
-</ng-template>
 
 
 

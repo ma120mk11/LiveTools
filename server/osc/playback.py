@@ -1,3 +1,4 @@
+import asyncio
 from osc.ardour_osc import ArdourOSC
 import logging
 
@@ -25,9 +26,19 @@ class OSCPlayback(ArdourOSC):
         self.send_osc_msg(self._play)
 
 
-    def stop(self, force_send=False):
+    async def stop(self, force_send=True):
         if self._is_playing or force_send:
             logger.debug("Stopping Ardour playback")
             self.send_osc_msg(self._stop)
-            self.send_osc_msg(self._save)
+
+            # TODO: Fix ugly workaround for ardour bug
+            await asyncio.sleep(0.1)
+
+            # Go to a safe marker, in case the next marker is not found
+            self.goto_safe_marker()
+            # self.send_osc_msg(self._save)
             self._is_playing = False
+
+    def goto_safe_marker(self):
+        # TODO: Should go to end marker
+        self.send_osc_msg("/marker", "safe")

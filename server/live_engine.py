@@ -1,6 +1,7 @@
 import logging
 from osc.ligths import OSCLights
 from osc.playback import OSCPlayback
+from osc.mixer import OSCMixer
 from websocket.connection_manager import manager
 from osc.recording import OSCRecoding
 
@@ -19,12 +20,18 @@ class Engine():
         self.recording = OSCRecoding()
         self.lights = OSCLights()
         self.playback = OSCPlayback()
+        self.mixer = OSCMixer()
 
     async def start_osc(self):
         logger.info("Connecting all OSC devices...")
-        await self.lights.connect("192.168.43.120", 8887)
-        await self.recording.connect("192.168.43.120", 3819)
-        await self.playback.connect("192.168.43.121", 3819)
+        await self.mixer.connect("192.168.1.2", 10024)
+        await self.lights.connect("192.168.1.6", 8887)
+        await self.recording.connect("192.168.1.122", 3819)
+        await self.playback.connect("192.168.1.6", 3819)
+        # await self.mixer.connect("192.168.43.226", 10024)
+        # await self.lights.connect("192.168.43.120", 8887)
+        # await self.recording.connect("192.168.43.122", 3819)
+        # await self.playback.connect("192.168.43.120", 3819)
 
 
     def get_status(self) -> str:
@@ -58,7 +65,7 @@ class Engine():
         logger.info("Loading setlist: %s", set['name'])
         
         # TODO: How to handle loading a setlist if engine is running
-        self._reset_engine()
+        await self._reset_engine()
 
         self._setlist = set
         await manager.broadcast(self._setlist, "load-set")
@@ -76,6 +83,9 @@ class Engine():
 
         self._current_id = 0            # First action
         self._status = "set_running"
+
+        self.mixer.mute_all_fx()        # Mute when starting set
+
         await self.recording.record()
 
         # Set frontlights and leave them on for rest of the set
@@ -94,15 +104,15 @@ class Engine():
         await manager.broadcast("end-set", "end-set")
 
         self.lights.release_active_cuelists()
-        self.recording.stop_recording()
+        await self.recording.stop_recording()
 
-        self._reset_engine()
+        await self._reset_engine()
 
 
     async def _execute_action(self, action:dict, preview=False):
         logger.debug(action)
         self._current_action = action
-        self.playback.stop()    # Stop playback if active
+        await self.playback.stop()    # Stop playback if active
 
         await manager.broadcast(action, "action-config")
         await manager.broadcast(str(action.get('nbr',-2)), "executing-action-nbr")
@@ -124,7 +134,14 @@ class Engine():
                 except Exception as e:
                     logger.error("Unable to start playback")
                     logger.debug(e)
+                    await manager.broadcast("Error starting playback")
                 
+        if action['type'] == "speech":
+            self.mixer.mute_all_fx()
+
+        if action["execution"].get('audio'):
+            self.mixer.set_fx_mutes(action["execution"]['audio'])
+
         # Only release and start if cuelist differs from currently active
         if set(self.lights.get_active()) != set(cuelist):
             self.lights.release_active_cuelists()
@@ -218,11 +235,11 @@ class Engine():
         elif self._setlist:
             await manager.broadcast(self._current_id, "executing-action-nbr")
         else:
-            self._reset_engine()
+            await self._reset_engine()
             await manager.broadcast(self._current_id, "executing-action-nbr")
         
 
-    def _reset_engine(self) -> None:
+    async def _reset_engine(self) -> None:
         """
         Resets engine state
         """
@@ -230,5 +247,6 @@ class Engine():
         self._setlist = {}
         self._status = "idle"
         self._current_id = -1
+        self.mixer.mute_all_fx()
         self.lights.release_active_cuelists(persistent=True)
-        self.playback.stop(force_send=True)    # Send playback stop 
+        await self.playback.stop(force_send=True)    # Send playback stop 

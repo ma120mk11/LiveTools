@@ -1,0 +1,31 @@
+{
+    "type": "song",
+    "title": "In Time (you'll find)",
+    "song_id": 9,
+    "version": 1,
+    "playback": true,
+    "execution":{
+        "playback": {
+            "marker_name": "in_time_youll_find_v1"
+        },
+        "lights": {
+            "cuelist": ["in_time_youll_find_v1"]
+        },
+        "audio": {
+            "fx1": {
+                "enabled": true
+            },
+            "fx2": {
+                "enabled": true
+            },
+            "fx3": {
+                "enabled": false,
+                "dly_time": 421
+            },
+            "fx4": {
+                "enabled": true
+            },
+            "channel_mutes": [1,3]
+        }
+    }
+}
