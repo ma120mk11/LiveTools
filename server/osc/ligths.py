@@ -9,14 +9,18 @@ class OSCLights(OSCBase):
     # TODO Move to db
     cuelists = {
         "frontlights": "/Mx/playback/page5/50/",
-        "generic_rock": "/Mx/playback/page1/2/",
+        "generic_rock": "/Mx/playback/page5/1/",
         "runaway": "/Mx/playback/page10/0/",
+        "bourbon_street": "/Mx/playback/page6/1/",
+        "heavy_red": "/Mx/playback/page5/0/",
         "speaking": "/Mx/playback/page1/1/",
+        "back_par_100": "/Mx/playback/page1/8/",
         "pause": "/Mx/playback/page1/3/",
-        "slow_ballad": "/Mx/playback/page3/0/",
+        "slow_ballad": "/Mx/playback/page5/2/",
         "high_intensity": "/Mx/playback/page3/20/",
         "side_par_red": "/Mx/playback/page1/40/",
-        "par_red_blue_fx": "/Mx/playback/page1/25/"
+        "par_red_blue_fx": "/Mx/playback/page1/25/",
+        "in_time_youll_find_v1": "/Mx/playback/page10/1/"
     }
     _active: list = []
     _active_persistent: list = []           # Ex. frontlights that is on the whole set
