@@ -111,6 +111,7 @@ export class WebSocketService {
           try {
             this.setlist=msg_obj.data;
             this.isLoaded = true;
+            this.activeSetlistActionId = -1
             this.event.next(null);
             console.log(`Loaded set: ${this.setlist.name}`)
           } catch (error){
@@ -121,6 +122,7 @@ export class WebSocketService {
 
         case "action-config":
           this.activeAction = msg_obj.data
+          this.event.next(null);
           break;
 
 

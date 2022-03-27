@@ -124,7 +124,10 @@ class Engine():
 
         await manager.broadcast(action, "action-config")
         # await manager.broadcast(str(action.get('nbr',-2)), "executing-action-nbr")
-        await manager.broadcast(str(self._current_action_id), "executing-action-nbr")
+        if self._in_preview:
+            await manager.broadcast(str(-2), "executing-action-nbr")
+        else:
+            await manager.broadcast(str(self._current_action_id), "executing-action-nbr")
 
         cuelist: list(str) = []
         try:
@@ -241,6 +244,9 @@ class Engine():
         Sets engine state to the state before priview was initiated
         """
         logger.info("Action preview release initiated")
+        
+        if not self._in_preview:
+            logger.info("Engine is not in preview")
 
         self._in_preview = False
 
