@@ -1,7 +1,7 @@
 import asyncio
 import uvicorn
 from typing import List
-from fastapi import FastAPI, HTTPException, Depends, status, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, Body ,HTTPException, Depends, status, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
 import schemas, models, crud, live_engine
 from device_manager import device_mgr
@@ -12,6 +12,8 @@ import logging
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.encoders import jsonable_encoder
 from osc.osc_server import server
+from sqlalchemy import update
+from sqlalchemy.future import select
 
 # dictConfig(LogConfig)
 logging.basicConfig(level=logging.DEBUG)
@@ -252,6 +254,19 @@ async def device_config(id:int, request: schemas.OSCDeviceUpdate ):
 #     is_connected = engine.recording.test_connection()
 #     return await is_connected
     
+
+@app.post('/songs/{id}/lyrics',
+        tags=["songs"],
+        status_code=status.HTTP_202_ACCEPTED
+    )
+def update_lyrics(id: int, lyrics: str = Body(...), db: Session = Depends(get_db)):
+    song = db.query(models.Song).filter(models.Song.id == id)
+    if not song.first():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"No song with id {id} found")
+    song.update({'lyrics': lyrics})
+    db.commit()
+    return
+
 
 
 @app.put('/songs/{id}', 

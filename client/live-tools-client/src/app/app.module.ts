@@ -46,6 +46,10 @@ import { CreateSongComponent } from './components/song-book/create-song/create-s
 import { ConfigureDeviceComponent } from './components/devices/configure-device/configure-device.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { WsDisconnectedModalComponent } from './ws-disconnected-modal/ws-disconnected-modal.component';
+import { LyricsEditorComponent } from './lyrics-editor/lyrics-editor.component';
+import { AngularEditorModule } from '@kolkov/angular-editor';
+import { FormsModule } from '@angular/forms';
+
 
 @NgModule({
   declarations: [
@@ -65,7 +69,8 @@ import { WsDisconnectedModalComponent } from './ws-disconnected-modal/ws-disconn
     SongBookComponent,
     CreateSongComponent,
     ConfigureDeviceComponent,
-    WsDisconnectedModalComponent
+    WsDisconnectedModalComponent,
+    LyricsEditorComponent
   ],
   imports: [
     BrowserModule,
@@ -95,7 +100,9 @@ import { WsDisconnectedModalComponent } from './ws-disconnected-modal/ws-disconn
     DragDropModule,
     ScrollingModule,
     MatTableModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    AngularEditorModule,
+    FormsModule
   ],
   providers: [
     WebSocketService,
