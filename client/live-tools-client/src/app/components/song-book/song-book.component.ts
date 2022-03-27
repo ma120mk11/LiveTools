@@ -1,6 +1,8 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { LyricsEditorComponent } from 'src/app/lyrics-editor/lyrics-editor.component';
+import { environment } from 'src/environments/environment';
 import { CreateSongComponent } from './create-song/create-song.component';
 import { ISong } from './song';
 import { SongsService } from './songs.service';
@@ -14,13 +16,13 @@ import { SongsService } from './songs.service';
 })
 
 export class SongBookComponent implements OnInit {
-  availableColumns: string[] = ["title","artist", "lead_singer", "duration", "tags", "tempo", "key", "lyrics"];
-  displayedColumns: string[] = ["title","artist", "lead_singer", "duration", "tempo", "lyrics"];
+  availableColumns: string[] = ["title","artist", "lead_singer", "duration", "tags", "tempo", "key", "lyrics", "preview"];
+  displayedColumns: string[] = ["title","artist", "lead_singer", "duration", "tempo", "preview", "lyrics"];
   songs: ISong[] = [];
   editSong: ISong | undefined // The song currently being edited
   isLoading: boolean = true
 
-  constructor(private songService: SongsService, private dialog: MatDialog) {}
+  constructor(private songService: SongsService, private dialog: MatDialog, private http: HttpClient) {}
   
   ngOnInit(): void {
     this.getSongs();
@@ -43,6 +45,12 @@ export class SongBookComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       
     })
+  }
+
+  onPreview(song: ISong) {
+    console.log("Preview song: " + song.title)
+    this.http.post(`${environment.apiEndpoint}/songs/${song.id}/preview`, {})
+    .subscribe()
   }
 
   onViewLyric(song: ISong) {

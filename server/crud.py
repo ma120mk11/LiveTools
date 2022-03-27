@@ -1,3 +1,4 @@
+from datetime import datetime
 from sqlalchemy.orm import Session
 import models, schemas
 
@@ -40,7 +41,8 @@ def get_songs(db: Session, skip: int=0, limit: int=100, sort_by="", sort_order="
     return db.query(models.Song).offset(skip).limit(limit).all()
 
 def create_song(db: Session, song: schemas.SongCreate):
-    db_song = models.Song(**song.dict())
+    db_song = models.Song(
+        created=datetime.now(), **song.dict())
     db.add(db_song)
     db.commit()
     db.refresh(db_song)

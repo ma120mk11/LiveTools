@@ -83,12 +83,21 @@ class SongBase(BaseModel):
     duration: Optional[int]
     lead_singer: Optional[str]
     key: Optional[str]
+    playback: Optional[bool]
+    description: Optional[str]
+    execution: Optional[str]
+    # execution: Optional[Execution]
+
 
 class SongCreate(SongBase):
     pass
 
 class Song(SongBase):
     id: int
+    last_played: Optional[datetime]
+    created: Optional[datetime]
+    version: Optional[int]
+    hidden: Optional[bool]
 
     class Config:
         orm_mode = True
