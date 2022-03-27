@@ -1,17 +1,8 @@
 <div class="container">
-    <div *ngIf="isLoading"><mat-spinner></mat-spinner></div>
-    <!-- <div *ngIf="!isLoading"> -->
+    <div *ngIf="isLoading">
+        <mat-spinner></mat-spinner>
+    </div>
 
-        <!-- <h1>Born to Run</h1> -->
-        
-        <div [innerHTML]="lyrics" class="lyrics"></div>
-        
-        <!-- <div ng-bind-html="lyrics"></div> -->
-        
-        <!-- <pre> -->
-            <!-- {{lyrics}} -->
-            <!-- </pre> -->
-        
-        <!-- </div> -->
+    <div [innerHTML]="lyrics" class="lyrics"></div>
     
 </div>

@@ -1,0 +1,29 @@
+<!-- <h2>{{name}}</h2> -->
+
+<div class="editor-container">
+    <angular-editor [(ngModel)]="htmlContent" [config]="editorConfig"></angular-editor>
+</div>
+
+<button 
+    mat-raised-button color="secondary" 
+    class="right" 
+    mat-dialog-close
+    (click)="onCancel()"
+>
+    <mat-icon>clear</mat-icon>
+    Cancel
+</button>
+
+<button 
+    mat-raised-button color="primary" class="right" 
+    [disabled]="htmlContent == previousContent" 
+    (click)="onSave()"
+    mat-dialog-close
+    >
+    <mat-icon>save</mat-icon>
+    Save
+</button>
+
+<!-- <div>
+    {{htmlContent}}
+</div> -->

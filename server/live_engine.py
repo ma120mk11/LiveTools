@@ -10,10 +10,11 @@ logger = logging.getLogger(__name__)
 class Engine():
     _setlist = {}
     _status = "stopped"
-    _current_id = -1
+    _current_action_id = -1                # Action ID
     _current_action: dict = {}
     _state_savepoint: dict
     _in_preview: bool = False
+    _set_info: dict = { "actions": 0}
 
     def __init__(self):
         logger.info("Engine initializing")
@@ -51,7 +52,7 @@ class Engine():
         if self._in_preview:
             action_id = -2
         else:
-            action_id = self._current_id
+            action_id = self._current_action_id
 
         return {
             "setlist": self._setlist,
@@ -63,12 +64,19 @@ class Engine():
     async def load_setlist(self, set: dict):
         """Loads a set"""
         logger.info("Loading setlist: %s", set['name'])
-        
+
+        count = 0
+        for count, action in enumerate(set['actions']):
+            action['nbr'] = count
+
+        self._set_info['actions'] = count+1
+
         # TODO: How to handle loading a setlist if engine is running
         await self._reset_engine()
 
         self._setlist = set
         await manager.broadcast(self._setlist, "load-set")
+        logger.info("Loaded set with %i actions", count+1)
 
 
     async def start_set(self):
@@ -77,11 +85,11 @@ class Engine():
         if not self._setlist:
             logger.error("Unable to start set: No set loaded")
             return 
-        if self._current_id >= 0:
+        if self._current_action_id >= 0:
             logger.error("Unable to start set: A set is already running")
             return
 
-        self._current_id = 0            # First action
+        # self._current_action_id = 0            # First action
         self._status = "set_running"
 
         self.mixer.mute_all_fx()        # Mute when starting set
@@ -115,11 +123,15 @@ class Engine():
         await self.playback.stop()    # Stop playback if active
 
         await manager.broadcast(action, "action-config")
-        await manager.broadcast(str(action.get('nbr',-2)), "executing-action-nbr")
+        # await manager.broadcast(str(action.get('nbr',-2)), "executing-action-nbr")
+        if self._in_preview:
+            await manager.broadcast(str(-2), "executing-action-nbr")
+        else:
+            await manager.broadcast(str(self._current_action_id), "executing-action-nbr")
 
         cuelist: list(str) = []
         try:
-            cuelist = self._setlist['actions'][self._current_id]['execution']['lights']['cuelist']
+            cuelist = self._setlist['actions'][self._current_action_id]['execution']['lights']['cuelist']
         except Exception:
             pass
         
@@ -154,21 +166,24 @@ class Engine():
     async def next_event(self, event_initiator:str = ""):
         logger.info("Next event triggered by %s", event_initiator)
 
-        # if self.get_status() != "set_running":
-        if self._current_id == -1:
-            await manager.broadcast("Set is not started", "notification-warning")
+        # Check that engine is running
+        if self._current_action_id == -2:
+            await manager.broadcast("Release preview first", "notification-warning")
             logger.info("Set is not started")
             return
         
-        if self._current_id >= len(self._setlist['actions']):
+        self._current_action_id += 1
+        
+        logger.debug("Current action nbr: %i, of %i total", self._current_action_id, len(self._setlist['actions']))
+
+        if self._current_action_id >= len(self._setlist['actions']):
             await self.end_set()
             return
 
-        action = self._setlist['actions'][self._current_id]
+        action = self._setlist['actions'][self._current_action_id]
         
         await self._execute_action(action, preview=False)
 
-        self._current_id += 1
 
         return
 
@@ -185,27 +200,32 @@ class Engine():
 
     def get_next_song_id(self) -> int:
         """
-        Returns song current song id. If no set is loaded -1
+        Returns current song id, if not a song it returns the next song id. If not available -1
         """
+        logger.info("In preview: " + str(self._in_preview))
+        if self._in_preview:
+            logger.debug(self._current_action)
+            return self._current_action.get('song_id', -1)
+
         if not self._setlist:
             return -1
 
         action_arr = self._setlist['actions']
 
         search_id: int
-        if self._current_id >= 0:
-            search_id = self._current_id
+        if self._current_action_id >= 0:
+            search_id = self._current_action_id
         else: search_id = 0
 
         while True:
-            logger.debug(f"Current: {self._current_id}, search: {search_id}")
+            logger.debug(f"Current setlist action nbr: {self._current_action_id}, search: {search_id}")
             if len(action_arr) <= search_id:
                 return -1
             elif action_arr[search_id].get("song_id"):
                 return action_arr[search_id].get("song_id")
             else:
                 search_id = search_id + 1
-        
+
 
     async def preview_action(self, action: dict):
         """
@@ -224,19 +244,22 @@ class Engine():
         Sets engine state to the state before priview was initiated
         """
         logger.info("Action preview release initiated")
+        
+        if not self._in_preview:
+            logger.info("Engine is not in preview")
 
         self._in_preview = False
 
         #Started set
-        if self._current_id > -1:
+        if self._current_action_id > -1:
             self._status = "set_running"
             await self.next_event("Preview release")
         #Set loaded, but not started
         elif self._setlist:
-            await manager.broadcast(self._current_id, "executing-action-nbr")
+            await manager.broadcast(self._current_action_id, "executing-action-nbr")
         else:
             await self._reset_engine()
-            await manager.broadcast(self._current_id, "executing-action-nbr")
+            await manager.broadcast(self._current_action_id, "executing-action-nbr")
         
 
     async def _reset_engine(self) -> None:
@@ -246,7 +269,7 @@ class Engine():
         logger.debug("Resetting engine")
         self._setlist = {}
         self._status = "idle"
-        self._current_id = -1
+        self._current_action_id = -1
         self.mixer.mute_all_fx()
         self.lights.release_active_cuelists(persistent=True)
         await self.playback.stop(force_send=True)    # Send playback stop 

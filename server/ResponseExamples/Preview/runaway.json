@@ -1,0 +1,30 @@
+{
+    "type": "song",
+    "title": "Runaway",
+    "song_id": 1,
+    "playback": true,
+    "execution":{
+        "playback": {
+            "marker_name": "runaway_v1"
+        },
+        "lights": {
+            "cuelist": ["runaway"]
+        },
+        "audio": {
+            "fx1": {
+                "enabled": false
+            },
+            "fx2": {
+                "enabled": false
+            },
+            "fx3": {
+                "enabled": true,
+                "dly_time": 421
+            },
+            "fx4": {
+                "enabled": false
+            },
+            "channel_mutes": [1,3]
+        }
+    }
+}

@@ -28,10 +28,11 @@
         matSort
         matSortActive="tempo"
         matSortDirection="asc"
-        matSortDisableClear>
+        matSortDisableClear
+    >
         
         <ng-container matColumnDef="title">
-            <mat-header-cell *matHeaderCellDef>Test</mat-header-cell>
+            <mat-header-cell *matHeaderCellDef>Title</mat-header-cell>
             <mat-cell *matCellDef="let song">{{song.title}}</mat-cell>
         </ng-container>
 
@@ -69,6 +70,18 @@
                     <mat-chip>Tag1</mat-chip>
                     <mat-chip>Tag2</mat-chip>
                 </mat-chip-list>
+            </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="lyrics">
+            <mat-header-cell *matHeaderCellDef>Lyrics</mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let song">
+                <button *ngIf="song.lyrics" mat-raised-button color="secondary" class="right" (click)="onViewLyric(song)">
+                    <mat-icon>visibility</mat-icon>
+                </button>
+                <button *ngIf="!song.lyrics" mat-raised-button color="primary" class="right" (click)="onViewLyric(song)">
+                    <mat-icon>add</mat-icon>
+                </button>
             </mat-cell>
         </ng-container>
 
