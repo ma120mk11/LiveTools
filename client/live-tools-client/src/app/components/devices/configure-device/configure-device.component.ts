@@ -34,6 +34,7 @@ export class ConfigureDeviceComponent implements OnInit {
     console.log(this.deviceEditForm.controls['receive_port'].value)
 
     const url = `${environment.apiEndpoint}/devices/${this.data.id}`
+    
     this.http.patch(url, {
       ip: this.deviceEditForm.controls['ip'].value,
       receive_port: this.deviceEditForm.controls['receive_port'].value
