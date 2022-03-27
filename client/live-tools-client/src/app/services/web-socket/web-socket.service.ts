@@ -92,6 +92,7 @@ export class WebSocketService {
   public engineStatus: string;
   public devices: IDevice[]
 
+  // Used for notifying a change
   public event: Subject<any> = new Subject()
 
   getMessages(){
@@ -125,7 +126,7 @@ export class WebSocketService {
 
         case "executing-action-nbr":
           try {
-            const action_id = msg_obj.data;
+            const action_id: number = parseInt(msg_obj.data);
             if (action_id == -2) {
               // TODO: ACTION PREVEW
               this.activeSetlistActionId = action_id
@@ -134,11 +135,14 @@ export class WebSocketService {
             }
           } catch (error) {
             console.error("Unable to set executing action id");
+          } finally {
+            this.event.next(null);
           }
           break;
 
         case "end-set":
-          console.info("Set ended")
+          console.info("Set ended");
+          this.event.next(null);
           this.isLoaded = false;
           this.activeSetlistActionId = -1;
           break;
@@ -156,7 +160,7 @@ export class WebSocketService {
                 console.log("no set")
                 this.isLoaded = false;
               }
-              this.activeSetlistActionId = msg_obj.data.action_id
+              this.activeSetlistActionId = parseInt(msg_obj.data.action_id)
               this.activeAction = msg_obj.data.current_action
 
             } catch (error) {
@@ -165,7 +169,7 @@ export class WebSocketService {
             }
 
             this.engineStatus = msg_obj.data.status;
-            this.activeSetlistActionId = msg_obj.data.action_id;
+            this.activeSetlistActionId = parseInt(msg_obj.data.action_id);
             
           } catch (error) {
             console.error("Unable to parse engine state");
@@ -220,19 +224,25 @@ export class WebSocketService {
   }
 
   public getNextAction(): string {
-    let action = "";
+    let actionName = "";
+    const id: number = (this.activeSetlistActionId)+1;
+
+    if (id > this.setlist.actions.length-1){ return "End set"}
+
     try {
-      if (this.setlist.actions[this.activeSetlistActionId].title) {
-        action = this.setlist.actions[this.activeSetlistActionId].title || "ERROR"
+      if (this.setlist.actions[id]?.type === "song") {
+        actionName = this.setlist.actions[id].title || "ERROR"
       }
       else {
-        action = this.setlist.actions[this.activeSetlistActionId].type
+        actionName = this.setlist.actions[id]?.type
       }
     } catch (error) {
       console.log(error)
     }
-    return action
+    return actionName
   }
+
+
   public startSet() {
     this.ws.send("start-set");
   }

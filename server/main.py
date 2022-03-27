@@ -225,7 +225,7 @@ def get_lyrics_for_next_song(lookahead: int=3, db: Session = Depends(get_db)):
             if song.lyrics:
                 return song.lyrics
 
-    return "No lyrics available"
+    return "Start set or song to view lyrics"
 
 #////////////////////////////////////////////////////////////////
 #//                        DEVICES                             //
