@@ -17,7 +17,7 @@ import { SongsService } from './songs.service';
 
 export class SongBookComponent implements OnInit {
   availableColumns: string[] = ["title","artist", "lead_singer", "duration", "tags", "tempo", "key", "lyrics", "preview"];
-  displayedColumns: string[] = ["title","artist", "lead_singer", "duration", "tempo", "preview", "lyrics"];
+  displayedColumns: string[] = ["title","artist", "lead_singer", "duration", "preview", "lyrics"];
   songs: ISong[] = [];
   editSong: ISong | undefined // The song currently being edited
   isLoading: boolean = true
