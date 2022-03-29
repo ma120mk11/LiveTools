@@ -241,9 +241,10 @@ def get_lyrics_for_next_song(lookahead: int=3, db: Session = Depends(get_db)):
         if song is None:
             return "No lyrics available"
         else: 
-
             if song.lyrics:
                 return song.lyrics
+            else:
+                return "No lyrics available"
 
     return "Start set or song to view lyrics"
 
