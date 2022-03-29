@@ -14,6 +14,7 @@ from fastapi.encoders import jsonable_encoder
 from osc.osc_server import server
 from sqlalchemy import update
 from sqlalchemy.future import select
+import json
 
 # dictConfig(LogConfig)
 logging.basicConfig(level=logging.DEBUG)
@@ -95,6 +96,25 @@ def update_user(user_id: int, db: Session = Depends(get_db)):
 #////////////////////////////////////////////////////////////////
 #//                         SONGS                              //
 #////////////////////////////////////////////////////////////////
+@app.post('/songs/{song_id}/preview', response_model=schemas.Song, tags=["songs"])
+async def preview_song_by_id(song_id: int, db: Session = Depends(get_db)):
+    song = db.query(models.Song).filter(models.Song.id == song_id)
+    if not song.first():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"No song with id {id} found")
+    
+    song_dict = jsonable_encoder(song.first())
+
+    exec = json.loads(db.query(models.Song.execution).filter(models.Song.id == song_id).scalar())
+    logger.info(str(song.scalar()))
+
+    song_dict['execution'] = exec
+    song_dict['type'] = "song"
+    song_dict['song_id'] = song_dict['id']
+    song_dict.pop("id")
+
+    await engine.preview_action(song_dict)
+
+
 @app.post('/song', response_model=schemas.Song, tags=["song-library"])
 def add_song(song: schemas.SongCreate, db: Session = Depends(get_db)):
 
@@ -267,6 +287,19 @@ def update_lyrics(id: int, lyrics: str = Body(...), db: Session = Depends(get_db
     db.commit()
     return
 
+@app.post('/songs/{song_id}/execution', status_code=status.HTTP_202_ACCEPTED)
+def update_song_execution(song_id: int, execution: schemas.Execution, db: Session = Depends(get_db)):
+    song = db.query(models.Song).filter(models.Song.id == song_id)
+    if not song.first():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"No song with id {id} found")
+    
+    exec_str = jsonable_encoder(execution)
+    
+    song.update({'execution': json.dumps(exec_str)})
+
+    db.commit()
+
+    return
 
 
 @app.put('/songs/{id}', 

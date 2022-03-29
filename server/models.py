@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime, JSON
 from sqlalchemy.orm import relationship
 from database import Base
 
@@ -13,6 +13,14 @@ class Song(Base):
     duration = Column(Integer)
     lead_singer = Column(String)
     key = Column(String)
+    version = Column(Integer)
+    playback = Column(Boolean)
+    hidden = Column(Boolean)
+    tags = Column(String)
+    created = Column(DateTime)
+    last_played = Column(DateTime)
+    description = Column(String)
+    execution = Column(JSON)      # Store execution properties as string for now
 
 
 class Setlist(Base):
