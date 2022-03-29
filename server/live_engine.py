@@ -131,9 +131,11 @@ class Engine():
 
         cuelist: list(str) = []
         try:
-            cuelist = self._setlist['actions'][self._current_action_id]['execution']['lights']['cuelist']
+            cuelist = action['execution']['lights']['cuelist']
+            if cuelist == None:
+                cuelist = [""]
         except Exception:
-            pass
+            logger.error("Action doesn't contain a cuelist")
         
         if action['type'] == "song": 
             if not preview:
