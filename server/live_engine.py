@@ -237,13 +237,18 @@ class Engine():
         self._in_preview = True
         self._status = "preview"
         self._state_savepoint = self.get_engine_state()
+
+        # Set frontlights
+        self.lights.start_cuelist(["frontlights"], persistent=True)
+
         await self._execute_action(action, preview=True)
 
 
     async def release_preview(self):
         """
         Releses current preview (if any)
-        Sets engine state to the state before priview was initiated
+        Sets engine state to the state before priview was initiated (if any)
+        Starts frontlights and leaves them on.
         """
         logger.info("Action preview release initiated")
         
@@ -260,11 +265,13 @@ class Engine():
         elif self._setlist:
             await manager.broadcast(self._current_action_id, "executing-action-nbr")
         else:
-            await self._reset_engine()
+            # Don't reset persistent lights for now, to avoid blackout
+            await self._reset_engine(persistent=False)
+
             await manager.broadcast(self._current_action_id, "executing-action-nbr")
         
 
-    async def _reset_engine(self) -> None:
+    async def _reset_engine(self, persistent=True) -> None:
         """
         Resets engine state
         """
@@ -274,5 +281,5 @@ class Engine():
         self._current_action_id = -1
         self._current_action = {}
         self.mixer.mute_all_fx()
-        self.lights.release_active_cuelists(persistent=True)
+        self.lights.release_active_cuelists(persistent=persistent)
         await self.playback.stop(force_send=True)    # Send playback stop 

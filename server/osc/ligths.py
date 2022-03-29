@@ -57,7 +57,9 @@ class OSCLights(OSCBase):
             logger.debug("Cuelist: %s go", cue)
 
             if persistent:
-                self._active_persistent.append(cue)
+                # Avoid duplicates
+                if not cue in self._active_persistent:
+                    self._active_persistent.append(cue)
             else:
                 self._active.append(cue)
 
