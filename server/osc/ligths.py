@@ -8,13 +8,29 @@ class OSCLights(OSCBase):
 
     # TODO Move to db
     cuelists = {
+        "BACK_PAR_RED": "/Mx/playback/page1/0/",
+        "BACK_PAR_GREEN": "/Mx/playback/page1/1/",
+        "BACK_PAR_BLUE": "/Mx/playback/page1/2/",
+        "BACK_PAR_AMBER": "/Mx/playback/page1/3/",
+        "BACK_PAR_YELLOW": "/Mx/playback/page1/4/",
+        "BACK_PAR_MAGENTA": "/Mx/playback/page1/5/",
+
+        "BACK_PAR_100": "/Mx/playback/page1/8/",
+        "BACK_PAR_0": "/Mx/playback/page1/8/",
+
+        "BACK_PAR_MINT": "/Mx/playback/page1/10/",
+        "BACK_PAR_ORANGE": "/Mx/playback/page1/11/",
+        "BACK_PAR_PURPLE": "/Mx/playback/page1/12/",
+        "BACK_PAR_PINK": "/Mx/playback/page1/13/",
+        "BACK_PAR_CYAN": "/Mx/playback/page1/14/",
+        "BACK_PAR_R_B_FX": "/Mx/playback/page1/15/",
+
         "frontlights": "/Mx/playback/page5/50/",
         "generic_rock": "/Mx/playback/page5/1/",
         "runaway": "/Mx/playback/page10/0/",
         "bourbon_street": "/Mx/playback/page6/1/",
         "heavy_red": "/Mx/playback/page5/0/",
         "speaking": "/Mx/playback/page1/1/",
-        "back_par_100": "/Mx/playback/page1/8/",
         "pause": "/Mx/playback/page1/3/",
         "slow_ballad": "/Mx/playback/page5/2/",
         "high_intensity": "/Mx/playback/page3/20/",
