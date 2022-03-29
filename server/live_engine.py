@@ -272,6 +272,7 @@ class Engine():
         self._setlist = {}
         self._status = "idle"
         self._current_action_id = -1
+        self._current_action = {}
         self.mixer.mute_all_fx()
         self.lights.release_active_cuelists(persistent=True)
         await self.playback.stop(force_send=True)    # Send playback stop 
