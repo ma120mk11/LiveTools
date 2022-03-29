@@ -49,7 +49,8 @@
 
         <!-- When set is started -->
         <span *ngIf="ws.isSetStarted() && ws.activeSetlistActionId != -2" class="center">
-          {{ws.activeAction.title ? ws.activeAction.title : ws.activeAction.type}}
+          <b>{{ws.activeAction.title ? ws.activeAction.title : ""}}</b>
+          <i>{{ws.activeAction.title ? "" : ws.activeAction.type}}</i>
         </span>
         <!-- When set is not started -->
         <span *ngIf="!ws.isSetStarted() && ws.activeSetlistActionId != -2" class="center">
@@ -75,7 +76,7 @@
 
       <!-- When preview is active -->
       <span  *ngIf="ws.activeSetlistActionId == -2" class="set-loaded-container">
-        {{ws.activeAction.title}}
+        <b class="song-title">{{ws.activeAction.title}}</b>
         <span>
           <button mat-raised-button color="secondary"  (click)="this.releasePreview()">
             Release preview

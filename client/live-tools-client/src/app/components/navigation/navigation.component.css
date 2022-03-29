@@ -24,7 +24,7 @@
 }
 .set-loaded-container {
   width: 100%;
-  /* text-align: center; */
+  text-align: center;
 }
 
 .right {
@@ -44,5 +44,10 @@
 }
 
 .center {
-  margin-left: 4em;
+  padding-right: 2em;
+}
+
+.song-title {
+  margin-left: 1em;
+  margin-right: 1em;
 }
