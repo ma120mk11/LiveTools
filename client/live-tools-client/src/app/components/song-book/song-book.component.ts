@@ -17,8 +17,12 @@ import { SongsService } from './songs.service';
 })
 
 export class SongBookComponent implements OnInit {
-  availableColumns: string[] = ["title","artist", "lead_singer", "duration", "tags", "tempo", "key", "lyrics", "preview"];
-  displayedColumns: string[] = ["title","artist", "lead_singer", "preview", "lyrics"];
+  availableColumns: string[] = ["title","artist", "lead_singer", "duration", "tags", "tempo", "key", "lyrics", "preview", "lights", "effects"];
+  displayedColumns: string[] = ["title","artist", "preview", "lyrics"];
+
+  displayExecution: string[] = ["title","artist", "preview", "lyrics", "lights", "effects"];
+  displayDefault: string[] = ["title","artist", "preview", "lyrics"];
+
   songs: ISong[] = [];
   editSong: ISong | undefined // The song currently being edited
   isLoading: boolean = true
@@ -47,6 +51,15 @@ export class SongBookComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       
     })
+  }
+
+  onToggleExecutionView() {
+    if (this.displayedColumns == this.displayExecution) {
+      this.displayedColumns = this.displayDefault
+    }
+    else {
+      this.displayedColumns = this.displayExecution
+    }
   }
 
   onPreview(song: ISong) {
