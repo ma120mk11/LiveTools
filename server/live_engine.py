@@ -62,7 +62,10 @@ class Engine():
         }
 
     async def load_setlist(self, set: dict):
-        """Loads a set"""
+        """
+        Loads a set
+        Releases preview if active
+        """
         logger.info("Loading setlist: %s", set['name'])
 
         count = 0
@@ -280,6 +283,8 @@ class Engine():
         self._status = "idle"
         self._current_action_id = -1
         self._current_action = {}
+        self._in_preview = False
         self.mixer.mute_all_fx()
         self.lights.release_active_cuelists(persistent=persistent)
         await self.playback.stop(force_send=True)    # Send playback stop 
+        await manager.broadcast(str(self._current_action_id), "executing-action-nbr")
