@@ -18,6 +18,9 @@ export class LyricsEditorComponent implements OnInit {
   previousContent = "";
   songId: number;
 
+  searchBtnTitle = "Search for lyrics..."
+  enableSearch = true;
+
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: ISong,
     private http: HttpClient
@@ -25,6 +28,10 @@ export class LyricsEditorComponent implements OnInit {
     this.htmlContent = this.data.lyrics;
     this.previousContent = this.data.lyrics;
     this.songId = this.data.id
+
+    if (this.data.lyrics) {
+      this.enableSearch = false;
+    }
   }
 
   ngOnInit(): void { }
@@ -38,6 +45,24 @@ export class LyricsEditorComponent implements OnInit {
 
   onCancel() {
 
+  }
+
+  onSearch() {
+    this.searchBtnTitle = "Loading...";
+
+    this.http.get<any>(`https://api.lyrics.ovh/v1/${this.data.artist}/${this.data.title}`)
+    .subscribe((result) => {
+      console.log(result);
+      try{
+        const lyrics = `<div>${result.lyrics.replace(/\\r\\n/g, "<br/>")}</div>`;
+        console.log(lyrics);
+        this.htmlContent = lyrics;
+        this.enableSearch = false;
+      }
+      catch (e) {
+        console.error("No lyrics")
+      }
+    },(error) => {this.searchBtnTitle="No lyrics found :("})
   }
 
   editorConfig: AngularEditorConfig = {

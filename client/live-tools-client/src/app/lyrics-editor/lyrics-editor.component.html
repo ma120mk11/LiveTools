@@ -4,6 +4,15 @@
     <angular-editor [(ngModel)]="htmlContent" [config]="editorConfig"></angular-editor>
 </div>
 
+<button
+    mat-raised-button color="warn" 
+    class="right" 
+    (click)="onSearch()"
+    [disabled]="!enableSearch"
+>
+    {{searchBtnTitle}}
+</button>
+
 <button 
     mat-raised-button color="secondary" 
     class="right" 
