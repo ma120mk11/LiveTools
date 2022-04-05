@@ -77,8 +77,8 @@
         </ng-container>
 
         <ng-container matColumnDef="lyrics">
-            <mat-header-cell *matHeaderCellDef>Lyrics</mat-header-cell>
-            <mat-cell mat-cell *matCellDef="let song">
+            <mat-header-cell [ngClass]="'w-small'" *matHeaderCellDef>Lyrics</mat-header-cell>
+            <mat-cell [ngClass]="'w-small'"  mat-cell *matCellDef="let song">
                 <button *ngIf="song.lyrics" mat-raised-button color="secondary" class="right" (click)="onViewLyric(song)">
                     <mat-icon>edit</mat-icon>
                 </button>
@@ -90,8 +90,8 @@
 
 
         <ng-container matColumnDef="preview">
-            <mat-header-cell *matHeaderCellDef>Preview</mat-header-cell>
-            <mat-cell mat-cell *matCellDef="let song">
+            <mat-header-cell [ngClass]="'w-small'" *matHeaderCellDef>Preview</mat-header-cell>
+            <mat-cell [ngClass]="'w-small'" mat-cell *matCellDef="let song">
                 <button *ngIf="!(ws.activeSetlistActionId == -2 && ws.activeAction.song_id == song.id)" mat-raised-button color="primary" class="right" (click)="onPreview(song)">
                     <mat-icon>play_circle_outline</mat-icon>
                 </button>
@@ -106,7 +106,9 @@
             <mat-header-cell *matHeaderCellDef>Light Cuelist</mat-header-cell>
             <mat-cell mat-cell *matCellDef="let song">
                 <mat-chip-list aria-label="Cuelists">
-                    <mat-chip *ngFor="let cue of song.execution.lights.cuelist" color="primary">{{cue}}</mat-chip>
+                    <mat-chip *ngFor="let cue of song.execution.lights.cuelist" color="primary" (click)="onEditExecutionProperties(song, 'lights')">
+                        {{cue}}
+                    </mat-chip>
                 </mat-chip-list>
             </mat-cell>
         </ng-container>
@@ -114,12 +116,14 @@
         <ng-container matColumnDef="effects">
             <mat-header-cell *matHeaderCellDef>Effects</mat-header-cell>
             <mat-cell mat-cell *matCellDef="let song">
-                <mat-chip-list aria-label="Effects">
-                    <mat-chip *ngIf="song.execution.audio.fx1.enabled" color="primary">Hall</mat-chip>
-                    <mat-chip *ngIf="song.execution.audio.fx2.enabled" color="primary">Plate</mat-chip>
-                    <mat-chip *ngIf="song.execution.audio.fx3.enabled" color="primary">Slap</mat-chip>
-                    <mat-chip *ngIf="song.execution.audio.fx4.enabled" color="secondary">DLY</mat-chip>
-                </mat-chip-list>
+                <div >
+                    <mat-chip-list aria-label="Effects">
+                        <mat-chip *ngIf="song.execution.audio.fx1.enabled" color="primary" (click)="onEditExecutionProperties(song, 'audio')">Hall</mat-chip>
+                        <mat-chip *ngIf="song.execution.audio.fx2.enabled" color="primary" (click)="onEditExecutionProperties(song, 'audio')">Plate</mat-chip>
+                        <mat-chip *ngIf="song.execution.audio.fx3.enabled" color="primary" (click)="onEditExecutionProperties(song, 'audio')">Slap</mat-chip>
+                        <mat-chip *ngIf="song.execution.audio.fx4.enabled" color="primary" (click)="onEditExecutionProperties(song, 'audio')">DLY</mat-chip>
+                    </mat-chip-list>
+                </div>
             </mat-cell>
         </ng-container>
 

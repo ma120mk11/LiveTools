@@ -49,7 +49,10 @@ import { WsDisconnectedModalComponent } from './ws-disconnected-modal/ws-disconn
 import { LyricsEditorComponent } from './lyrics-editor/lyrics-editor.component';
 import { AngularEditorModule } from '@kolkov/angular-editor';
 import { FormsModule } from '@angular/forms';
-
+import { StartPageComponent } from './start-page/start-page.component';
+import { SongExecutionEditorComponent } from './song-execution-editor/song-execution-editor.component';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatGridListModule } from '@angular/material/grid-list';
 
 @NgModule({
   declarations: [
@@ -70,7 +73,9 @@ import { FormsModule } from '@angular/forms';
     CreateSongComponent,
     ConfigureDeviceComponent,
     WsDisconnectedModalComponent,
-    LyricsEditorComponent
+    LyricsEditorComponent,
+    StartPageComponent,
+    SongExecutionEditorComponent
   ],
   imports: [
     BrowserModule,
@@ -94,6 +99,7 @@ import { FormsModule } from '@angular/forms';
     MatSelectModule,
     MatAutocompleteModule,
     MatChipsModule,
+    MatTabsModule,
     MatPaginatorModule,
     MatSlideToggleModule,
     MatProgressBarModule,
@@ -102,7 +108,8 @@ import { FormsModule } from '@angular/forms';
     MatTableModule,
     ReactiveFormsModule,
     AngularEditorModule,
-    FormsModule
+    FormsModule,
+    MatGridListModule
   ],
   providers: [
     WebSocketService,

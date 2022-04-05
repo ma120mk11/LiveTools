@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { LyricsEditorComponent } from 'src/app/lyrics-editor/lyrics-editor.component';
 import { WebSocketService } from 'src/app/services/web-socket/web-socket.service';
+import { SongExecutionEditorComponent } from 'src/app/song-execution-editor/song-execution-editor.component';
 import { environment } from 'src/environments/environment';
 import { CreateSongComponent } from './create-song/create-song.component';
 import { ISong } from './song';
@@ -18,10 +19,10 @@ import { SongsService } from './songs.service';
 
 export class SongBookComponent implements OnInit {
   availableColumns: string[] = ["title","artist", "lead_singer", "duration", "tags", "tempo", "key", "lyrics", "preview", "lights", "effects"];
-  displayedColumns: string[] = ["title","artist", "preview", "lyrics"];
+  displayedColumns: string[] = ["title","lead_singer", "artist", "preview"];
 
-  displayExecution: string[] = ["title","artist", "preview", "lyrics", "lights", "effects"];
-  displayDefault: string[] = ["title","artist", "preview", "lyrics"];
+  displayExecution: string[] = ["title", "artist", "preview", "lyrics", "lights", "effects"];
+  displayDefault: string[] = ["title","lead_singer", "artist", "preview"];
 
   songs: ISong[] = [];
   editSong: ISong | undefined // The song currently being edited
@@ -71,6 +72,20 @@ export class SongBookComponent implements OnInit {
   onPreviewRelease() {
     this.http.post(`${environment.apiEndpoint}/engine/action/preview/release`, {})
     .subscribe()
+  }
+
+  onEditExecutionProperties(song: ISong, view: string) {
+    console.log("Open " + view)
+    const dialogRef = this.dialog.open(SongExecutionEditorComponent,{
+      data: {
+        song: song,
+        view: view
+      }}
+    );
+
+    dialogRef.afterClosed().subscribe(result => {
+      this.getSongs();
+    })
   }
 
   onViewLyric(song: ISong) {

@@ -7,4 +7,5 @@ export interface ISong {
     lead_singer: string;
     key: string;
     id: number;
+    execution?: any;
 }

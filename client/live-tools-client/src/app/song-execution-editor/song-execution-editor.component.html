@@ -1,0 +1,70 @@
+<div class="container">
+    <h2>{{song.title}}</h2>
+
+    <form #form="ngForm" (ngSubmit)="onSubmit()">
+
+
+        <h4>Audio</h4>
+
+            <mat-grid-list cols="2" rowHeight="4:1">
+                <mat-grid-tile>
+                    <mat-slide-toggle 
+                        [(ngModel)]="song.execution.audio.fx1.enabled"
+                        name="fx1"
+                        matInput
+                        color="warn">
+                        Hall
+                    </mat-slide-toggle>
+                </mat-grid-tile>
+                <mat-grid-tile>
+                    <mat-slide-toggle 
+                    [(ngModel)]="song.execution.audio.fx2.enabled"
+                    name="fx2" color="warn">
+                    Plate
+                </mat-slide-toggle>
+                </mat-grid-tile>
+
+                <mat-grid-tile>
+                    <mat-slide-toggle [(ngModel)]="song.execution.audio.fx3.enabled"
+                        name="fx3" color="warn">
+                        Slap
+                    </mat-slide-toggle>                    
+                </mat-grid-tile>
+                <mat-grid-tile>
+                    <mat-slide-toggle [(ngModel)]="song.execution.audio.fx4.enabled"
+                        name="fx4" color="warn">
+                        Delay
+                    </mat-slide-toggle>
+                </mat-grid-tile>
+                </mat-grid-list>
+
+            
+            <br>
+
+        <h4>Lights</h4>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Cuelist</mat-label>
+            <mat-select [(ngModel)]="song.execution.lights.cuelist"
+                name="cuelist"
+                multiple
+            >
+                <mat-option *ngFor="let cue of cuelistArray" [value]="cue">
+                    {{cue}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+
+        <h4>Playback</h4>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Marker name</mat-label>
+            <input 
+                matInput 
+                [(ngModel)]="song.execution.playback.marker_name"
+                name="marker_name">
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" type="submit" mat-dialog-close>Save</button>
+    <!-- </div> -->

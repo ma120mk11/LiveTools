@@ -225,6 +225,9 @@ async def release_preview():
 def get_active_cuelists():
     return engine.lights.get_active_cuelists()
 
+@app.get("/engine/lights/cuelists", tags=["engine", "lights"])
+def get_cuelists():
+    return engine.lights.get_cuelist()
 
 @app.get("/engine/state", tags=["engine"])
 def get_engine_status():
