@@ -27,8 +27,19 @@ class OSCLights(OSCBase):
 
         "frontlights": "/Mx/playback/page5/50/",
         "generic_rock": "/Mx/playback/page5/1/",
-        "runaway": "/Mx/playback/page10/0/",
+        "red_ambient": "/Mx/playback/page5/6/",
+        "blue_amber": "/Mx/playback/page5/10/",
+        "green_rocker": "/Mx/playback/page5/20/",
+
+        "runaway": "/Mx/playback/page6/0/",
         "bourbon_street": "/Mx/playback/page6/1/",
+        "born_to_run": "/Mx/playback/page6/2/",
+        "flickorna_tv2": "/Mx/playback/page6/3/",
+        "rosanna": "/Mx/playback/page6/4/",
+        "boys_of_summer": "/Mx/playback/page6/5/",
+        "when_youre_gone": "/Mx/playback/page6/6/",
+        "died_in_your_arms": "/Mx/playback/page6/7/",
+
         "heavy_red": "/Mx/playback/page5/0/",
         "speaking": "/Mx/playback/page1/1/",
         "pause": "/Mx/playback/page1/3/",
@@ -95,3 +106,8 @@ class OSCLights(OSCBase):
             "active": self._active,
             "persistent": self._active_persistent 
         }
+    def get_cuelist(self) -> dict:
+        """
+        Returns all available cuelists
+        """
+        return self.cuelists
