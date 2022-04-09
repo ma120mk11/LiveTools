@@ -26,10 +26,15 @@ class OSCLights(OSCBase):
         "BACK_PAR_R_B_FX": "/Mx/playback/page1/15/",
 
         "frontlights": "/Mx/playback/page5/50/",
+        
         "generic_rock": "/Mx/playback/page5/1/",
+        "red_rocker_1": "/Mx/playback/page5/3/",
+        "red_rocker_2": "/Mx/playback/page5/4/",
+        "red_amber": "/Mx/playback/page5/5/",
         "red_ambient": "/Mx/playback/page5/6/",
         "blue_amber": "/Mx/playback/page5/10/",
         "green_rocker": "/Mx/playback/page5/20/",
+        "magenta_rocker": "/Mx/playback/page5/30/",
 
         "runaway": "/Mx/playback/page6/0/",
         "bourbon_street": "/Mx/playback/page6/1/",
