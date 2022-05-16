@@ -16,7 +16,7 @@ export class LyricsComponent implements OnInit, OnDestroy {
   isLoading: boolean = true
   unsubscribe: Subject<boolean> = new Subject()
 
-  constructor(private http: HttpClient, public ws: WebSocketService) { console.log("Lyrics constructor")}
+  constructor(private http: HttpClient, public ws: WebSocketService) { }
   
   ngOnInit(): void {
     this.ws.event
