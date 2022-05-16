@@ -278,6 +278,18 @@ async def device_config(id:int, request: schemas.OSCDeviceUpdate ):
 #     is_connected = engine.recording.test_connection()
 #     return await is_connected
     
+@app.post('/songs/{id}/tempo',
+        tags=["songs"],
+        status_code=status.HTTP_202_ACCEPTED
+    )
+def set_song_tempo(id: int, tempo: int = Body(...), db: Session = Depends(get_db)):
+    '''The song tempo will not be updated for everybody'''
+    song = db.query(models.Song).filter(models.Song.id == id)
+    if not song.first():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"No song with id {id} found")
+    song.update({'tempo': tempo})
+    db.commit()
+    return
 
 @app.post('/songs/{id}/lyrics',
         tags=["songs"],
