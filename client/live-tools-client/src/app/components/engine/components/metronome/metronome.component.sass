@@ -1,0 +1,60 @@
+.container
+    max-width: 600px
+
+.metronome
+    width: 100%
+    background-color: #2e2828
+    padding: 1em
+    margin: 10px
+    // margin-right: 10px
+
+    mat-slider
+        width: 100%
+
+    .align-right
+        float: right
+        // margin-left: auto
+        margin-left: 10px
+        margin-right: 10px
+    .align
+        margin-right: auto
+        // margin-right: 10px
+        float: left
+
+    h1
+        font-size: 45px
+
+    .beat-indicator
+        text-align: center
+        width: 100%
+
+    .tempo-indicator
+        position: relative
+        top: 5px
+    
+    .toggle
+        position: relative
+        top: 5px 
+    &.on-beat
+        background-color: #634a4a
+
+        &.on-accent
+            background-color: #cbbebe
+
+
+    .dots
+        display: flex
+        justify-content: space-between
+        margin: 5em
+
+        .dot
+            height: 4em
+            width: 4em
+            border-radius: 50%
+            background-color: #bbb
+
+            &.active
+                box-shadow: 0 0 10px 10px lightblue
+
+
+

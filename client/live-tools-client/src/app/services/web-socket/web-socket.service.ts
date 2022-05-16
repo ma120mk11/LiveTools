@@ -42,6 +42,7 @@ export interface IAction {
   type: string;
   title?: string;
   playback?: boolean;
+  tempo?: number;
   song_id?: number;
   duration? : number;
   execution: IExecution;

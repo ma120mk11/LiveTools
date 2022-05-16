@@ -1,0 +1,59 @@
+<div class="container">
+
+    <div class="metronome rounded mat-elevation-z3"
+        [ngClass]="isOnBeat ? 'on-beat':'' "
+        [class.on-accent]="isOnAccent"
+        >
+        <div>
+            <h2 class="align tempo-indicator">BPM = {{tempo}}</h2>
+
+            <button mat-icon-button color="accent" aria-label="Increase tempo" 
+                (click)="setTempo(tempo-1)">
+                <mat-icon>remove</mat-icon>
+            </button>
+            
+            <button mat-icon-button color="accent" aria-label="Increase tempo" 
+                (click)="setTempo(tempo+1)">
+                <mat-icon>add</mat-icon>
+            </button>
+
+            <button mat-raised-button color="primary" 
+                class="align-right"
+                (click)="setTempoToSong()"
+                [class.spinner]="isUpdatingTempo" 
+                [disabled]="isUpdatingTempo || (orginalTempo == tempo && orginalTempo != -1)"
+                >Save Tempo
+            </button>
+
+            <mat-slide-toggle
+                color="warn"
+                class="align-right toggle"
+                [(ngModel)]="isEnabled"
+                >
+                Enable
+            </mat-slide-toggle>
+
+            
+        </div>
+        
+
+        <mat-slider 
+            min="50" max="200" step="1"
+            thumbLabel
+            (input)="onSlideChange($event)"
+            [value]="tempo"
+            >
+        </mat-slider>
+        
+        <div class="dots">    
+            <div *ngFor="let beat of [].constructor(beatsUpper); let i = index">
+                <div class="dot" [ngClass]="i+1 == currentBeat ? 'active':'' "></div>
+            </div>
+        </div>
+
+        <span class="beat-indicator">
+            <h1>{{isEnabled? currentBeat:"-"}}</h1>
+        </span>
+
+    </div>
+</div>

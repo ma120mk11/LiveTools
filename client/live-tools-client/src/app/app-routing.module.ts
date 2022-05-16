@@ -4,6 +4,7 @@ import { DevicesComponent } from './components/devices/devices.component';
 import { ButtonsComponent } from './components/engine/components/buttons/buttons.component';
 import { DebugComponent } from './components/engine/components/debug/debug.component';
 import { LyricsComponent } from './components/engine/components/lyrics/lyrics.component';
+import { MetronomeComponent } from './components/engine/components/metronome/metronome.component';
 import { SetlistComponent } from './components/engine/components/setlist/setlist.component';
 import { StatusComponent } from './components/engine/components/status/status.component';
 import { EngineComponent } from './components/engine/engine.component';
@@ -17,6 +18,7 @@ const routes: Routes = [
   children:[
     { path: 'lyrics', component: LyricsComponent },
     { path: 'setlist', component: SetlistComponent },
+    { path: 'metronome', component: MetronomeComponent },
     { path: 'debug', component: DebugComponent },
     { path: 'status', component: StatusComponent },
     { path: 'buttons', component: ButtonsComponent },

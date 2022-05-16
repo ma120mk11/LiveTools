@@ -31,6 +31,7 @@ import { SetlistCreatorComponent } from './components/setlist-creator/setlist-cr
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSliderModule } from '@angular/material/slider';
 import { LogComponent } from './components/log/log.component';
 import { LyricsComponent } from './components/engine/components/lyrics/lyrics.component';
 import { SetlistComponent } from './components/engine/components/setlist/setlist.component';
@@ -53,6 +54,7 @@ import { StartPageComponent } from './start-page/start-page.component';
 import { SongExecutionEditorComponent } from './song-execution-editor/song-execution-editor.component';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatGridListModule } from '@angular/material/grid-list';
+import { MetronomeComponent } from './components/engine/components/metronome/metronome.component';
 
 @NgModule({
   declarations: [
@@ -75,7 +77,8 @@ import { MatGridListModule } from '@angular/material/grid-list';
     WsDisconnectedModalComponent,
     LyricsEditorComponent,
     StartPageComponent,
-    SongExecutionEditorComponent
+    SongExecutionEditorComponent,
+    MetronomeComponent
   ],
   imports: [
     BrowserModule,
@@ -91,6 +94,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
     MatStepperModule,
     MatListModule,
     MatMenuModule,
+    MatSliderModule,
     MatDialogModule,
     MatCardModule,
     MatFormFieldModule,
