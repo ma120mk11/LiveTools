@@ -29,13 +29,13 @@
 
     <mat-table [dataSource]="songs"
         matSort
-        matSortActive="tempo"
+        matSortActive="title"
         matSortDirection="asc"
         matSortDisableClear
     >
         
         <ng-container matColumnDef="title">
-            <mat-header-cell *matHeaderCellDef>Title</mat-header-cell>
+            <mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by title">Title</mat-header-cell>
             <mat-cell *matCellDef="let song">{{song.title}}</mat-cell>
         </ng-container>
 
