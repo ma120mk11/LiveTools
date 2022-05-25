@@ -1,4 +1,26 @@
 
+<div *ngIf="cueList.length > 0" class="mat-elevation-z8 cuelist-container">
+    <div *ngFor="let song of cueList; let i = index" [attr.data-index]="i">
+        <div *ngIf="song.type != 'speech'">
+            <h3>{{song.title}}</h3>
+            <i><p>{{song.artist}}</p></i>
+        </div>
+        <div *ngIf="song.type == 'speech'">
+            <i><p>Speech</p></i>
+        </div>
+        <button mat-raised-button [color]="''" class="right" (click)="onRemoveFromCueByIndex(i)">
+            Remove
+        </button>
+        <hr>
+    </div>
+    <button mat-raised-button [color]="''" class="btn" (click)="onAddSpeechToCue()">
+        Add speech
+    </button>
+    <button *ngIf="cueList.length > 0" mat-raised-button [color]="isCueMode?'primary':''" (click)="onExecuteCue()">
+        Add to setlist
+    </button>
+</div>
+
 
 
 <div class="mat-elevation-z8 table-container" *ngIf="!isLoading">
@@ -18,14 +40,23 @@
         <mat-menu #columns>
         </mat-menu>
     </button> -->
-    <button mat-raised-button color="" class="right" (click)="onToggleExecutionView()">
+
+
+    <button mat-raised-button 
+        [color]="isCueMode?'warn':''" class="right align-btn" 
+        [disabled]="cueList.length > 0"
+        (click)="onToggleMode()">
+        Cue mode
+    </button>
+
+    <button mat-raised-button color="" class="right align-btn" (click)="onToggleExecutionView()">
         Toggle columns
     </button>
 
-    <button mat-raised-button color="warn" class="right" (click)="onCreateSong()">
+    <!-- <button mat-raised-button color="warn" class="right" (click)="onCreateSong()">
         <mat-icon>add</mat-icon>
         Add Song
-    </button>
+    </button> -->
 
     <mat-table [dataSource]="songs"
         matSort
@@ -92,12 +123,26 @@
         <ng-container matColumnDef="preview">
             <mat-header-cell [ngClass]="'w-small'" *matHeaderCellDef>Preview</mat-header-cell>
             <mat-cell [ngClass]="'w-small'" mat-cell *matCellDef="let song">
-                <button *ngIf="!(ws.activeSetlistActionId == -2 && ws.activeAction.song_id == song.id)" mat-raised-button color="primary" class="right" (click)="onPreview(song)">
+                <button *ngIf="!(ws.activeSetlistActionId == -2 && ws.activeAction.song_id == song.id)"
+                    mat-raised-button color="primary" class="right table-btn" (click)="onPreview(song)">
                     <mat-icon>play_circle_outline</mat-icon>
                 </button>
-                <button *ngIf="ws.activeSetlistActionId == -2 && ws.activeAction.song_id == song.id" mat-raised-button color="warn" class="right" (click)="onPreviewRelease()">
+                <button *ngIf="ws.activeSetlistActionId == -2 && ws.activeAction.song_id == song.id"
+                    mat-raised-button color="warn" class="right table-btn" (click)="onPreviewRelease()">
                     <mat-icon>stop_circle</mat-icon>
                 </button>
+            </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="cue">
+            <mat-header-cell [ngClass]="'w-small'" *matHeaderCellDef>Cue</mat-header-cell>
+            <mat-cell [ngClass]="'w-small'" mat-cell *matCellDef="let song">
+                <button mat-raised-button color="warn" class="right" (click)="onAddToCue(song)">
+                    <mat-icon>add</mat-icon>
+                </button>
+                <!-- <button *ngIf="ws.activeSetlistActionId == -2 && ws.activeAction.song_id == song.id" mat-raised-button color="warn" class="right" (click)="onRemoveFromCue(song)">
+                    <mat-icon>stop_circle</mat-icon>
+                </button> -->
             </mat-cell>
         </ng-container>
 

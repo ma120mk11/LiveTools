@@ -2,16 +2,17 @@
   <mat-sidenav #drawer class="sidenav" fixedInViewport
       [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
       [mode]="(isHandset$ | async) ? 'over' : 'side'"
-      [opened]="(isHandset$ | async) === false">
+      [opened]="(isHandset$ | async) === true">
     <mat-toolbar>Menu</mat-toolbar>
     <mat-nav-list>
-      <a mat-list-item routerLink="/engine">Live</a>
+      <a mat-list-item [routerLink]="ws.isSetStarted()? '/engine/setlist':'/engine/songs'">Live</a>
       <!-- <a mat-list-item routerLink="/setlist/create">Setlist Creator</a> -->
       <!-- <a mat-list-item routerLink="/setlist/">Setlists</a> -->
       <a mat-list-item routerLink="/songs">Song Book</a>
       <!-- <a mat-list-item routerLink="/settings">Settings</a> -->
       <a mat-list-item routerLink="/devices">Devices</a>
-      <a mat-list-item routerLink="/logs">Logs</a>
+      <!-- <a mat-list-item routerLink="/logs">Logs</a> -->
+      <a mat-list-item routerLink="/debug">Logs</a>
 
       <mat-divider></mat-divider>
 
@@ -48,6 +49,7 @@
         </span> -->
 
         <!-- When set is started -->
+        <div *ngIf="ws.isSetStarted()" class="duration">{{runningSetDuration}}</div>
         <span *ngIf="ws.isSetStarted() && ws.activeSetlistActionId != -2" class="center">
           <b>{{ws.activeAction.title ? ws.activeAction.title : ""}}</b>
           <i>{{ws.activeAction.title ? "" : ws.activeAction.type}}</i>

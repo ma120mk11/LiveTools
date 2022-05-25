@@ -4,6 +4,8 @@ import { of, Observable, Subject, Observer } from 'rxjs'
 import { MatDialog } from '@angular/material/dialog';
 import { WsDisconnectedModalComponent } from 'src/app/ws-disconnected-modal/ws-disconnected-modal.component';
 import { environment } from 'src/environments/environment';
+import { Router } from '@angular/router';
+import { Time } from '@angular/common';
 
 // export const WS_ENDPOINT = "ws://localhost:8000/ws/"
 // export const WS_ENDPOINT = "ws://192.168.0.24:8000/ws/"
@@ -42,6 +44,7 @@ export interface IAction {
   type: string;
   title?: string;
   playback?: boolean;
+  isCueItem?: boolean;
   tempo?: number;
   song_id?: number;
   duration? : number;
@@ -92,7 +95,7 @@ export class WebSocketService {
   public isLoaded = false;
   public engineStatus: string;
   public devices: IDevice[]
-
+  public setStartedOn: Date
   // Used for notifying a change
   public event: Subject<any> = new Subject()
 
@@ -100,7 +103,7 @@ export class WebSocketService {
     return this.messages
   }
 
-  constructor(private dialog: MatDialog) {
+  constructor(private dialog: MatDialog, private router: Router) {
     this.ws.onmessage = (event) => {
       console.log(event.data)
       let msg_obj = JSON.parse(event.data);
@@ -126,6 +129,11 @@ export class WebSocketService {
           this.event.next(null);
           break;
 
+        case "set-started":
+          console.log("Set started")
+          this.setStartedOn = msg_obj.data
+          break;
+
 
         case "executing-action-nbr":
           try {
@@ -148,6 +156,7 @@ export class WebSocketService {
           this.event.next(null);
           this.isLoaded = false;
           this.activeSetlistActionId = -1;
+          this.router.navigate(["/engine/songs"]);
           break;
         
 
@@ -159,6 +168,7 @@ export class WebSocketService {
               if (msg_obj.data.setlist?.name) {
                 this.setlist = msg_obj.data?.setlist
                 this.isLoaded = true
+                this.setStartedOn = msg_obj.data?.set_started_on
               } else {
                 console.log("no set")
                 this.isLoaded = false;

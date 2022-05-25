@@ -1,15 +1,44 @@
 .engine-container
+    height: calc(100% - 3.5cm)
     // height: 100%
+    overflow: scroll
+
+    .hidden
+        display: none
 
     .engine-view-container
         height: 100%
         width: 100%
         overflow-x: clip
+        // overflow-y: scroll
 
     .btn-container
         position: fixed
-        right: 15px
-        bottom: 75px
+        bottom: 80px
+        right: 5px
+        // width: 100%
+        height: fit-content
+        // background-color: #d2c2d243
+
+        .next-speech
+            width: 5em
+            height: 5em
+            left: 0px
+            border: none
+            border-radius: 5px
+            background-color: #949c9e
+            // margin-left: 10px
+
+        .next-action
+            border: none
+            width: 5em
+            height: 5em
+            // position: fixed
+            border-radius: 5px
+            margin-right: 5px
+            left: 0px
+            background-color: #996969
+
     .engine-action-bar
         // max-width: 500px
         position: fixed
@@ -17,4 +46,9 @@
         bottom: 0
         z-index: 1
         .engine-nav-btn-container
-            max-width: 500px                
+            max-width: 500px
+
+    button
+        font-size:20px !important
+        margin: 0px 5px
+          

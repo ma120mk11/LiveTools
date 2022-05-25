@@ -15,13 +15,13 @@ export class SongsService {
       this.handleError = httpErrorHandler.createHandleError("SongBookComponent");
     }
 
-  getSongs(): Observable<ISong[]> {
+  getSongs(includeHidden: boolean = false): Observable<ISong[]> {
     
     console.log("getting songs...")
-    return this.http.get<ISong[]>(`${environment.apiEndpoint}/songs`)
+    return this.http.get<ISong[]>(`${environment.apiEndpoint}/songs`,{params: {"include_hidden": includeHidden}})
     .pipe(
       tap(
-        data => console.log(data)
+        // data => console.log(data)
         )
       );
     }

@@ -1,1 +1,8 @@
-<p>buttons works!</p>
+
+<button [disabled]="!ws.isSetStarted()" (click)="onExecutePrevious()" class="mat-elevation-z8">
+    Previous song
+</button>
+
+<button (click)="onResetEngine()" class="mat-elevation-z8">
+    Reset engine
+</button>

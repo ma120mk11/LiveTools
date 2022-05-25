@@ -6,7 +6,8 @@
                 <div [ngClass]="getClass(action.nbr)">
                     <div *ngIf="action.type=='song'" class="song">
                         <div *ngIf="action.playback" class="blackout-indicator">Playback</div>
-                        <h1>{{getSongNbr(action.nbr)}}. {{action.title}}</h1>
+                        <div *ngIf="action.isCueItem && ws.activeSetlistActionId < action.nbr" class=""></div>
+                        <h1 [class.is-cue-item]="action.isCueItem && ws.activeSetlistActionId < action.nbr">{{getSongNbr(action.nbr)}}. {{action.title}}</h1>
                         <!-- <div *ngIf="action.execution?.lights?.blackout" class="blackout-indicator">Blackout</div> -->
                     </div>
                     <div *ngIf="action.type=='speech'" class="speech">
