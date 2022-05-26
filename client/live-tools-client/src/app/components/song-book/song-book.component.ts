@@ -21,6 +21,9 @@ import { SongsService } from './songs.service';
 })
 
 export class SongBookComponent implements OnInit {
+  EST_SPEECH_DURATION = 60
+  EST_SONG_DURATION = 200
+
   availableColumns: string[] = ["title","artist", "lead_singer", "duration", "tags", "tempo", "key", "lyrics", "preview", "cue", "lights", "effects"];
   displayedColumns: string[] = ["title","lead_singer", "artist", "cue"];
   displayDefault:   string[] = ["title","lead_singer", "artist", "cue"];
@@ -141,14 +144,17 @@ export class SongBookComponent implements OnInit {
     console.log(this.isCueMode)
   }
 
-  onAddToCue(song: ISong){
+  onAddToCue(song: ISong) {
     this.cueList.push(song);
   }
 
-  onRemoveFromCue(song: ISong){
-    this.cueList.splice(this.cueList.indexOf(song));
+  onRemoveFromCue(song: ISong) {
+    let index = this.cueList.indexOf(song)
+    if (index == -1) { return }
+    console.log("Removing item " + index)
+    this.cueList.splice(index, 1);
   }
-  onRemoveFromCueByIndex(i: number){
+  onRemoveFromCueByIndex(i: number) {
     this.cueList.splice(i,1);
   }
 
@@ -161,12 +167,46 @@ export class SongBookComponent implements OnInit {
     });
   }
 
-  onRemoveSongFromCue(index: number):void {
-    this.cueList.splice(index);
-  }
 
   onAddSpeechToCue() {
     this.cueList.push({type: "speech", id: 1000})
+  }
+
+  getNbrOfSongsInCue(): number {
+    let nbr = 0
+    this.cueList.forEach((action) => {
+      if (action.artist) {
+        nbr += 1;
+      }
+    })
+    return nbr
+  }
+
+  getEstimatedCueTime(): string {
+    let totDuration: number = 0;
+    this.cueList.forEach((action) => {
+      if (action.duration) {
+        totDuration += action.duration;
+      } else if (action.type == "speech") {
+        totDuration += this.EST_SPEECH_DURATION
+      } else {
+        totDuration += this.EST_SONG_DURATION;
+      }
+    })
+    return this.formatDuration(totDuration)
+  }
+
+  existsInCuelist(song: ISong) {
+    if (this.cueList.length == 0) {
+      return false
+    }
+
+    let index = this.cueList.indexOf(song);
+    if (index == -1) {
+      return false
+    } else {
+      return true
+    }
   }
 
   formatDuration(seconds: number) {

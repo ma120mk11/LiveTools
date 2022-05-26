@@ -8,7 +8,7 @@
       <a mat-list-item [routerLink]="ws.isSetStarted()? '/engine/setlist':'/engine/songs'">Live</a>
       <!-- <a mat-list-item routerLink="/setlist/create">Setlist Creator</a> -->
       <!-- <a mat-list-item routerLink="/setlist/">Setlists</a> -->
-      <a mat-list-item routerLink="/songs">Song Book</a>
+      <!-- <a mat-list-item routerLink="/songs">Song Book</a> -->
       <!-- <a mat-list-item routerLink="/settings">Settings</a> -->
       <a mat-list-item routerLink="/devices">Devices</a>
       <!-- <a mat-list-item routerLink="/logs">Logs</a> -->
@@ -50,9 +50,10 @@
 
         <!-- When set is started -->
         <div *ngIf="ws.isSetStarted()" class="duration">{{runningSetDuration}}</div>
-        <span *ngIf="ws.isSetStarted() && ws.activeSetlistActionId != -2" class="center">
+
+        <span *ngIf="ws.isSetStarted() && ws.activeSetlistActionId != -2" class="center title">
           <b>{{ws.activeAction.title ? ws.activeAction.title : ""}}</b>
-          <i>{{ws.activeAction.title ? "" : ws.activeAction.type}}</i>
+          <i>{{ws.activeAction.title ? "" : ws.activeAction.type.toLocaleUpperCase()}}</i>
         </span>
         <!-- When set is not started -->
         <span *ngIf="!ws.isSetStarted() && ws.activeSetlistActionId != -2" class="center">

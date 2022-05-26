@@ -34,7 +34,8 @@ class Engine():
     async def start_osc(self):
         logger.info("Connecting all OSC devices...")
         await self.mixer.connect("192.168.1.2", 10024)
-        await self.lights.connect("192.168.1.6", 8887)
+        await self.lights.connect("192.168.1.5", 8887)
+        # await self.lights.connect("192.168.1.6", 8887)  # Wireless
         await self.recording.connect("192.168.1.122", 3819)
         await self.playback.connect("192.168.1.6", 3819)
 
@@ -386,7 +387,7 @@ class Engine():
             await manager.broadcast(self._current_action_id, "executing-action-nbr")
         
 
-    async def _reset_engine(self, persistent=True, notify_end_set=False) -> None:
+    async def _reset_engine(self, persistent=False, notify_end_set=False) -> None:
         """
         Resets engine state
         """

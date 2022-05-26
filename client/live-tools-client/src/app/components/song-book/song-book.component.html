@@ -13,12 +13,23 @@
         </button>
         <hr>
     </div>
+    
     <button mat-raised-button [color]="''" class="btn" (click)="onAddSpeechToCue()">
         Add speech
     </button>
     <button *ngIf="cueList.length > 0" mat-raised-button [color]="isCueMode?'primary':''" (click)="onExecuteCue()">
-        Add to setlist
+        <mat-icon>publish</mat-icon>
+        {{ws.isSetStarted()? "Insert after current song": "Create setlist"}}
     </button>
+
+    <div class="metadata">
+        <div>
+            Songs: {{getNbrOfSongsInCue()}}
+        </div>
+        <div>
+            Time: {{getEstimatedCueTime()}}
+        </div>
+    </div>
 </div>
 
 
@@ -50,6 +61,7 @@
     </button>
 
     <button mat-raised-button color="" class="right align-btn" (click)="onToggleExecutionView()">
+        <mat-icon>view_column</mat-icon>
         Toggle columns
     </button>
 
@@ -137,8 +149,11 @@
         <ng-container matColumnDef="cue">
             <mat-header-cell [ngClass]="'w-small'" *matHeaderCellDef>Cue</mat-header-cell>
             <mat-cell [ngClass]="'w-small'" mat-cell *matCellDef="let song">
-                <button mat-raised-button color="warn" class="right" (click)="onAddToCue(song)">
+                <button *ngIf="!existsInCuelist(song)" mat-raised-button color="warn" class="right" (click)="onAddToCue(song)">
                     <mat-icon>add</mat-icon>
+                </button>
+                <button *ngIf="existsInCuelist(song)" mat-raised-button color="secondary" class="right" (click)="onRemoveFromCue(song)">
+                    <mat-icon>remove</mat-icon>
                 </button>
                 <!-- <button *ngIf="ws.activeSetlistActionId == -2 && ws.activeAction.song_id == song.id" mat-raised-button color="warn" class="right" (click)="onRemoveFromCue(song)">
                     <mat-icon>stop_circle</mat-icon>

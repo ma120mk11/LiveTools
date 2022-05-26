@@ -47,6 +47,7 @@ export interface IAction {
   isCueItem?: boolean;
   tempo?: number;
   song_id?: number;
+  id?: number;
   duration? : number;
   execution: IExecution;
 }

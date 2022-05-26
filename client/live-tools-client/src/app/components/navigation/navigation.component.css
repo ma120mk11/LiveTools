@@ -33,7 +33,11 @@
   float:right;
 
 }
-
+.center.title b {
+  /* margin-top: -15px; */
+  /* top: 0px; */
+  font-size: 28px;
+}
 .next-event {
   float: right;
   margin: 0px;
@@ -43,9 +47,6 @@
   /* margin-left: auto; */
 }
 
-.center {
-  padding-right: 2em;
-}
 
 .song-title {
   margin-left: 1em;

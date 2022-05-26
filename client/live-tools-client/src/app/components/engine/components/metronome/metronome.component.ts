@@ -13,12 +13,14 @@ import { environment } from 'src/environments/environment';
 export class MetronomeComponent implements OnInit {
 
   BLINK_TIMEOUT_MS = 80;
+  AUTO_DISABLE_TIMEOUT = 10000;
 
   // For calculating performance
   startTime: any;
   endTime: any;
 
   timer: any;
+  disableTimeout: any;
   beatTimeout: any;
   currentBeatDuration: number;
   isEnabled = false;
@@ -45,6 +47,8 @@ export class MetronomeComponent implements OnInit {
 
   onActionChange():void {
     this.maxDriftMs = 0;
+    this.hasTempo = false // Default
+
     if (this.ws.activeSetlistActionId == -1) {
       // Disable
       this.isEnabled = false;
@@ -55,13 +59,21 @@ export class MetronomeComponent implements OnInit {
       console.log("No tempo provided for current song");
       this.orginalTempo = -1; // No tempo defined
       this.isEnabled = false;
+      this.currentBeat = 0;
       return;
     }
 
     if (this.ws.activeAction.tempo) {
       this.tempo = this.ws.activeAction.tempo;
       this.orginalTempo = this.tempo;
+      this.hasTempo = true;
       this.isEnabled = true;
+      this.onTempoChange();
+      this.disableTimeout = setTimeout(()=> {
+        this.isEnabled = false;
+        this.currentBeat = 0;
+      }, this.AUTO_DISABLE_TIMEOUT)
+
     } else {
       this.isEnabled = false;
     }
@@ -84,7 +96,8 @@ export class MetronomeComponent implements OnInit {
   }
 
   setTempoToSong(): void {
-    let songId = this.ws.activeAction.song_id;
+    let songId = this.ws.activeAction.id;
+    console.log("Song id: " + songId)
     if (!songId) { console.log("no song id provided"); return }
     let tempo = this.tempo;
     
@@ -102,21 +115,29 @@ export class MetronomeComponent implements OnInit {
     .pipe(takeUntil(this.unsubscribe))
     .subscribe({
       next: () => {
-        console.log("Change!")
-        console.log(this.ws.activeAction);
-        console.log(this.ws.activeSetlistActionId);
+        // console.log("Change!")
+        // console.log(this.ws.activeAction);
+        // console.log(this.ws.activeSetlistActionId);
         this.onActionChange();
       }
     })
 
     if (this.ws.activeAction?.tempo){
-      this.onTempoChange() 
+      console.log("Init, song has tempo")
+      this.isEnabled = true;
+      // this.onTempoChange();
+      this.disableTimeout = setTimeout(()=> {
+        this.isEnabled = false;
+        this.currentBeat = 0;
+      }, this.AUTO_DISABLE_TIMEOUT)
     }
+
     this.onTempoChange()
   }
   
   onTempoChange() {
     // clearInterval(this.timer);
+    console.log("Tempo change: " + this.tempo);
     clearInterval(this.timer);
     this.startTime = performance.now();
     this.timer = setInterval(() => this.onBeat(), this.getBeatDuration(this.tempo, this.beatsUpper, this.beatsLower))
@@ -162,10 +183,24 @@ export class MetronomeComponent implements OnInit {
   ngOnDestroy(): void {
     clearInterval(this.timer);
     clearInterval(this.beatTimeout);
+    clearInterval(this.disableTimeout);
   }
   
   clearIntervals(): void {    
 
+  }
+
+  toggleEnable(): void {
+    this.isEnabled = !this.isEnabled
+    this.currentBeat = 0;
+
+    if (this.isEnabled) {
+      clearTimeout(this.disableTimeout)
+      this.disableTimeout = setTimeout(()=> {
+        this.isEnabled = false;
+        this.currentBeat = 0;
+      }, this.AUTO_DISABLE_TIMEOUT)
+    }
   }
 
   getBeatDuration(tempo: number, top: number, bottom: number): number {
