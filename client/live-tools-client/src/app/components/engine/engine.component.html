@@ -5,19 +5,25 @@
     </div>
     
     
-    <div class="btn-container">
-        <button *ngIf="ws.isSetStarted()" mat-fab color="warn" (click)="nextEvent()">Next</button>
+    <div [class.hidden]="!buttonsVisibleInRoutes.includes(getRoute())" class="btn-container">
+        
+        <button *ngIf="ws.isSetStarted()" class="btn next-speech mat-elevation-z8" color="warn" (click)="insertSpeech()">Speech</button>
+        <button *ngIf="ws.isSetStarted()" class="btn next-action mat-elevation-z8" color="warn" (click)="nextEvent()">
+            {{ws.getNextAction()=='End set'?'End set':'Next'}}
+        </button>
+        <!-- <button *ngIf="ws.isSetStarted()" class="btn next-speech" color="warn" (click)="nextEvent()">Speech</button> -->
     </div>
 
     <mat-toolbar color="secondary" class="engine-action-bar">
         <div class="engine-nav-btn-container">
 
-            <button mat-button routerLink="/engine/setlist">Setlist</button>
-            <button mat-button routerLink="/engine/lyrics">Lyrics</button>
-            <button mat-button routerLink="/engine/metronome">Metronome</button>
-            <button mat-button routerLink="/engine/buttons">Control</button>
-            <button mat-button routerLink="/engine/status">Status</button>
-            <button mat-button routerLink="/engine/debug">Debug</button>
+            <button mat-flat-button [color]="getRoute()==='/engine/songs'?'primary':''" routerLink="/engine/songs">Songs</button>
+            <button mat-flat-button [color]="getRoute()==='/engine/setlist'?'primary':''" routerLink="/engine/setlist">Setlist</button>
+            <button mat-flat-button [color]="getRoute()==='/engine/lyrics'?'primary':''" routerLink="/engine/lyrics">Lyrics</button>
+            <button mat-flat-button [color]="getRoute()==='/engine/metronome'?'primary':''" routerLink="/engine/metronome">Metronome</button>
+            <button mat-button [color]="getRoute()==='/engine/buttons'?'primary':''" routerLink="/engine/buttons">Control</button>
+            <!-- <button mat-button routerLink="/engine/status">Status</button> -->
+            <!-- <button mat-button routerLink="/engine/debug">Debug</button> -->
 
             <!-- <mat-nav-list>
                 <a mat-list-item routerLink="/engine">Setlist</a>

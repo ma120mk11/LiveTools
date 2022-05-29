@@ -4,13 +4,16 @@
     padding: 20px
     background-color: #494747
     border-radius: 5px
-    max-width: 650px
+    max-width: 600px
     text-align: center
     margin-top: 20px
 
     .actions
         h1
             margin: 15px
+            &.is-cue-item
+                background-color: #11be5315
+                border-radius: 5px
         .current
             background-color: #746f6f
             padding: 10px
@@ -21,8 +24,9 @@
         .blackout-indicator
             color: black
             // right: 20px
-            float: right
+            // float: right
             display: block
+            position: absolute
             width: fit-content
             // margin: 0px
             margin-left: auto

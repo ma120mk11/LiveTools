@@ -33,7 +33,7 @@
                 Enable
             </mat-slide-toggle>
 
-            
+            Drift: {{maxDriftMs}} ms
         </div>
         
 
@@ -44,16 +44,21 @@
             [value]="tempo"
             >
         </mat-slider>
-        
-        <div class="dots">    
-            <div *ngFor="let beat of [].constructor(beatsUpper); let i = index">
-                <div class="dot" [ngClass]="i+1 == currentBeat ? 'active':'' "></div>
-            </div>
-        </div>
 
-        <span class="beat-indicator">
-            <h1>{{isEnabled? currentBeat:"-"}}</h1>
-        </span>
+        <span *ngIf="ws.activeAction && !hasTempo" class="no-tempo-indicator"><i>No tempo provided</i></span>
+
+        <div (click)="toggleEnable()">
+
+            <div class="dots">    
+                <div *ngFor="let beat of [].constructor(beatsUpper); let i = index">
+                    <div class="dot" [ngClass]="i+1 == currentBeat ? 'active':'' "></div>
+                </div>
+            </div>
+            
+            <span class="beat-indicator">
+                <h1>{{isEnabled && currentBeat > 0? currentBeat:"-"}}</h1>
+            </span>
+        </div>
 
     </div>
 </div>

@@ -1,5 +1,7 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { environment } from 'src/environments/environment';
 import { WebSocketService } from '../../services/web-socket/web-socket.service';
 
 @Component({
@@ -9,7 +11,9 @@ import { WebSocketService } from '../../services/web-socket/web-socket.service';
 })
 export class EngineComponent implements OnInit {
 
-  constructor(public ws: WebSocketService) {}
+  buttonsVisibleInRoutes: string[] = ['/engine','/engine/setlist', '/engine/lyrics', '/engine/metronome'];
+
+  constructor(public ws: WebSocketService, private router: Router, public http: HttpClient) {this.getRoute()}
 
 
   ngOnInit(): void {}
@@ -26,5 +30,13 @@ export class EngineComponent implements OnInit {
   }
   nextEvent() {
     this.ws.send("next-song")
+  }
+
+  insertSpeech() {
+    this.http.post(`${environment.apiEndpoint}/engine/set/insert-speech`, {}).subscribe();
+  }
+
+  getRoute(): string {
+    return window.location.pathname
   }
 }

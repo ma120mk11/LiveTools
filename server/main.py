@@ -123,14 +123,16 @@ def add_song(song: schemas.SongCreate, db: Session = Depends(get_db)):
 
 @app.get('/songs', response_model=List[schemas.Song], tags=["song-library"])
 def get_songs(
+    include_hidden: bool,
+    include_lyrics: bool = True,
     skip: int=0, 
     limit: int=100,
     sort_by: str= "",
     sort_order: str="", 
     db: Session = Depends(get_db)
     ):
-
-    songs = crud.get_songs(db,skip,limit, sort_by, sort_order)
+    logger.info("include hidden: " + str(include_hidden))
+    songs = crud.get_songs(db,skip,limit, sort_by, sort_order, include_hidden, include_lyrics=include_lyrics)
     return songs
 
 
@@ -211,6 +213,76 @@ def next_song():
     engine.next_event()
     return
 
+@app.post("/engine/set/insert-speech", status_code=status.HTTP_202_ACCEPTED, tags=["engine"])
+async def add_speech_next():
+    """Adds a speech as the next action, and executes it"""
+    speech = {
+        "type": "speech",
+        "duration": 5,
+        "execution": {
+            "lights": {
+                "cuelist": ["speaking"]
+            }
+        }
+    }
+    await engine.add_to_cue(actions=[speech])
+    return
+
+@app.post("/engine/set/prev", status_code=status.HTTP_202_ACCEPTED, tags=["engine"])
+async def prev_song():
+    await engine.prev_event()
+    return
+
+@app.post("/engine/reset", status_code=status.HTTP_202_ACCEPTED, tags=["engine"])
+async def reset_engine():
+    await engine._reset_engine(notify_end_set=True)
+    return
+
+
+
+@app.post("/engine/cue/add", status_code=status.HTTP_202_ACCEPTED, tags=["engine"])
+async def add_songs_by_id_to_cue(song_ids: List[int], db: Session = Depends(get_db)):
+    songs = []
+
+    for song_id in song_ids:
+
+        if song_id == 1000:
+            song = {
+                "type": "speech",
+                "duration": 5,
+                "execution": {
+                    "lights": {
+                        "cuelist": ["speaking"]
+                    }
+                }
+            }
+    
+        else:
+            song = jsonable_encoder(crud.get_song(db, song_id))
+            song['type'] = "song"
+            # TODO: Move to crud
+            if "lyrics" in song:
+                song.pop("lyrics")
+
+        songs.append(song)
+
+    await engine.add_to_cue(songs)
+
+    return
+
+
+
+# def get_song_dict(song_id: int, db: Session = Depends(get_db)):
+#     song = db.query(models.Song).filter(models.Song.id == song_id)
+
+#     if not song.first():
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"No song with id {id} found")
+    
+#     song_dict = jsonable_encoder(song.first())
+#     return song_dict
+
+
+
 @app.post("/engine/action/preview", status_code=status.HTTP_202_ACCEPTED, tags=["engine"])
 async def test_action(action: dict):
     await engine.preview_action(action)
@@ -273,10 +345,8 @@ async def device_config(id:int, request: schemas.OSCDeviceUpdate ):
     if request.enabled is not None:
         await device_mgr.set_enabled(id, request.enabled)
 
-# @app.get("/devices/test/{id}", tags=["devices"])
-# async def test_device_connection(id:int):
-#     is_connected = engine.recording.test_connection()
-#     return await is_connected
+
+
     
 @app.post('/songs/{id}/tempo',
         tags=["songs"],

@@ -46,7 +46,7 @@ class OSCLights(OSCBase):
         "died_in_your_arms": "/Mx/playback/page6/7/",
 
         "heavy_red": "/Mx/playback/page5/0/",
-        "speaking": "/Mx/playback/page1/1/",
+        "speaking": "/Mx/playback/page5/60/",
         "pause": "/Mx/playback/page1/3/",
         "slow_ballad": "/Mx/playback/page5/2/",
         "high_intensity": "/Mx/playback/page3/20/",

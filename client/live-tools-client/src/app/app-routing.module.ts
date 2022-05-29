@@ -16,10 +16,10 @@ import { SongBookComponent } from './components/song-book/song-book.component';
 const routes: Routes = [
   { path: 'engine', component: EngineComponent, 
   children:[
+    { path: 'songs', component: SongBookComponent },
     { path: 'lyrics', component: LyricsComponent },
     { path: 'setlist', component: SetlistComponent },
     { path: 'metronome', component: MetronomeComponent },
-    { path: 'debug', component: DebugComponent },
     { path: 'status', component: StatusComponent },
     { path: 'buttons', component: ButtonsComponent },
     { path: '**', component: SetlistComponent },
@@ -27,6 +27,7 @@ const routes: Routes = [
   { path: 'setlist/create', component: SetlistCreatorComponent },
   { path: 'devices', component: DevicesComponent },
   { path: 'songs', component: SongBookComponent },
+  { path: 'debug', component: DebugComponent },
   { path: 'logs', component: LogComponent },
   { path: '**', component: PageNotFoundComponent }
 ];

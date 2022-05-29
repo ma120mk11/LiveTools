@@ -1,5 +1,6 @@
 from datetime import datetime
 import json
+from sqlalchemy import null, or_
 from sqlalchemy.orm import Session
 import models, schemas
 from fastapi.encoders import jsonable_encoder
@@ -40,9 +41,19 @@ def update_user(db: Session, user_id: int):
 def get_song(db: Session, song_id: int):
     return transform_song(db.query(models.Song).filter(models.Song.id == song_id).first())
 
-def get_songs(db: Session, skip: int=0, limit: int=100, sort_by="", sort_order=""):
-    songs = db.query(models.Song).offset(skip).limit(limit).all()
+def get_songs(db: Session, skip: int=0, limit: int=100, sort_by="", sort_order="", include_hidden:bool=True, include_lyrics: bool = True):
+    if include_hidden:
+        songs = db.query(models.Song).offset(skip).limit(limit).all()
+    else:
+        print("Do not include hidden songs")
+        # songs = db.query(models.Song).filter(models.Song.hidden == None).offset(skip).limit(limit).all()
+        songs = db.query(models.Song).filter(or_(models.Song.hidden == None, models.Song.hidden == False)).offset(skip).limit(limit).all()
+
     for song in songs:
+        if not include_lyrics:
+            if song.lyrics:
+                song.lyrics = ""
+            
         song = transform_song(song)
     return songs
 
