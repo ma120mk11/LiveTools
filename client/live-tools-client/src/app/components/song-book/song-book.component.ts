@@ -51,7 +51,7 @@ export class SongBookComponent implements OnInit {
   }
 
   onRowClicked(row: any) {
-    console.log("Row clicked: " + row)
+    // console.log("Row clicked: " + row)
     // console.log(this.ws.activeAction)
   }
 
