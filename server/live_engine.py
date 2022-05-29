@@ -313,7 +313,7 @@ class Engine():
 
             await self.load_setlist(setlist)
 
-            await self.start_set()
+            # await self.start_set()
 
         await manager.broadcast(self._setlist, "load-set")
         await manager.broadcast(str(self._current_action_id), "executing-action-nbr")
