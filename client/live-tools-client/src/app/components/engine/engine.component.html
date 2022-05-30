@@ -7,8 +7,19 @@
     
     <div [class.hidden]="!buttonsVisibleInRoutes.includes(getRoute())" class="btn-container">
         
-        <button *ngIf="ws.isSetStarted()" class="btn next-speech mat-elevation-z8" color="warn" (click)="insertSpeech()">Speech</button>
-        <button *ngIf="ws.isSetStarted()" class="btn next-action mat-elevation-z8" color="warn" (click)="nextEvent()">
+        <button 
+            *ngIf="ws.isSetStarted()" class="btn next-speech mat-elevation-z8" color="warn" 
+            (click)="insertSpeech()"
+            [disabled]="isLoadingSpeech || ws.activeAction.type == 'speech' || ws.getNextActionType() === 'speech'"
+            [class.spinner]="isLoadingSpeech"
+            >Speech
+        </button>
+        <button 
+            *ngIf="ws.isSetStarted()" 
+            class="btn next-action mat-elevation-z8"
+            [class.spinner]="isLoadingNext" color="warn" 
+            [disabled]="isLoadingNext"
+            (click)="nextEvent()">
             {{ws.getNextAction()=='End set'?'End set':'Next'}}
         </button>
         <!-- <button *ngIf="ws.isSetStarted()" class="btn next-speech" color="warn" (click)="nextEvent()">Speech</button> -->

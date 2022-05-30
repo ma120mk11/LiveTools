@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
-import {webSocket, WebSocketSubject } from 'rxjs/webSocket'
+import { webSocket, WebSocketSubject } from 'rxjs/webSocket'
 import { of, Observable, Subject, Observer } from 'rxjs'
 import { MatDialog } from '@angular/material/dialog';
 import { WsDisconnectedModalComponent } from 'src/app/ws-disconnected-modal/ws-disconnected-modal.component';
 import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
-import { Time } from '@angular/common';
 
 // export const WS_ENDPOINT = "ws://localhost:8000/ws/"
 // export const WS_ENDPOINT = "ws://192.168.0.24:8000/ws/"
@@ -100,7 +99,7 @@ export class WebSocketService {
   // Used for notifying a change
   public event: Subject<any> = new Subject()
 
-  getMessages(){
+  getMessages(): IWsMsg[] {
     return this.messages
   }
 
@@ -114,14 +113,13 @@ export class WebSocketService {
 
           console.log("Loading set...")
           try {
-            this.setlist=msg_obj.data;
+            this.setlist = msg_obj.data;
             this.isLoaded = true;
             this.activeSetlistActionId = -1
             this.event.next(null);
             console.log(`Loaded set: ${this.setlist.name}`)
           } catch (error){
             console.error("Unable to load setlist");
-            
           }
           break;
 
@@ -256,6 +254,16 @@ export class WebSocketService {
     return actionName
   }
 
+  public getNextActionType(): string {
+    let type = ""
+    const id: number = (this.activeSetlistActionId)+1;
+
+    if (id > this.setlist.actions.length -1) { return "end-set"}
+
+    type = this.setlist.actions[id]?.type;
+
+    return type
+  }
 
   public startSet() {
     this.ws.send("start-set");
@@ -287,6 +295,7 @@ export class WebSocketService {
     }
     return browserName
   }
+
   private getRandomInt(min: number, max: number) {
     min = Math.ceil(min);
     max = Math.floor(max);
