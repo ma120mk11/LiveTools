@@ -292,6 +292,10 @@ async def release_preview():
     await engine.release_preview()
 
 
+@app.post("/engine/action/blackout", status_code=status.HTTP_202_ACCEPTED, tags=["engine", "lights"])
+async def blackout():
+    engine.lights.blackout()
+
 
 @app.get("/engine/lights/active", tags=["engine", "lights"])
 def get_active_cuelists():

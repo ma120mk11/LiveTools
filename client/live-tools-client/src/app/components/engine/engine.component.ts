@@ -16,7 +16,8 @@ export class EngineComponent implements OnInit {
 
   isLoadingNext: boolean = false;
   isLoadingSpeech: boolean = false;
-
+  isLoadingBlackout: boolean = false;
+  
   unsubscribe: Subject<boolean> = new Subject()
 
   constructor(public ws: WebSocketService, private router: Router, public http: HttpClient) {this.getRoute()}
@@ -54,6 +55,13 @@ export class EngineComponent implements OnInit {
     this.http.post(`${environment.apiEndpoint}/engine/set/insert-speech`, {}).subscribe(()=> {
       this.isLoadingSpeech = false;
     });
+  }
+
+  blackout() {
+    this.isLoadingBlackout = true;
+    this.http.post(`${environment.apiEndpoint}/engine/action/blackout`, {}).subscribe(()=> {
+      this.isLoadingBlackout = false;
+    })
   }
 
   ngOnDestroy(): void {

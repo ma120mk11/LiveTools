@@ -8,6 +8,13 @@
     <div [class.hidden]="!buttonsVisibleInRoutes.includes(getRoute())" class="btn-container">
         
         <button 
+            *ngIf="ws.isSetStarted()" class="btn blackout mat-elevation-z8" color="warn" 
+            (click)="blackout()"
+            [disabled]="ws.activeAction.type == 'speech'"
+            [class.spinner]="isLoadingBlackout"
+            >Blackout
+        </button>
+        <button 
             *ngIf="ws.isSetStarted()" class="btn next-speech mat-elevation-z8" color="warn" 
             (click)="insertSpeech()"
             [disabled]="isLoadingSpeech || ws.activeAction.type == 'speech' || ws.getNextActionType() === 'speech'"
