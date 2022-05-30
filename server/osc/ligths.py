@@ -26,6 +26,8 @@ class OSCLights(OSCBase):
         "BACK_PAR_R_B_FX": "/Mx/playback/page1/15/",
 
         "frontlights": "/Mx/playback/page5/50/",
+        "speaking": "/Mx/playback/page5/60/",
+        "blackout": "/Mx/playback/page5/70/",
         
         "generic_rock": "/Mx/playback/page5/1/",
         "red_rocker_1": "/Mx/playback/page5/3/",
@@ -46,7 +48,6 @@ class OSCLights(OSCBase):
         "died_in_your_arms": "/Mx/playback/page6/7/",
 
         "heavy_red": "/Mx/playback/page5/0/",
-        "speaking": "/Mx/playback/page5/60/",
         "pause": "/Mx/playback/page1/3/",
         "slow_ballad": "/Mx/playback/page5/2/",
         "high_intensity": "/Mx/playback/page3/20/",
@@ -63,6 +64,9 @@ class OSCLights(OSCBase):
         self._type = "Lighting console"
         super().__init__()
         logger.debug("Initializing Onyx")
+
+    def blackout(self):
+        self.start_cuelist(cuelist=['blackout'])
 
     def start_cuelist(self, cuelist:list=[], persistent=False):
         for cue in cuelist:
