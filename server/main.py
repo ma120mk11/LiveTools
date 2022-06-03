@@ -438,5 +438,14 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
         await manager.broadcast(f"Client {client_id} disconnected", "notification")
 
 
+@app.middleware("http")
+async def add_process_time_header(request: Request, call_next):
+    start_time = time.time()
+    response = await call_next(request)
+    process_time = time.time() - start_time
+    response.headers["X-Process-Time"] = str(process_time)
+    return response
+
+
 if __name__ == "__main__":
     uvicorn.run(app, host="192.168.34.249", port=8000)
