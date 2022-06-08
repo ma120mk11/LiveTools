@@ -3,3 +3,4 @@ uvicorn
 sqlalchemy
 websockets
 python-osc
+alembic
