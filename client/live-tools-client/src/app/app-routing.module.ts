@@ -12,6 +12,7 @@ import { LogComponent } from './components/log/log.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
 import { SetlistCreatorComponent } from './components/setlist-creator/setlist-creator.component';
 import { SongBookComponent } from './components/song-book/song-book.component';
+import { LightCommandsComponent } from './light-commands/light-commands.component';
 
 const routes: Routes = [
   { path: 'engine', component: EngineComponent, 
@@ -26,6 +27,7 @@ const routes: Routes = [
   ]},
   { path: 'setlist/create', component: SetlistCreatorComponent },
   { path: 'devices', component: DevicesComponent },
+  { path: 'light', component: LightCommandsComponent },
   { path: 'songs', component: SongBookComponent },
   { path: 'debug', component: DebugComponent },
   { path: 'logs', component: LogComponent },

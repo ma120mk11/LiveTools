@@ -14,6 +14,7 @@ pip3 install fastapi
 pip3 install uvicorn
 pip3 install websockets
 pip3 install python-osc
+pip3 install alembic
 
 pip3 install -r requirements.txt
 

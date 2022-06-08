@@ -1,0 +1,36 @@
+<h1>Edit {{data.id}}</h1>
+
+<form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="outline">
+        <mat-label>Name</mat-label>
+        <input matInput [value]="data.name" formControlName="name">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+        <mat-label>OSC</mat-label>
+        <input matInput [value]="data.osc_path" formControlName="osc_path">
+    </mat-form-field>
+
+    <!-- <mat-form-field appearance="outline">
+        <mat-label>Page</mat-label>
+        <input matInput type="number" [value]="getOnyxPage(data.osc_path)" formControlName="osc_path">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+        <mat-label>Number</mat-label>
+        <input matInput type="number" [value]="getOnyxNumber(data.osc_path)" formControlName="osc_path">
+    </mat-form-field> -->
+
+    <mat-form-field appearance="outline">
+        <mat-label>Type</mat-label>
+        <input matInput [value]="data.type" formControlName="type">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+        <mat-label>Category</mat-label>
+        <input matInput type="number" [value]="data.category" formControlName="category">
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" type="submit" mat-dialog-close>Save</button>
+
+</form>

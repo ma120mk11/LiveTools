@@ -55,6 +55,9 @@ import { SongExecutionEditorComponent } from './song-execution-editor/song-execu
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MetronomeComponent } from './components/engine/components/metronome/metronome.component';
+import { LightCommandsComponent } from './light-commands/light-commands.component';
+import { LightCommandEditorComponent } from './light-command-editor/light-command-editor.component';
+import { LightCommandCreatorComponent } from './light-command-creator/light-command-creator.component';
 
 @NgModule({
   declarations: [
@@ -78,7 +81,10 @@ import { MetronomeComponent } from './components/engine/components/metronome/met
     LyricsEditorComponent,
     StartPageComponent,
     SongExecutionEditorComponent,
-    MetronomeComponent
+    MetronomeComponent,
+    LightCommandsComponent,
+    LightCommandEditorComponent,
+    LightCommandCreatorComponent
   ],
   imports: [
     BrowserModule,

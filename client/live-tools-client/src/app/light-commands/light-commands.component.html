@@ -1,0 +1,30 @@
+
+<mat-table [dataSource]="lightCommands">
+
+    <ng-container matColumnDef="id">
+        <mat-header-cell *matHeaderCellDef>Id</mat-header-cell>
+        <mat-cell *matCellDef="let item">{{item.id}}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="name">
+        <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
+        <mat-cell *matCellDef="let item">{{item.name}}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="type">
+        <mat-header-cell *matHeaderCellDef>Type</mat-header-cell>
+        <mat-cell *matCellDef="let item">{{item.type}}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="osc">
+        <mat-header-cell *matHeaderCellDef>OSC</mat-header-cell>
+        <mat-cell *matCellDef="let item">{{item.osc_path}}</mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns; sticky:true"></mat-header-row>
+
+    <mat-row *matRowDef="let row; columns: displayedColumns" (click)="onEditLightCommand(row)">
+        
+    </mat-row>
+
+</mat-table>
