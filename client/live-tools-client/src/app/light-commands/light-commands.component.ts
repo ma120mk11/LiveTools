@@ -9,7 +9,8 @@ export interface ILightCommand {
 	name: string;
 	osc_path: string;
 	type?: string;
-	category?: number
+	category?: number;
+	description?: string;
 }
 
 @Component({

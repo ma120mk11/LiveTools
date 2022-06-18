@@ -11,7 +11,12 @@ import { ILightCommand } from '../light-commands/light-commands.component';
 	styleUrls: ['./light-command-editor.component.sass']
 })
 export class LightCommandEditorComponent implements OnInit {
+
+	public CUELIST_TYPES = ["COLOR", "CUELIST", "TIMECODE", "OVERRIDE"];
+
 	public formGroup: FormGroup;
+
+	public isLoading = false;
 
 	constructor(@Inject(MAT_DIALOG_DATA) public data: ILightCommand, private http: HttpClient) { 
 		this.formGroup = this.createFormGroup(data);
@@ -22,7 +27,8 @@ export class LightCommandEditorComponent implements OnInit {
 			name: new FormControl(data.name),
 			osc_path: new FormControl(data.osc_path),
 			type: new FormControl(data.type),
-			category: new FormControl(data.category)
+			category: new FormControl(data.category),
+			description: new FormControl(data.description)
 		})
 	}
 
@@ -54,7 +60,9 @@ export class LightCommandEditorComponent implements OnInit {
 			type: this.formGroup.controls['type'].value,
 			category: this.formGroup.controls['category'].value
 		};
-
-		this.http.put(`${environment.apiEndpoint}/lights/commands/${this.data.id}`, payload).subscribe()
+		this.isLoading = true;
+		this.http.put<ILightCommand>(`${environment.apiEndpoint}/lights/commands/${this.data.id}`, payload)
+		.subscribe(
+			(result) => { this.data = result; this.isLoading = false;})
 	}
 }

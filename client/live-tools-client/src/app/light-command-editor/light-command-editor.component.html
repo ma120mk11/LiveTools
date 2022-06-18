@@ -1,14 +1,17 @@
 <h1>Edit {{data.id}}</h1>
 
+<div class="form-container">
+
+
 <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
     <mat-form-field appearance="outline">
         <mat-label>Name</mat-label>
-        <input matInput [value]="data.name" formControlName="name">
+        <input matInput [value]="data.name" formControlName="name" required>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
         <mat-label>OSC</mat-label>
-        <input matInput [value]="data.osc_path" formControlName="osc_path">
+        <input matInput [value]="data.osc_path" formControlName="osc_path" required>
     </mat-form-field>
 
     <!-- <mat-form-field appearance="outline">
@@ -23,7 +26,11 @@
 
     <mat-form-field appearance="outline">
         <mat-label>Type</mat-label>
-        <input matInput [value]="data.type" formControlName="type">
+        <mat-select formControlName="type">
+            <mat-option *ngFor="let type of CUELIST_TYPES" [value]="type" >
+                {{type}}
+            </mat-option>
+        </mat-select>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
@@ -31,6 +38,12 @@
         <input matInput type="number" [value]="data.category" formControlName="category">
     </mat-form-field>
 
-    <button mat-raised-button color="primary" type="submit" mat-dialog-close>Save</button>
+    <mat-form-field appearance="outline">
+        <mat-label>Description</mat-label>
+        <textarea matInput [value]="data.description" formControlName="description"></textarea>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" type="submit" [class.spinner]="isLoading">Save</button>
 
 </form>
+</div>
