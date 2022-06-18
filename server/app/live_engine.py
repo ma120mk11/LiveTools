@@ -176,6 +176,9 @@ class Engine():
 
 
     async def next_event(self, event_initiator:str = ""):
+        if not self._setlist:
+            await manager.broadcast("No set loaded", "notification-warning")
+            return
         logger.info("Next event triggered by %s", event_initiator)
 
         # Check that engine is running
