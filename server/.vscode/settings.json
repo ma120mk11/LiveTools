@@ -5,7 +5,7 @@
             "driver": "SQLite",
             "name": "LiveToolsDB",
             "group": "live-tools",
-            "database": "${workspaceFolder:server}/.database.db"
+            "database": "${workspaceFolder:server}/database.db"
         }
     ],
     "sqltools.useNodeRuntime": true

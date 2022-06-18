@@ -5,6 +5,13 @@ from sqlalchemy import pool
 
 from alembic import context
 
+from app.db.base_class import Base  # noqa
+from app.models.light_cmd import LightCommand
+from app.models.user import User
+from app.models.song import Song
+from app.models.setlist import Setlist 
+from app.db.session import SQLALCHEMY_DATABASE_URL
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
@@ -18,7 +25,15 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = None
+# target_metadata = None
+
+
+
+target_metadata = Base.metadata
+
+
+def get_url():
+    return SQLALCHEMY_DATABASE_URL
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -38,7 +53,7 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = config.get_main_option("sqlalchemy.url")
+    url = get_url()
     context.configure(
         url=url,
         target_metadata=target_metadata,
