@@ -1,15 +1,9 @@
 import { Injectable } from '@angular/core';
-import { webSocket, WebSocketSubject } from 'rxjs/webSocket'
 import { of, Observable, Subject, Observer } from 'rxjs'
 import { MatDialog } from '@angular/material/dialog';
 import { WsDisconnectedModalComponent } from 'src/app/ws-disconnected-modal/ws-disconnected-modal.component';
 import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
-
-// export const WS_ENDPOINT = "ws://localhost:8000/ws/"
-// export const WS_ENDPOINT = "ws://192.168.0.24:8000/ws/"
-export const WS_ENDPOINT = "ws://192.168.43.249:8000/ws/"
-export const BACKED_URL = "192.168.0.249:8000"
 
 export interface IWsMsg {
   msg_type: string;
@@ -84,7 +78,7 @@ export class WebSocketService {
   https://developerslogblog.wordpress.com/2019/04/23/how-to-use-angular-services-to-share-data-between-components/
   */
 
-  id = "angular-" + this.browserDetect() + "-" +this.getRandomInt(0,99);
+  id = "angular-" + this.browserDetect() + "-" + this.getRandomInt(0,99);
   ws = new WebSocket(this.URL)
   
   public messages: IWsMsg[] = []
@@ -224,7 +218,7 @@ export class WebSocketService {
 
 
   get URL(): string {
-    return environment.wsEndpoint + this.Id
+    return environment.wsEndpoint + '/ws/' + this.Id
   }
 
   get Id(): string {
