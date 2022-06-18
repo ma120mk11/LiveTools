@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.get('/', response_model=List[Song])
+@router.get('', response_model=List[Song])
 def get_songs(
         include_hidden: bool = False,
         include_lyrics: bool = True,
