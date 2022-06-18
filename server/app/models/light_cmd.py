@@ -11,3 +11,5 @@ class LightCommand(Base):
     type = Column(String)
     auto_release_ms = Column(Integer)
     category = Column(Integer)
+    description = Column(String)
+    is_default = Column(Boolean, server_default='false', default=False)

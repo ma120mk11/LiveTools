@@ -1,7 +1,7 @@
 from pydantic import BaseModel, HttpUrl
 from datetime import datetime
-
 from typing import List, Optional, Sequence
+
 
 class LightCommandBase(BaseModel):
     name: str
@@ -9,6 +9,8 @@ class LightCommandBase(BaseModel):
     type: Optional[str]
     auto_release_ms: Optional[int]
     category: Optional[int]
+    description: Optional[str]
+    is_default: Optional[bool]
 
 class LightCommandCreate(LightCommandBase):
     pass
@@ -21,3 +23,10 @@ class LightCommand(LightCommandBase):
 
     class Config():
         orm_mode = True
+
+class SongIdentity(BaseModel):
+    id: int
+    name: str
+
+class LightCommandUsage(LightCommand):
+    used_in: List[SongIdentity]
