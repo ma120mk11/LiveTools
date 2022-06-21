@@ -19,7 +19,9 @@ router = APIRouter()
 
 actions = [
     {"name": "Next", "action_cat": "engine", "action_id": "next"},
-    {"name": "Blackout", "action_cat": "engine", "action_id": "blackout"},
+    {"name": "Blackout", "action_cat": "light_cmd", "action_id": "blackout"},
+    {"name": "Strobe", "action_cat": "light_cmd", "action_id": "strobe"},
+    {"name": "Blind", "action_cat": "light_cmd", "action_id": "blind"},
     {"name": "Add speech", "action_cat": "engine", "action_id": "speech-add"},
     {"name": "Speech", "action_cat": "engine", "action_id": "speech-next"},
     {"name": "Song btn 1", "action_cat": "song", "action_id": "btn-1"},
