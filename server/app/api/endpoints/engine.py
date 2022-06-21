@@ -77,17 +77,20 @@ def next_song():
 
 @router.post("/set/insert-speech", status_code=status.HTTP_202_ACCEPTED, tags=["engine"])
 async def add_speech_next():
-    """Adds a speech as the next action, and executes it"""
-    speech = {
-        "type": "speech",
-        "duration": 5,
-        "execution": {
-            "lights": {
-                "cuelist": ["speaking"]
-            }
-        }
-    }
-    await engine.add_to_cue(actions=[speech])
+    """
+    Adds a speech as the next action
+    """
+    # speech = {
+    #     "type": "speech",
+    #     "duration": 5,
+    #     "execution": {
+    #         "lights": {
+    #             "cuelist": ["speaking"]
+    #         }
+    #     }
+    # }
+    # await engine.add_to_cue(actions=[speech])
+    await engine.add_speech_to_cue()
     return
 
 @router.post("/set/prev", status_code=status.HTTP_202_ACCEPTED, tags=["engine"])

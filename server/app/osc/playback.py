@@ -28,7 +28,7 @@ class OSCPlayback(ArdourOSC):
 
     async def stop(self, force_send=True):
         if self._is_playing or force_send:
-            logger.debug("Stopping Ardour playback")
+            logger.debug("Stopping audio playback")
             self.send_osc_msg(self._stop)
 
             # TODO: Fix ugly workaround for ardour bug

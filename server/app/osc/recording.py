@@ -22,12 +22,12 @@ class OSCRecoding(ArdourOSC):
 
 
     def create_marker(self):
-        logger.debug("Creating marker in Ardour")
+        logger.debug("Creating marker in Ardour recording")
         self.send_osc_msg(self._add_marker)
 
 
     async def record(self) -> bool:
-        logger.debug("Starting recording via OSC")
+        logger.debug("Starting Ardour recording")
         self.send_osc_msg(self._toggle_record_enable)
         self.send_osc_msg(self._play)
 
@@ -35,7 +35,7 @@ class OSCRecoding(ArdourOSC):
 
 
     async def stop_recording(self) -> bool:
-        logger.debug("Stopping recording")
+        logger.debug("Stopping Ardour recording")
         self.status = self._STOPPED
         self.send_osc_msg(self._stop)
         self.send_osc_msg(self._toggle_record_enable)

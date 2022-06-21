@@ -320,6 +320,24 @@ class Engine():
         await manager.broadcast(self._setlist, "load-set")
         await manager.broadcast(str(self._current_action_id), "executing-action-nbr")
 
+
+    async def add_speech_to_cue(self) -> None:
+        """Adds a speech as the next action"""
+        if not self._setlist or self._current_action_id == -1:
+            await manager.broadcast("Set is not loaded, or not started", "notification-warning")
+            return
+        
+        speech = {
+            "type": "speech",
+            "duration": 5,
+            "execution": {
+                "lights": {
+                    "cuelist": ["speaking"]
+                }
+            }
+        }
+        await self.add_to_cue(actions=[speech])
+
     async def add_action_next(self, actions: List[dict]):
         """
         Adds action to song cue

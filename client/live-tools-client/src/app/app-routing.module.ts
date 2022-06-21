@@ -12,6 +12,7 @@ import { LogComponent } from './components/log/log.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
 import { SetlistCreatorComponent } from './components/setlist-creator/setlist-creator.component';
 import { SongBookComponent } from './components/song-book/song-book.component';
+import { FootswitchComponent } from './footswitch/footswitch.component';
 import { LightCommandsComponent } from './light-commands/light-commands.component';
 
 const routes: Routes = [
@@ -30,6 +31,8 @@ const routes: Routes = [
   { path: 'light', component: LightCommandsComponent },
   { path: 'songs', component: SongBookComponent },
   { path: 'debug', component: DebugComponent },
+  { path: 'footswitch/:fs_id', component: FootswitchComponent },
+  { path: 'footswitch', component: FootswitchComponent },
   { path: 'logs', component: LogComponent },
   { path: '**', component: PageNotFoundComponent }
 ];
