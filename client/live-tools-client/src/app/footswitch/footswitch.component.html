@@ -1,0 +1,46 @@
+<div class="container">
+
+    <mat-form-field appearance="outline" class="select">
+        <mat-label>Select footswitch</mat-label>
+        <mat-select [(value)]="selected" (selectionChange)="onFsChangeRequest($event)">
+            <mat-option *ngFor="let fs of fsArray" [value]="fs">{{fs.name}} </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+</div>
+
+<div class="container">
+    <div class="footswitch" *ngIf="fs?.id">
+        <mat-slide-toggle class="edit-toggle" [(ngModel)]="isEditMode" >Edit</mat-slide-toggle>
+        <div *ngIf="!isEditMode">
+
+            <h1 class="fs-name">{{fs.name}}</h1>
+            <div class="btn-container">
+                <div  *ngFor="let button of fs.buttons" class="button" 
+                (mousedown)="onBtnPress(button)"
+                (mouseup)="onBtnRelease(button)"
+                >
+                    {{button.name}}
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="isEditMode">
+            <mat-form-field appearance="outline">
+                <mat-label>Footswitch name</mat-label>
+                <input matInput type="text">
+            </mat-form-field>
+            <!-- <h1 class="fs-name">{{fs.name}}</h1> -->
+            <div class="btn-container">
+                <div  *ngFor="let button of fs.buttons" class="button btn-edit" 
+                (click)="onButtonEdit(button)"
+                >
+                    <mat-icon class="icon">edit</mat-icon>
+                    {{button.name}}
+                </div>
+
+                <button mat-fab color="primary" class="add-btn" (click)="onAddButton()">Add</button>
+            </div>
+        </div>
+    </div>
+</div>

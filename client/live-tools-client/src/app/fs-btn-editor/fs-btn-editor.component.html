@@ -1,0 +1,42 @@
+
+<h1>Edit button (id: {{data.id}})</h1>
+
+<div class="container">
+
+    <mat-form-field appearance="outline">
+        <mat-label>Display name</mat-label>
+        <input matInput type="text" [(ngModel)]="data.name">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+        <mat-label>Button type</mat-label>
+        <mat-select [(value)]="data.type">
+            <mat-option *ngFor="let type of btnTypes" [value]="type">{{type}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-divider></mat-divider>
+
+    <mat-form-field appearance="outline">
+        <mat-label>Action</mat-label>
+        <mat-select (selectionChange)="onActionChange()" [(value)]="selectedAction">
+            <mat-option *ngFor="let action of actions" [value]="action">
+                {{action.action_cat | titlecase}} - {{action.name}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-divider></mat-divider>
+
+    <button mat-raised-button 
+        color="secondary" class="btn" 
+        mat-dialog-close="cancel"
+        >Cancel
+    </button>
+    
+    <button mat-raised-button 
+        color="primary" class="btn"
+        (click)="onSave()"
+        >Save
+    </button>
+    
+</div>

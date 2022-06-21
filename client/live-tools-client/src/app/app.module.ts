@@ -58,6 +58,8 @@ import { MetronomeComponent } from './components/engine/components/metronome/met
 import { LightCommandsComponent } from './light-commands/light-commands.component';
 import { LightCommandEditorComponent } from './light-command-editor/light-command-editor.component';
 import { LightCommandCreatorComponent } from './light-command-creator/light-command-creator.component';
+import { FootswitchComponent } from './footswitch/footswitch.component';
+import { FsBtnEditorComponent } from './fs-btn-editor/fs-btn-editor.component';
 
 @NgModule({
   declarations: [
@@ -84,7 +86,9 @@ import { LightCommandCreatorComponent } from './light-command-creator/light-comm
     MetronomeComponent,
     LightCommandsComponent,
     LightCommandEditorComponent,
-    LightCommandCreatorComponent
+    LightCommandCreatorComponent,
+    FootswitchComponent,
+    FsBtnEditorComponent
   ],
   imports: [
     BrowserModule,

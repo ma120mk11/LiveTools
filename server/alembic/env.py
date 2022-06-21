@@ -10,6 +10,9 @@ from app.models.light_cmd import LightCommand
 from app.models.user import User
 from app.models.song import Song
 from app.models.setlist import Setlist 
+from app.models.footswitch import Footswitch
+from app.models.footswitch import Button
+
 from app.db.session import SQLALCHEMY_DATABASE_URL
 
 # this is the Alembic Config object, which provides
@@ -59,6 +62,7 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        render_as_batch=True,
     )
 
     with context.begin_transaction():

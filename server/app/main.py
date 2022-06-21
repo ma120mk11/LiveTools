@@ -1,6 +1,6 @@
 import time
 from fastapi import FastAPI, Request
-from app.api.endpoints import devices, lights, songs, engine, websocket
+from app.api.endpoints import devices, footswitch, lights, songs, engine, websocket
 import logging
 from fastapi.middleware.cors import CORSMiddleware
 import app.api.endpoints
@@ -35,12 +35,17 @@ async def add_process_time_header(request: Request, call_next):
     response.headers["X-Process-Time"] = str(process_time)
     return response
 
+@app.on_event("startup")
+def on_startup():
+    ...
+
 
 app.include_router(lights.router, prefix="/lights", tags=["lights"])
 app.include_router(songs.router, prefix="/songs", tags=["song-book"])
 app.include_router(devices.router, prefix="/devices", tags=["devices"])
 app.include_router(engine.router, prefix="/engine", tags=["engine"])
 app.include_router(websocket.router, tags=["websocket"])
+app.include_router(footswitch.router, prefix="/footswitch", tags=["footswitch"])
 
 
 if __name__ == "__main__":
