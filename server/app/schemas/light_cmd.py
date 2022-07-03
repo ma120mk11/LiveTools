@@ -2,7 +2,11 @@ from pydantic import BaseModel, HttpUrl
 from datetime import datetime
 from typing import List, Optional, Sequence
 
-
+class LightCommandShort(BaseModel):
+    id: int
+    name: str
+    # class Config():
+        # orm_mode = True
 class LightCommandBase(BaseModel):
     name: str
     osc_path: str

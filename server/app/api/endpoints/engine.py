@@ -43,7 +43,7 @@ async def preview_song_by_id(song_id: int, db: Session = Depends(dependencies.ge
     song_dict['song_id'] = song_dict['id']
     song_dict.pop("id")
 
-    await engine.preview_action(song_dict)
+    await engine.preview_action(song_dict, db=db)
 
 
 #////////////////////////////////////////////////////////////////
@@ -65,14 +65,14 @@ async def load_set(set_to_load: dict):
 
 
 @router.post("/set/start", status_code=status.HTTP_202_ACCEPTED, tags=["engine"])
-def start_set():
+async def start_set(db: Session = Depends(dependencies.get_db)):
     if engine.get_status() != "is_running":
-        engine.start_set()
+        await engine.start_set(db=db)
     return
 
 @router.post("/set/next", status_code=status.HTTP_202_ACCEPTED, tags=["engine"])
-def next_song():
-    engine.next_event()
+def next_song(db: Session = Depends(dependencies.get_db)):
+    engine.next_event(db=db)
     return
 
 @router.post("/set/insert-speech", status_code=status.HTTP_202_ACCEPTED, tags=["engine"])
@@ -139,17 +139,17 @@ async def add_songs_by_id_to_cue(song_ids: List[int], db: Session = Depends(get_
 
 
 @router.post("/action/preview", status_code=status.HTTP_202_ACCEPTED, tags=["engine"])
-async def test_action(action: dict):
-    await engine.preview_action(action)
+async def test_action(action: dict, db: Session = Depends(dependencies.get_db)):
+    await engine.preview_action(action, db=db)
 
 @router.post("/action/preview/release", status_code=status.HTTP_202_ACCEPTED, tags=["engine"])
-async def release_preview():
-    await engine.release_preview()
+async def release_preview(db: Session = Depends(get_db)):
+    await engine.release_preview(db=db)
 
 
 @router.post("/action/blackout", status_code=status.HTTP_202_ACCEPTED, tags=["engine", "lights"])
-async def blackout():
-    engine.lights.blackout()
+async def blackout(db: Session = Depends(dependencies.get_db)):
+    engine.lights.blackout(db=db)
 
 
 @router.get("/lights/active", tags=["engine", "lights"])

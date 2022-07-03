@@ -2,6 +2,7 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from fastapi.encoders import jsonable_encoder
 from fastapi import APIRouter, Depends
+from app.db.session import SessionLocal
 from app.websocket.connection_manager import manager
 from app.live_engine import engine, Engine
 from app.device_manager import DeviceManager, device_mgr
@@ -21,18 +22,25 @@ async def websocket_endpoint(
         await manager.send_personal_message(websocket, jsonable_encoder(device_mgr.get_status()), "device-state")
         
         while True:
+
             data = await websocket.receive_text()
-            if data == "next-song":
-                await engine.next_event(client_id)
-            elif data == "start-set":
-                await engine.start_set()
-                await manager.broadcast(f"engine:{engine.get_status()}")
-            elif data.startswith("song-btn-press:"):
-                btn_id = int(data.replace("song-btn-press:", ""))
-                engine.action_btn_pressed(btn_id, client_id)
+            try:
+                db = SessionLocal()
+
+                if data == "next-song":
+                    await engine.next_event(event_initiator=client_id, db=db)
+                elif data == "start-set":
+                    await engine.start_set(db=db)
+                    await manager.broadcast(f"engine:{engine.get_status()}")
+                elif data.startswith("song-btn-press:"):
+                    btn_id = int(data.replace("song-btn-press:", ""))
+                    engine.action_btn_pressed(btn_id, client_id)
             
-            else:
-                await manager.send_personal_message(f"unsupported command: {data}", "error", websocket)
+                else:
+                    await manager.send_personal_message(f"unsupported command: {data}", "error", websocket)
+            
+            finally:
+                db.close()
 
     except WebSocketDisconnect:
         manager.disconnect(websocket)

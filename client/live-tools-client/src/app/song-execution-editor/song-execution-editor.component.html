@@ -49,8 +49,9 @@
                 name="cuelist"
                 multiple
             >
-                <mat-option *ngFor="let cue of cuelistArray" [value]="cue">
-                    {{cue}}
+                <mat-option *ngFor="let cue of cuelistArray" [value]="cue.id">
+                    {{cue.name}}
+                    <mat-chip *ngIf="cue.type" color="accent" selected style="float:right;top:5px;">{{cue.type}}</mat-chip>
                 </mat-option>
             </mat-select>
         </mat-form-field>

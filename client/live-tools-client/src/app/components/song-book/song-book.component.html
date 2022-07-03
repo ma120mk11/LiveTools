@@ -171,8 +171,9 @@
             <mat-cell mat-cell *matCellDef="let song">
                 <mat-chip-list aria-label="Cuelists">
                     <mat-chip *ngFor="let cue of song.execution.lights.cuelist" color="primary" (click)="onEditExecutionProperties(song, 'lights')">
-                        {{cue}}
+                        {{cue.name}}
                     </mat-chip>
+                    <mat-chip *ngIf="!song.execution.lights.cuelist">+</mat-chip>
                 </mat-chip-list>
             </mat-cell>
         </ng-container>
@@ -186,6 +187,7 @@
                         <mat-chip *ngIf="song.execution.audio.fx2.enabled" color="primary" (click)="onEditExecutionProperties(song, 'audio')">Plate</mat-chip>
                         <mat-chip *ngIf="song.execution.audio.fx3.enabled" color="primary" (click)="onEditExecutionProperties(song, 'audio')">Slap</mat-chip>
                         <mat-chip *ngIf="song.execution.audio.fx4.enabled" color="primary" (click)="onEditExecutionProperties(song, 'audio')">DLY</mat-chip>
+                        <mat-chip *ngIf="!song.execution.audio.fx1.enabled && !song.execution.audio.fx2.enabled && !song.execution.audio.fx3.enabled && !song.execution.audio.fx4.enabled">+</mat-chip>
                     </mat-chip-list>
                 </div>
             </mat-cell>

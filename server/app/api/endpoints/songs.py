@@ -4,7 +4,7 @@ from fastapi import APIRouter, Body, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.crud import crud_song as crud
 from app.models.song import Song as SongModel
-from app.schemas.song import Song, SongCreate, Execution
+from app.schemas.song import ExecutionUpdate, Song, SongCreate, Execution
 from app import dependencies
 
 logger = logging.getLogger(__name__)
@@ -91,8 +91,8 @@ def update_lyrics(id: int, lyrics: str = Body(...), db: Session = Depends(depend
 
 
 @router.post('/{song_id}/execution', status_code=status.HTTP_202_ACCEPTED)
-def update_song_execution(song_id: int, execution: Execution, db: Session = Depends(dependencies.get_db)):
-    song = crud.song.update_song_execution(id=song_id, execution_in=execution,db=db)
+def update_song_execution(song_id: int, execution: ExecutionUpdate, db: Session = Depends(dependencies.get_db)):
+    song = crud.song.update_song_execution(id=song_id, execution_in=execution, db=db)
 
-    return
+    return song
 

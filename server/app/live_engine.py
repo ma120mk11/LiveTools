@@ -1,11 +1,14 @@
 import logging
-from typing import List
+from typing import List, Union
 from datetime import datetime
 from app.osc.mixer import OSCMixer
 from app.osc.ligths import OSCLights
 from app.osc.playback import OSCPlayback
 from app.osc.recording import OSCRecoding
 from app.websocket.connection_manager import manager
+
+from sqlalchemy.orm import Session
+
 
 logger = logging.getLogger(__name__)
 
@@ -87,7 +90,7 @@ class Engine():
         logger.info("Loaded set with %i actions", count+1)
 
 
-    async def start_set(self):
+    async def start_set(self, db: Session):
         """Starts the loaded set"""
         # No set loaded
         if not self._setlist:
@@ -106,11 +109,11 @@ class Engine():
         await self.recording.record()
 
         # Set frontlights and leave them on for rest of the set
-        self.lights.start_cuelist(["frontlights"], persistent=True)
+        self.lights.start_cuelist(cuelist=["frontlights"], persistent=True, db=db)
 
         await manager.broadcast(str(self._set_info['started_on']), "set-started")
         # Automatically start action 0
-        await self.next_event("engine")
+        await self.next_event(db=db, event_initiator="engine")
 
 
     async def end_set(self) -> None:
@@ -127,7 +130,7 @@ class Engine():
         await self._reset_engine()
 
 
-    async def _execute_action(self, action:dict, preview=False):
+    async def _execute_action(self, db: Session, action:dict, preview=False):
         logger.debug(action)
         self._current_action = action
         await self.playback.stop()    # Stop playback if active
@@ -139,14 +142,15 @@ class Engine():
         else:
             await manager.broadcast(str(self._current_action_id), "executing-action-nbr")
 
-        cuelist: list(str) = []
+        # String will be depricated, using light_cmd in the future
+        cuelist: list(Union[str, int]) = []
         try:
             cuelist = action['execution']['lights']['cuelist']
             if cuelist == None:
                 cuelist = [""]
         except Exception:
             logger.error("Action doesn't contain a cuelist")
-        
+
         if action['type'] == "song": 
             if not preview:
                 #Create marker to easily identify where songs start
@@ -167,15 +171,19 @@ class Engine():
             self.mixer.set_fx_mutes(action["execution"]['audio'])
 
         # Only release and start if cuelist differs from currently active
-        if set(self.lights.get_active()) != set(cuelist):
-            self.lights.release_active_cuelists()
-            self.lights.start_cuelist(cuelist)
+        # TODO: Move logic to light class
+        # if set(self.lights.get_active()) != set(cuelist):
+        #     self.lights.release_active_cuelists()
+        #     self.lights.start_cuelist(cuelist=cuelist, db=db)
+
+        self.lights.release_active_cuelists()
+        self.lights.start_cuelist(cuelist=cuelist, db=db)
 
         return
 
 
 
-    async def next_event(self, event_initiator:str = ""):
+    async def next_event(self, db: Session, event_initiator:str = ""):
         if not self._setlist:
             await manager.broadcast("No set loaded", "notification-warning")
             return
@@ -197,13 +205,13 @@ class Engine():
 
         action = self._setlist['actions'][self._current_action_id]
         
-        await self._execute_action(action, preview=False)
+        await self._execute_action(db=db, action=action, preview=False)
 
 
         return
 
 
-    async def prev_event(self, event_initiator:str = ""):
+    async def prev_event(self, db: Session, event_initiator:str = ""):
         logger.debug("Previous song triggered : %s", event_initiator)
         
 
@@ -226,7 +234,7 @@ class Engine():
 
         action = self._setlist['actions'][self._current_action_id]
         
-        await self._execute_action(action, preview=False)
+        await self._execute_action(db=db, action=action, preview=False)
 
         return
 
@@ -266,7 +274,7 @@ class Engine():
                 search_id = search_id + 1
 
 
-    async def preview_action(self, action: dict):
+    async def preview_action(self, action: dict, db: Session):
         """
         Overrides current engine state
         """
@@ -276,9 +284,10 @@ class Engine():
         self._state_savepoint = self.get_engine_state()
 
         # Set frontlights
-        self.lights.start_cuelist(["frontlights"], persistent=True)
+        # TODO: Get frontlights from DB
+        self.lights.start_cuelist(db=db, cuelist=["frontlights"], persistent=True)
 
-        await self._execute_action(action, preview=True)
+        await self._execute_action(action=action, preview=True, db=db)
 
 
     async def add_to_cue(self, actions: List[dict]):
@@ -389,7 +398,7 @@ class Engine():
 
 
 
-    async def release_preview(self):
+    async def release_preview(self, db: Session):
         """
         Releses current preview (if any)
         Sets engine state to the state before priview was initiated (if any)
@@ -405,7 +414,7 @@ class Engine():
         #Started set
         if self._current_action_id > -1:
             self._status = "set_running"
-            await self.next_event("Preview release")
+            await self.next_event("Preview release", db=db)
         #Set loaded, but not started
         elif self._setlist:
             await manager.broadcast(self._current_action_id, "executing-action-nbr")

@@ -6,6 +6,7 @@ import { AngularEditorConfig } from '@kolkov/angular-editor';
 import { environment } from 'src/environments/environment';
 import { ISong } from '../components/song-book/song';
 import { SongsService } from '../components/song-book/songs.service';
+import { ILightCommand } from '../light-commands/light-commands.component';
 
 interface ICuelist {
   name: string,
@@ -23,8 +24,8 @@ export class SongExecutionEditorComponent implements OnInit {
   
   public formGroup: FormGroup
   song: ISong;
-  cuelists: ICuelist[] = []
-  cuelistArray: string[] = []
+  cuelists: ILightCommand[] = []
+  cuelistArray: ILightCommand[] = []
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: {song: ISong, view: string}, private http: HttpClient, formBuilder: FormBuilder) {
     this.song = {...data.song}
@@ -33,12 +34,9 @@ export class SongExecutionEditorComponent implements OnInit {
   ngOnInit(): void {}
 
   fetchCuelists() {
-    this.http.get<{[key: string]: string}>(`${environment.apiEndpoint}/engine/lights/cuelists`)
+    this.http.get<ILightCommand[]>(`${environment.apiEndpoint}/lights/commands`)
     .subscribe((result) => {
-      Object.entries(result).map((cue) => {
-        this.cuelistArray.push(cue[0])
-      })
-
+      this.cuelistArray = result;
       console.log(this.cuelistArray)
     })
   }

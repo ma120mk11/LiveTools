@@ -1,7 +1,8 @@
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel
 from datetime import datetime
+from app.schemas.light_cmd import LightCommandShort
+from typing import List, Optional, Union
 
-from typing import List, Optional, Sequence
 
 class FXModel(BaseModel):
     enabled: Optional[bool]
@@ -16,15 +17,31 @@ class AudioExecution(BaseModel):
 class PlaybackExecution(BaseModel):
     marker_name: Optional[str]
 
-class LightExecution(BaseModel):
+class LightExecutionBase(BaseModel):
     blackout: Optional[bool]
-    cuelist: Optional[List[str]]
 
-class Execution(BaseModel):
+class LightExecution(LightExecutionBase):
+    blackout: Optional[bool]
+    cuelist: Optional[List[Union[LightCommandShort, str]]]
+
+class LightExecutionUpdate(BaseModel):
+    cuelist: Optional[List[int]]
+
+class ExecutionBase(BaseModel):
     playback: PlaybackExecution
     lights: LightExecution
     audio: AudioExecution
 
+
+class ExecutionCreate(ExecutionBase):
+    ...
+class ExecutionUpdate(ExecutionBase):
+    playback: PlaybackExecution
+    lights: LightExecutionUpdate
+    audio: AudioExecution
+
+class Execution(ExecutionBase):
+    ...
 
 
 class SongBase(BaseModel):
