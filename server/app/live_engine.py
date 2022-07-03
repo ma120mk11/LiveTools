@@ -326,7 +326,16 @@ class Engine():
         if not self._setlist or self._current_action_id == -1:
             await manager.broadcast("Set is not loaded, or not started", "notification-warning")
             return
-        
+        # Do not add if current or next is speech
+        if self._current_action['type'] == "speech":
+            logger.debug("Current action is speech, ignoring")
+            return
+        # Avoid index out of range
+        if len(self._setlist['actions']) <= self._current_action_id:
+            if self._setlist['actions'][self._current_action_id + 1] == "speech":
+                logger.debug("Next action is speech, ignoring")
+                return
+
         speech = {
             "type": "speech",
             "duration": 5,
