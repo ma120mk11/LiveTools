@@ -79,7 +79,11 @@
         
         <ng-container matColumnDef="title">
             <mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by title">Title</mat-header-cell>
-            <mat-cell *matCellDef="let song">{{song.title}}</mat-cell>
+            <mat-cell *matCellDef="let song">{{song.title}} 
+                <mat-chip-list>
+                    <mat-chip *ngIf="song.playback">P</mat-chip>
+                </mat-chip-list>
+            </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="artist">
