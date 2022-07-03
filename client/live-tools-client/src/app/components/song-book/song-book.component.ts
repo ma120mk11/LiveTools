@@ -74,7 +74,7 @@ export class SongBookComponent implements OnInit {
 
   onPreview(song: ISong) {
     console.log("Preview song: " + song.title)
-    this.http.post(`${environment.apiEndpoint}/songs/${song.id}/preview`, {})
+    this.http.post(`${environment.apiEndpoint}/engine/songs/${song.id}/preview`, {})
     .subscribe()
   }
   
