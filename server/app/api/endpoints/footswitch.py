@@ -188,3 +188,13 @@ def _get_default_btn_conf()-> Button:
     btn['has_led'] = False
     return btn
 
+
+@router.post("/btn-change")
+async def btn_change(request: ButtonChange, db: Session = Depends(dependencies.get_db)):
+    if request.state == 1:
+        await execute(
+            data=request,
+            db=db,
+            fs_id=request.fs_id,
+            btn_id=request.btn_id
+        )
