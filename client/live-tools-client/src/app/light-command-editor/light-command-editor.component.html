@@ -1,9 +1,8 @@
-<h1>Edit {{data.id}}</h1>
+<h1>Edit Light Command</h1>
 
 <div class="form-container">
 
-
-<form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+<form [formGroup]="formGroup">
     <mat-form-field appearance="outline">
         <mat-label>Name</mat-label>
         <input matInput [value]="data.name" formControlName="name" required>
@@ -14,15 +13,16 @@
         <input matInput [value]="data.osc_path" formControlName="osc_path" required>
     </mat-form-field>
 
-    <!-- <mat-form-field appearance="outline">
+    <h4>Onyx</h4>
+    <mat-form-field appearance="outline" class="left">
         <mat-label>Page</mat-label>
-        <input matInput type="number" [value]="getOnyxPage(data.osc_path)" formControlName="osc_path">
+        <input matInput type="number" [value]="getOnyxPage(data.osc_path)" formControlName="onyxPage">
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
+    <mat-form-field appearance="outline" class="right">
         <mat-label>Number</mat-label>
-        <input matInput type="number" [value]="getOnyxNumber(data.osc_path)" formControlName="osc_path">
-    </mat-form-field> -->
+        <input matInput type="number" [value]="getOnyxNumber(data.osc_path)" formControlName="onyxNumber">
+    </mat-form-field>
 
     <mat-form-field appearance="outline">
         <mat-label>Type</mat-label>
@@ -43,7 +43,11 @@
         <textarea matInput [value]="data.description" formControlName="description"></textarea>
     </mat-form-field>
 
-    <button mat-raised-button color="primary" type="submit" [class.spinner]="isLoading">Save</button>
+    <div mat-dialog-actions>
+        <button mat-raised-button color="primary" (click)="onSave()" [class.spinner]="isLoading">Save</button>
+        <button mat-raised-button color="secondary" (click)="testOsc('go')" [class.spinner]="isTestingGo">Test Go</button>
+        <button mat-raised-button color="secondary" (click)="testOsc('release')" [class.spinner]="isTestingRelease">Test Release</button>
+    </div>
 
 </form>
 </div>

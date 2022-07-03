@@ -1,10 +1,11 @@
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app import crud
 from app.schemas.light_cmd import LightCommand, LightCommandCreate, LightCommandUpdate
 from app import dependencies
+from app.live_engine import engine
 
 router = APIRouter()
 
@@ -27,10 +28,13 @@ def update_light_command(id: int, command_in: LightCommandUpdate, db: Session = 
             status_code=400, detail=f"Light command with ID: {id} not found."
         )
     updated_cmd = crud.light_cmd.update(db=db, db_obj=cmd, obj_in=command_in)
-    # db.commit()
     return updated_cmd
 
 @router.delete('/commands/{id}', response_model=LightCommand)
 def delete_light_command(id: int, db=Depends(dependencies.get_db)):
     command = crud.light_cmd.remove(db=db, id=id)
     return command
+
+@router.post("/osc/send", tags=(["osc"]))
+def send_light_osc_msg(osc_msg: str):
+    engine.lights.send_osc_msg(osc_msg)
