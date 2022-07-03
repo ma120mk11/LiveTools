@@ -12,7 +12,8 @@ export interface IFsButtonConfig {
   name: string,
   has_led: boolean,
   id: number,
-  fs_id: string
+  fs_id: string,
+  btn_id: number
 }
 
 export interface IFootswitch {
@@ -52,6 +53,7 @@ export class FootswitchComponent implements OnInit {
 
     this.ws.onopen = () => {
       // this.ws.send(JSON.stringify(this.fs));
+      this.ws.send(JSON.stringify({type: "config", data: {}}))
     }
 
     this.ws.onmessage = (event) => {
@@ -98,12 +100,12 @@ export class FootswitchComponent implements OnInit {
   }
 
   onBtnPress(btn: IFsButtonConfig) {
-    this.ws.send(JSON.stringify({"type": "btn-change","data": {"button_id": btn.id, "state": 1}}));
+    this.ws.send(JSON.stringify({"type": "btn-change","data": {"fs_id": btn.fs_id,"btn_id": btn.btn_id, "state": 1}}));
     // console.log(`Pressed ${btn.name}`);
   }
 
   onBtnRelease(btn: IFsButtonConfig) {
-    this.ws.send(JSON.stringify({"type": "btn-change","data": {"button_id": btn.id, "state": 0}}));
+    this.ws.send(JSON.stringify({"type": "btn-change","data": {"fs_id": btn.fs_id,"btn_id": btn.btn_id, "state": 0}}));
 
     // console.log(`Released ${btn.name}`);
 

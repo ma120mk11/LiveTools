@@ -5,9 +5,10 @@ import logging
 from typing import List
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from fastapi import APIRouter, Depends
+from app.db.session import SessionLocal
 from app.websocket.connection_manager import manager
 from app.live_engine import engine
-from app.schemas.footswitch import Footswitch, FootswitchCreate, ButtonCreate, Button, ButtonUpdate
+from app.schemas.footswitch import ButtonChange, Footswitch, FootswitchCreate, ButtonCreate, Button, ButtonUpdate
 from app.models.footswitch import Button as ButtonModel, Footswitch as FootswitchModel
 from app import crud, dependencies
 from sqlalchemy.orm import Session
@@ -32,68 +33,109 @@ actions = [
 async def websocket_footswitch(
     websocket: WebSocket,
     client_id: str,
-    db: Session = Depends(dependencies.get_db)
 ) -> None:
 
     await connect(websocket, client_id)
 
+    config = await websocket.receive_json()
+    if not config['type'] == "config":
+        logger.error("Could not connect footswitch: config error")
+        websocket.close()
+        return
+    
+    db = SessionLocal()
+    try:
+        fs = db.query(FootswitchModel.id).filter(FootswitchModel.id == config['data']['fs_id']).first()
+        if not fs:
+            logger.info("Footswitch not found in db")
+    except Exception as e:
+        logger.error("Could not connect footswitch: config error")
+    finally:
+        db.close()
+
     try:
         while True:
             data = await websocket.receive_text()
-            logger.info(f"Footswitch {client_id}: {data}")
+            logger.debug(f"Footswitch {client_id}: {data}")
+            
+            try:
+                data = json.loads(data)
+            except Exception as e:
+                logger.error("Data is not in JSON format")
+                continue
 
-            data = json.loads(data)
-
+            db: Session
+            
             if (data['type'] == "btn-change") and (data['data']['state'] == 1):
-                btn_conf = {}
-                btn_id = data['data']['button_id']
-
-                btn_conf = db.query(ButtonModel).filter(ButtonModel.id == btn_id).first()
-
-                if not btn_conf:
-                    logger.error("Button config not found")
-
-                # Button actions ///////////////////////////////////////////////////
-                category = btn_conf.action_cat
-                action = btn_conf.action_id
-                # engine
-                if category == "engine":
-                    # next
-                    if action == "next":
-                        await engine.next_event(f"Footswitch {client_id}")
-                    # blackout
-                    elif action == "blackout":
-                        engine.lights.blackout()
-                    # Speech
-                    elif action == "speech-add":
-                            await engine.add_speech_to_cue()
-                    # Speech
-                    elif action == "speech-next":
-                            await engine.add_speech_to_cue()
-                            await engine.next_event()
-                    else:
-                        logger.error(f"Button config not implemented: {btn_conf.action_cat}->{btn_conf.action_id}")
-                
-                elif category == "lights":
-                    await manager.broadcast("Button not implemented!", "notification-warning")
-                    logger.error("Button not implemented!")
-
-                    ...
-                else:
-                    msg = f"Button config not implemented: {btn_conf.action_cat}->{btn_conf.action_id}"
-                    logger.error(msg)
-                    await manager.broadcast(msg, "notification-warning")
-
-
-    except WebSocketDisconnect:
+                try:
+                    await execute(
+                        data=data,
+                        db=SessionLocal(),
+                        client_id=client_id,
+                        fs_id=data['data']['fs_id'],
+                        btn_id=data['data']['btn_id']
+                    )
+                except Exception as e:
+                    logger.error("An exception occured")
+                finally:
+                    db.close()
+            
+    except WebSocketDisconnect as e:
+        logger.error("Disconneced")
         # Notify web clients
         await manager.broadcast(f"Footswitch {client_id} disconnected", "notification")
-
+    except Exception as e:
+        logger.error("An unknown error occured: ")
+        await manager.broadcast(f"Footswitch {client_id} disconnected", "notification")
 
 
 async def connect(websocket: WebSocket, client_id: str):
     await websocket.accept()
-    logger.info("Footswitch client connected: %s", client_id)
+    logger.info("Footswitch connected: %s", client_id)
+
+
+
+async def execute(db: Session, data: dict, btn_id: int, fs_id: str, client_id="unknown"):
+    btn_conf = {}
+    # btn_id = data['data']['btn_id']
+    # fs_id = data['data']['fs_id']
+
+    btn_conf = db.query(ButtonModel).filter(ButtonModel.btn_id == btn_id).filter(ButtonModel.fs_id == fs_id).first()
+
+    if not btn_conf:
+        logger.error("Button config not found")
+
+    # Button actions ///////////////////////////////////////////////////
+    category = btn_conf.action_cat
+    action = btn_conf.action_id
+    # engine
+    if category == "engine":
+        # next
+        if action == "next":
+            await engine.next_event(db=db, event_initiator=f"footswitch: {client_id}")
+        # blackout
+        elif action == "blackout":
+            engine.lights.blackout(db=db)
+        # Speech
+        elif action == "speech-add":
+                await engine.add_speech_to_cue()
+        # Speech
+        elif action == "speech-next":
+                await engine.add_speech_to_cue()
+                await engine.next_event(db=db, event_initiator=f"Footswitch {client_id}")
+        else:
+            logger.error(f"Button config not implemented: {btn_conf.action_cat}->{btn_conf.action_id}")
+    
+    elif category == "lights":
+        await manager.broadcast("Button not implemented!", "notification-warning")
+        logger.error("Button not implemented!")
+
+        ...
+    else:
+        msg = f"Button config not implemented: {btn_conf.action_cat}->{btn_conf.action_id}"
+        logger.error(msg)
+        await manager.broadcast(msg, "notification-warning")
+
 
 
 

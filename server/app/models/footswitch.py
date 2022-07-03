@@ -23,6 +23,7 @@ class Button(Base):
     __tablename__ = "fs_buttons"
 
     id = Column(Integer, primary_key=True, index=True)
+    btn_id = Column(Integer)
     type = Column(String)
     name = Column(String)
     has_led = Column(Boolean, server_default='false', default=False)

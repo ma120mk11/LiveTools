@@ -5,6 +5,7 @@ from pydantic import BaseModel
 class ButtonBase(BaseModel):
     type: Optional[str]
     name: str
+    btn_id: int
     has_led: bool
     action_cat: str
     action_id: str
@@ -41,3 +42,9 @@ class FootswitchCreate(FootswitchBase):
 
 class FootswitchUpdate(FootswitchBase):
     ...
+
+
+class ButtonChange(BaseModel):
+    fs_id: str
+    btn_id: int
+    state: bool
