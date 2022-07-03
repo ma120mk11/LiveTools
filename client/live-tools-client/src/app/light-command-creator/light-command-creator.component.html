@@ -1,1 +1,62 @@
-<p>light-command-creator works!</p>
+<h1>Add new Ligh Command</h1>
+
+<div class="form-container">
+
+
+<form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="outline">
+        <mat-label>Name</mat-label>
+        <input matInput [value]="data.name" formControlName="name" required>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+        <mat-label>OSC</mat-label>
+        <input matInput [value]="data.osc_path" formControlName="osc_path" required>
+    </mat-form-field>
+
+    <h4>Onyx</h4>
+    <mat-form-field appearance="outline" class="left">
+        <mat-label>Page</mat-label>
+        <input matInput type="number" [value]="getOnyxPage(data.osc_path)" formControlName="onyxPage">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="right">
+        <mat-label>Number</mat-label>
+        <input matInput type="number" [value]="getOnyxNumber(data.osc_path)" formControlName="onyxNumber">
+    </mat-form-field>
+
+    <!-- <mat-form-field appearance="outline">
+        <mat-label>Page</mat-label>
+        <input matInput type="number" [value]="getOnyxPage(data.osc_path)" formControlName="osc_path">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+        <mat-label>Number</mat-label>
+        <input matInput type="number" [value]="getOnyxNumber(data.osc_path)" formControlName="osc_path">
+    </mat-form-field> -->
+
+    <mat-form-field appearance="outline">
+        <mat-label>Type</mat-label>
+        <mat-select formControlName="type">
+            <mat-option *ngFor="let type of CUELIST_TYPES" [value]="type" >
+                {{type}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+        <mat-label>Category</mat-label>
+        <input matInput type="number" [value]="data.category" formControlName="category">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+        <mat-label>Description</mat-label>
+        <textarea matInput [value]="data.description" formControlName="description"></textarea>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" type="submit" [class.spinner]="isLoading">Add</button>
+    <button mat-raised-button color="secondary" (click)="executeOsc('go')" [class.spinner]="isTestingGo">Test Go</button>
+    <button mat-raised-button color="secondary" (click)="executeOsc('rel')" [class.spinner]="isTestingRelease">Test Release</button>
+
+</form>
+</div>

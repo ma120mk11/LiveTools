@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { environment } from 'src/environments/environment';
+import { LightCommandCreatorComponent } from '../light-command-creator/light-command-creator.component';
 import { LightCommandEditorComponent } from '../light-command-editor/light-command-editor.component';
 
 export interface ILightCommand {
@@ -34,6 +35,10 @@ export class LightCommandsComponent implements OnInit {
 		})
 	}
 
+	onAdd() {
+		const dialogRef = this.dialog.open(LightCommandCreatorComponent);
+		dialogRef.afterClosed().subscribe(result => { this.fetchItems(); })
+	}
 	onEditLightCommand(item: ILightCommand) {
 		const dialogRef = this.dialog.open(LightCommandEditorComponent, { data: item});
 		dialogRef.afterClosed().subscribe(result => { })
