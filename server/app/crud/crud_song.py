@@ -26,8 +26,6 @@ class CRUDSong(CRUDBase[Song, SongCreate, SongUpdate]):
         if include_hidden:
             songs = db.query(Song).offset(skip).limit(limit).all()
         else:
-            print("Do not include hidden songs")
-            # songs = db.query(Song).filter(Song.hidden == None).offset(skip).limit(limit).all()
             songs = db.query(Song).filter(or_(Song.hidden == None, Song.hidden == False)).offset(skip).limit(limit).all()
 
         for song in songs:

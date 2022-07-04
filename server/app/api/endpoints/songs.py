@@ -22,7 +22,6 @@ def get_songs(
         sort_order: str="", 
         db: Session = Depends(dependencies.get_db)
     ):
-    logger.info("include hidden: " + str(include_hidden))
     songs = crud.song.get_songs(db,skip,limit, sort_by, sort_order, include_hidden, include_lyrics=include_lyrics)
     return songs
 
