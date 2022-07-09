@@ -3,7 +3,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { LyricsEditorComponent } from 'src/app/lyrics-editor/lyrics-editor.component';
 import { ISpeechAction, WebSocketService } from 'src/app/services/web-socket/web-socket.service';
 import { SongExecutionEditorComponent } from 'src/app/song-execution-editor/song-execution-editor.component';
@@ -37,7 +37,10 @@ export class SongBookComponent implements OnInit {
   isCueMode = true;
   cueList: any[] = []
 
-  constructor(private songService: SongsService, public ws: WebSocketService, private dialog: MatDialog, private http: HttpClient, private router: Router) {}
+  constructor(
+    private songService: SongsService, public ws: WebSocketService,
+    private dialog: MatDialog, private http: HttpClient, private router: Router)
+  {}
   
   ngOnInit(): void {
     this.getSongs();
@@ -121,26 +124,6 @@ export class SongBookComponent implements OnInit {
       this.displayDefault[this.displayedColumns.indexOf("cue")] = "preview";
 
     }
-    // if (this.isCueMode) {
-    //   this.displayedColumns.splice(this.displayedColumns.indexOf("preview"));
-    //   this.displayedColumns.push("cue");
-
-    //   this.displayExecution.splice(this.displayExecution.indexOf("preview"));
-    //   this.displayExecution.push("cue");
-
-    //   this.displayDefault.splice(this.displayDefault.indexOf("preview"));
-    //   this.displayDefault.push("cue");
-    // } else {
-    //   this.displayedColumns.splice(this.displayedColumns.indexOf("cue"));
-    //   this.displayedColumns.push("preview");
-
-    //   this.displayExecution.splice(this.displayExecution.indexOf("cue"));
-    //   this.displayExecution.push("preview");
-
-    //   this.displayDefault.splice(this.displayDefault.indexOf("cue"));
-    //   this.displayDefault.push("preview");
-    // }
-
     console.log(this.isCueMode)
   }
 
@@ -154,6 +137,7 @@ export class SongBookComponent implements OnInit {
     console.log("Removing item " + index)
     this.cueList.splice(index, 1);
   }
+
   onRemoveFromCueByIndex(i: number) {
     this.cueList.splice(i,1);
   }
@@ -168,7 +152,7 @@ export class SongBookComponent implements OnInit {
   }
 
 
-  onAddSpeechToCue() {
+  onAddSpeechToCue(): void {
     this.cueList.push({type: "speech", id: 1000})
   }
 
@@ -196,7 +180,7 @@ export class SongBookComponent implements OnInit {
     return this.formatDuration(totDuration)
   }
 
-  existsInCuelist(song: ISong) {
+  existsInCuelist(song: ISong): boolean {
     if (this.cueList.length == 0) {
       return false
     }
@@ -209,7 +193,7 @@ export class SongBookComponent implements OnInit {
     }
   }
 
-  formatDuration(seconds: number) {
+  formatDuration(seconds: number): string {
     let minutes = Math.floor(seconds / 60);
     let remainder = seconds % 60;
     return `${minutes}:${remainder<10?"0":""}${remainder}`
