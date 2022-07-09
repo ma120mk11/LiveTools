@@ -2,9 +2,9 @@
 from http.client import HTTPException
 import json
 import logging
+import time
 from typing import List
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends, status
 from app.db.session import SessionLocal
 from app.websocket.connection_manager import manager
 from app.live_engine import engine
@@ -95,15 +95,15 @@ async def connect(websocket: WebSocket, client_id: str):
 
 
 
-async def execute(db: Session, data: dict, btn_id: int, fs_id: str, client_id="unknown"):
+async def execute(db: Session, data: dict, btn_id: int, fs_id: str, client_id="unknown") -> None:
     btn_conf = {}
     # btn_id = data['data']['btn_id']
     # fs_id = data['data']['fs_id']
 
     btn_conf = db.query(ButtonModel).filter(ButtonModel.btn_id == btn_id).filter(ButtonModel.fs_id == fs_id).first()
-
     if not btn_conf:
         logger.error("Button config not found")
+        return
 
     # Button actions ///////////////////////////////////////////////////
     category = btn_conf.action_cat
@@ -113,9 +113,6 @@ async def execute(db: Session, data: dict, btn_id: int, fs_id: str, client_id="u
         # next
         if action == "next":
             await engine.next_event(db=db, event_initiator=f"footswitch: {client_id}")
-        # blackout
-        elif action == "blackout":
-            engine.lights.blackout(db=db)
         # Speech
         elif action == "speech-add":
                 await engine.add_speech_to_cue()
@@ -127,8 +124,19 @@ async def execute(db: Session, data: dict, btn_id: int, fs_id: str, client_id="u
             logger.error(f"Button config not implemented: {btn_conf.action_cat}->{btn_conf.action_id}")
     
     elif category == "lights":
-        await manager.broadcast("Button not implemented!", "notification-warning")
-        logger.error("Button not implemented!")
+        # blackout
+        if action == "blackout":
+            engine.lights.blackout(db=db, toggle=True)
+        # strobe
+        elif action == "strobe":
+            await manager.broadcast("Strobe not implemented!", "notification-warning")
+        # blind
+        elif action == "blind":
+            await manager.broadcast("Blind not implemented!", "notification-warning")
+
+        else:
+            await manager.broadcast("Button not implemented!", "notification-warning")
+            logger.error("Button not implemented!")
 
         ...
     else:
@@ -152,10 +160,16 @@ def add_new_footswitch(request: FootswitchCreate, db: Session = Depends(dependen
 
 @router.post('/{fs_id}/buttons', response_model=Footswitch)
 def add_button_to_footswitch(fs_id: str, db: Session = Depends(dependencies.get_db)):
-
+    fs = crud.footswitch.get(db=db, id=fs_id)
+    if not fs:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"No footswitch with id {fs_id} found"
+        )
+    nbr_of_btns = len(fs.buttons)
     # Create default btn configuration
     btn_create = _get_default_btn_conf()
     btn_create['fs_id'] = fs_id
+    btn_create['btn_id'] = nbr_of_btns
     button = crud.fs_button.create(db=db, obj_in=btn_create)
     return crud.footswitch.get(id=fs_id, db=db)
 
@@ -191,6 +205,7 @@ def _get_default_btn_conf()-> Button:
 
 @router.post("/btn-change")
 async def btn_change(request: ButtonChange, db: Session = Depends(dependencies.get_db)):
+    start = time.process_time()
     if request.state == 1:
         await execute(
             data=request,
@@ -198,3 +213,4 @@ async def btn_change(request: ButtonChange, db: Session = Depends(dependencies.g
             fs_id=request.fs_id,
             btn_id=request.btn_id
         )
+    logger.info("Process time: " + str(time.process_time() - start))

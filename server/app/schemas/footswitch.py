@@ -9,6 +9,8 @@ class ButtonBase(BaseModel):
     has_led: bool
     action_cat: str
     action_id: str
+    fs_id: str
+
 
 class ButtonCreate(ButtonBase):
     pass
@@ -18,7 +20,6 @@ class ButtonUpdate(ButtonBase):
 
 class Button(ButtonBase):
     id: int
-    fs_id: str
 
     class Config():
         orm_mode = True
