@@ -32,20 +32,21 @@ export class FootswitchComponent implements OnInit {
   selected: IFootswitch;
   fs: IFootswitch
   isEditMode: boolean = false;
-
+  isTestMode: boolean = false;
   ws: WebSocket;
 
   constructor(
     public http: HttpClient, 
     private dialog: MatDialog,
     private router: Router,
-    private route: ActivatedRoute) {
-      this.route.params.subscribe( params => {
-        console.log(params)
-        if (params['fs_id']) {
-          this.onFsChange(params['fs_id']);
-        }
-      });
+    private route: ActivatedRoute)
+  {
+    this.route.params.subscribe( params => {
+      console.log(params)
+      if (params['fs_id']) {
+        this.onFsChange(params['fs_id']);
+      }
+    });
   }
 
   configureSocket(): void {
@@ -90,7 +91,9 @@ export class FootswitchComponent implements OnInit {
         this.ws.close();
       }
       this.fs = this.selected;
-      this.connectFootswitch(this.fs);
+      if (this.isTestMode) {
+        this.connectFootswitch(this.fs);
+      }
     })
   }
 
@@ -100,13 +103,16 @@ export class FootswitchComponent implements OnInit {
   }
 
   onBtnPress(btn: IFsButtonConfig) {
-    this.ws.send(JSON.stringify({"type": "btn-change","data": {"fs_id": btn.fs_id,"btn_id": btn.btn_id, "state": 1}}));
+    if(this.isTestMode){
+      this.ws.send(JSON.stringify({"type": "btn-change","data": {"fs_id": btn.fs_id,"btn_id": btn.btn_id, "state": 1}}));
+    }
     // console.log(`Pressed ${btn.name}`);
   }
 
   onBtnRelease(btn: IFsButtonConfig) {
-    this.ws.send(JSON.stringify({"type": "btn-change","data": {"fs_id": btn.fs_id,"btn_id": btn.btn_id, "state": 0}}));
-
+    if(this.isTestMode){
+      this.ws.send(JSON.stringify({"type": "btn-change","data": {"fs_id": btn.fs_id,"btn_id": btn.btn_id, "state": 0}}));
+    }
     // console.log(`Released ${btn.name}`);
 
   }
