@@ -60,6 +60,9 @@ import { LightCommandEditorComponent } from './light-command-editor/light-comman
 import { LightCommandCreatorComponent } from './light-command-creator/light-command-creator.component';
 import { FootswitchComponent } from './footswitch/footswitch.component';
 import { FsBtnEditorComponent } from './fs-btn-editor/fs-btn-editor.component';
+import { SetlistsComponent } from './setlists/setlists.component';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { ConfirmModalComponent } from './confirm-modal/confirm-modal.component';
 
 @NgModule({
   declarations: [
@@ -88,7 +91,9 @@ import { FsBtnEditorComponent } from './fs-btn-editor/fs-btn-editor.component';
     LightCommandEditorComponent,
     LightCommandCreatorComponent,
     FootswitchComponent,
-    FsBtnEditorComponent
+    FsBtnEditorComponent,
+    SetlistsComponent,
+    ConfirmModalComponent
   ],
   imports: [
     BrowserModule,
@@ -123,7 +128,8 @@ import { FsBtnEditorComponent } from './fs-btn-editor/fs-btn-editor.component';
     ReactiveFormsModule,
     AngularEditorModule,
     FormsModule,
-    MatGridListModule
+    MatGridListModule,
+    MatExpansionModule
   ],
   providers: [
     WebSocketService,

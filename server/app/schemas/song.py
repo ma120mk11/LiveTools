@@ -72,3 +72,6 @@ class Song(SongBase):
     class Config:
         orm_mode = True
 
+
+class SongAction(Song):
+    type: str = "song"
