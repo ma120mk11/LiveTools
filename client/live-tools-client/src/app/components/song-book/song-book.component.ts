@@ -5,7 +5,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LyricsEditorComponent } from 'src/app/lyrics-editor/lyrics-editor.component';
-import { ISpeechAction, WebSocketService } from 'src/app/services/web-socket/web-socket.service';
+import { ISetlist, ISpeechAction, WebSocketService } from 'src/app/services/web-socket/web-socket.service';
 import { SongExecutionEditorComponent } from 'src/app/song-execution-editor/song-execution-editor.component';
 import { environment } from 'src/environments/environment';
 import { CreateSongComponent } from './create-song/create-song.component';
@@ -37,10 +37,20 @@ export class SongBookComponent implements OnInit {
   isCueMode = true;
   cueList: any[] = []
 
+  isSetSaved = false;
+
   constructor(
     private songService: SongsService, public ws: WebSocketService,
-    private dialog: MatDialog, private http: HttpClient, private router: Router)
-  {}
+    private dialog: MatDialog, private http: HttpClient, 
+    private router: Router, private route: ActivatedRoute)
+  {
+    this.route.queryParams.subscribe(query => {
+      console.log(query)
+      if(query['setlist_id']) {
+        this.getSetlist(query['setlist_id']);
+      }
+    })
+  }
   
   ngOnInit(): void {
     this.getSongs();
@@ -129,6 +139,7 @@ export class SongBookComponent implements OnInit {
 
   onAddToCue(song: ISong) {
     this.cueList.push(song);
+    this.isSetSaved = false;
   }
 
   onRemoveFromCue(song: ISong) {
@@ -136,24 +147,54 @@ export class SongBookComponent implements OnInit {
     if (index == -1) { return }
     console.log("Removing item " + index)
     this.cueList.splice(index, 1);
+    this.isSetSaved = false;
   }
 
   onRemoveFromCueByIndex(i: number) {
     this.cueList.splice(i,1);
+    this.isSetSaved = false;
   }
 
   onExecuteCue(): void {
-    let body: number[] = []
-    this.cueList.map((item) => body.push(item.id))
-    this.http.post(`${environment.apiEndpoint}/engine/cue/add`, body).subscribe(() => {
+    let action_ids: number[] = []
+    this.cueList.map((item) => action_ids.push(item.id))
+
+    if (!this.ws.isLoaded) {
+      this.saveAsSetlist();
+    }
+
+    this.http.post(`${environment.apiEndpoint}/engine/cue/add`, action_ids).subscribe(() => {
       this.cueList = [];
       this.router.navigate(["/engine/setlist"])
     });
   }
 
+  getSetlist(set_id: number) {
+    this.http.get<ISetlist>(`${environment.apiEndpoint}/setlists/${set_id}`)
+    .subscribe((setlist) => this.cueList = setlist.actions)
+  }
+
+  saveAsSetlist() {
+    let action_ids: number[] = []
+    this.cueList.map((item) => action_ids.push(item.id))
+
+
+    let now = new Date()
+
+    let setlist = {
+      name: `${now.getDate()}.${now.getMonth()}.${now.getFullYear()} - ${now.getHours()}:${now.getMinutes()}`,
+      actions: action_ids,
+      comments: "Auto generated"
+    }
+    this.http.post(`${environment.apiEndpoint}/setlists`, setlist).subscribe(
+      () => {this.isSetSaved = true;}, 
+      () => { this.isSetSaved = false;}
+    )
+  }
 
   onAddSpeechToCue(): void {
     this.cueList.push({type: "speech", id: 1000})
+    this.isSetSaved = false;
   }
 
   getNbrOfSongsInCue(): number {
@@ -184,13 +225,7 @@ export class SongBookComponent implements OnInit {
     if (this.cueList.length == 0) {
       return false
     }
-
-    let index = this.cueList.indexOf(song);
-    if (index == -1) {
-      return false
-    } else {
-      return true
-    }
+    return  this.cueList.find(element => element.id === song.id);
   }
 
   formatDuration(seconds: number): string {

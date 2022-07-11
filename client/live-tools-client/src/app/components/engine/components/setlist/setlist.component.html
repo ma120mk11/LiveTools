@@ -1,25 +1,24 @@
 <div *ngIf="ws.isLoaded && ws.activeSetlistActionId >= -1;" class="">
     <div class="set-container mat-elevation-z8">
 
-            <div *ngFor="let action of ws.setlist.actions" class="actions">
-                
-                <div [ngClass]="getClass(action.nbr)">
-                    <div *ngIf="action.type=='song'" class="song">
-                        <div *ngIf="action.playback" class="blackout-indicator">Playback</div>
-                        <div *ngIf="action.isCueItem && ws.activeSetlistActionId < action.nbr" class=""></div>
-                        <h1 [class.is-cue-item]="action.isCueItem && ws.activeSetlistActionId < action.nbr">{{getSongNbr(action.nbr)}}. {{action.title}}</h1>
-                        <!-- <div *ngIf="action.execution?.lights?.blackout" class="blackout-indicator">Blackout</div> -->
-                    </div>
-                    <div *ngIf="action.type=='speech'" class="speech">
-                        Speech
-                    </div>
-                    <div *ngIf="action.type=='start'" class="start">
-                        Start
-                    </div>
+        <div *ngFor="let action of ws.setlist.actions" class="actions">
+            
+            <div [ngClass]="getClass(action.nbr)">
+                <div *ngIf="action.type=='song'" class="song">
+                    <div *ngIf="action.playback" class="blackout-indicator">Playback</div>
+                    <div *ngIf="action.isCueItem && ws.activeSetlistActionId < action.nbr" class=""></div>
+                    <h1 [class.is-cue-item]="action.isCueItem && ws.activeSetlistActionId < action.nbr">{{getSongNbr(action.nbr)}}. {{action.title}}</h1>
                 </div>
-                
+                <div *ngIf="action.type=='speech'" class="speech">
+                    Speech
+                </div>
+                <div *ngIf="action.type=='start'" class="start">
+                    Start
+                </div>
             </div>
+            
         </div>
+    </div>
 </div>
 
 <div *ngIf="ws.activeSetlistActionId == -2">

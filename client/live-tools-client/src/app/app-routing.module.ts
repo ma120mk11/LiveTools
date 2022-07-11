@@ -14,6 +14,7 @@ import { SetlistCreatorComponent } from './components/setlist-creator/setlist-cr
 import { SongBookComponent } from './components/song-book/song-book.component';
 import { FootswitchComponent } from './footswitch/footswitch.component';
 import { LightCommandsComponent } from './light-commands/light-commands.component';
+import { SetlistsComponent } from './setlists/setlists.component';
 
 const routes: Routes = [
   { path: 'engine', component: EngineComponent, 
@@ -27,6 +28,7 @@ const routes: Routes = [
     { path: '**', component: SetlistComponent },
   ]},
   { path: 'setlist/create', component: SetlistCreatorComponent },
+  { path: 'setlists', component: SetlistsComponent },
   { path: 'devices', component: DevicesComponent },
   { path: 'light', component: LightCommandsComponent },
   { path: 'songs', component: SongBookComponent },

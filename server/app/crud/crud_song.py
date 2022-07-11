@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 from app.crud.base import CRUDBase
 from app.schemas.light_cmd import LightCommand
 from app.schemas.song import Execution, ExecutionUpdate, Song, SongCreate, SongUpdate
-from app.models.song import Song
+from app.models.song import Song as SongModel
 from app.models.light_cmd import LightCommand as LightCommandModel
 from app.crud.crud_light_cmd import light_cmd
 logger = logging.getLogger(__name__)
@@ -19,24 +19,27 @@ logger = logging.getLogger(__name__)
 
 class CRUDSong(CRUDBase[Song, SongCreate, SongUpdate]):
 
-    def get_song(self, db: Session, song_id: int):
-        return self.transform_song(db.query(Song).filter(Song.id == song_id).first(), db=db)
+    def get_song(self, db: Session, song_id: int, include_lyrics: bool = True) -> Song:
+        return self._transform_song(db.query(SongModel).filter(SongModel.id == song_id).first(), db=db, include_lyrics=include_lyrics)
 
     def get_songs(self, db: Session, skip: int=0, limit: int=100, sort_by="", sort_order="", include_hidden:bool=True, include_lyrics: bool = True):
         if include_hidden:
-            songs = db.query(Song).offset(skip).limit(limit).all()
+            songs = db.query(SongModel).offset(skip).limit(limit).all()
         else:
-            songs = db.query(Song).filter(or_(Song.hidden == None, Song.hidden == False)).offset(skip).limit(limit).all()
-
+            songs = db.query(SongModel).filter(or_(SongModel.hidden == None, SongModel.hidden == False)).offset(skip).limit(limit).all()
+    
         for song in songs:
-            if not include_lyrics:
-                if song.lyrics:
-                    song.lyrics = ""
-            song = self.transform_song(song, db=db)
+            song = self._transform_song(song, db=db, include_lyrics=include_lyrics)
         return songs
 
-    def transform_song(self, song: Song, db: Session):
-        song.execution = json.loads(song.execution)
+    def _transform_song(self, song: Song, db: Session, include_lyrics: bool = True) -> Song:
+        # logger.info(type(song.execution))
+        if not isinstance(song.execution, str):
+            logger.info(f"Getting song: {song.title} ({song.id})")
+
+            logger.info(song.execution)
+        else:
+            song.execution = json.loads(song.execution)
         new_cuelist = []
 
         if song.execution['lights']['cuelist']:
@@ -52,13 +55,15 @@ class CRUDSong(CRUDBase[Song, SongCreate, SongUpdate]):
                 else:
                     new_cuelist.append(cue)
             song.execution['lights']['cuelist'] = new_cuelist
-        song.lead_singer = song.lead_singer.split(",")
+        if isinstance(song.lead_singer, str):
+            song.lead_singer = song.lead_singer.split(",")
+
+        if not include_lyrics:
+            song.lyrics = ""
+
         return song
 
     def create_song(self, db: Session, song: SongCreate):
-        exec = json.dumps(jsonable_encoder(song.execution))
-        singers = ",".join(song.lead_singer)
-
         temp: dict = song.dict()
         temp.pop("execution")
         temp.pop("lead_singer")
@@ -67,21 +72,21 @@ class CRUDSong(CRUDBase[Song, SongCreate, SongUpdate]):
         temp['lead_singer'] = ",".join(song.lead_singer)
         temp['execution'] = json.dumps(jsonable_encoder(song.execution))
 
-        db_song = Song(**temp)
+        db_song = SongModel(**temp)
         db.add(db_song)
         db.commit()
         db.refresh(db_song)
 
-        return self.transform_song(db_song, db=db)
+        return self._transform_song(db_song, db=db)
 
     def delete_song(self, db: Session, song_id: int):
-        db_song = db.query(Song).filter(Song.id == song_id).delete(synchronize_session=False)
+        db_song = db.query(SongModel).filter(SongModel.id == song_id).delete(synchronize_session=False)
         db.commit()
         return db_song
 
 
     def update_tempo(self, db: Session, id: int, tempo_in):
-        song = db.query(Song).filter(Song.id == id)
+        song = db.query(SongModel).filter(SongModel.id == id)
         if not song.first():
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"No song with id {id} found")
         song.update({'tempo': tempo_in})
@@ -99,4 +104,4 @@ class CRUDSong(CRUDBase[Song, SongCreate, SongUpdate]):
         db.commit()
         return
 
-song = CRUDSong(Song)
+song = CRUDSong(SongModel)

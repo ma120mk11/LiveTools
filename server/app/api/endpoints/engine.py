@@ -5,6 +5,7 @@ from typing import List
 from fastapi import APIRouter ,HTTPException, Depends, status
 from app import dependencies
 from fastapi import APIRouter
+from app.constants import speech
 from app.osc.osc_server import server
 from sqlalchemy.orm import Session
 from app.models.song import Song as SongModel
@@ -80,16 +81,7 @@ async def add_speech_next():
     """
     Adds a speech as the next action
     """
-    # speech = {
-    #     "type": "speech",
-    #     "duration": 5,
-    #     "execution": {
-    #         "lights": {
-    #             "cuelist": ["speaking"]
-    #         }
-    #     }
-    # }
-    # await engine.add_to_cue(actions=[speech])
+
     await engine.add_speech_to_cue()
     return
 
@@ -112,18 +104,10 @@ async def add_songs_by_id_to_cue(song_ids: List[int], db: Session = Depends(get_
     for song_id in song_ids:
 
         if song_id == 1000:
-            song = {
-                "type": "speech",
-                "duration": 5,
-                "execution": {
-                    "lights": {
-                        "cuelist": ["speaking"]
-                    }
-                }
-            }
+            song = speech.speech
     
         else:
-            song = jsonable_encoder(crud.get_song(db, song_id))
+            song = jsonable_encoder(crud.get_song(db, song_id, include_lyrics=False))
             song['type'] = "song"
             # TODO: Move to crud
             if "lyrics" in song:

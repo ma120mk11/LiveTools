@@ -19,7 +19,7 @@
     </button>
     <button *ngIf="cueList.length > 0" mat-raised-button [color]="isCueMode?'primary':''" (click)="onExecuteCue()">
         <mat-icon>publish</mat-icon>
-        {{ws.isSetStarted()? "Insert after current song": "Create setlist"}}
+        {{ws.isSetStarted()? "Insert after current song": "Load setlist"}}
     </button>
 
     <div class="metadata">
@@ -51,7 +51,10 @@
         <mat-menu #columns>
         </mat-menu>
     </button> -->
-
+    <button *ngIf="cueList.length > 3" mat-raised-button color="warn" (click)="saveAsSetlist()" [disabled]="isSetSaved">
+        <mat-icon>publish</mat-icon>
+            Save as setlist
+    </button>
 
     <button mat-raised-button 
         [color]="isCueMode?'warn':''" class="right align-btn" 

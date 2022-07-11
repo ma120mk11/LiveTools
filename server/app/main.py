@@ -1,6 +1,6 @@
 import time
 from fastapi import FastAPI, Request
-from app.api.endpoints import devices, footswitch, lights, songs, engine, websocket
+from app.api.endpoints import devices, footswitch, lights, songs, setlists, engine, websocket
 import logging
 from fastapi.middleware.cors import CORSMiddleware
 import app.api.endpoints
@@ -9,7 +9,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="LiveTools API", debug=True)
+app = FastAPI(title="LiveTools API")
 
 origins = [
     "*"
@@ -46,6 +46,7 @@ app.include_router(devices.router, prefix="/devices", tags=["devices"])
 app.include_router(engine.router, prefix="/engine", tags=["engine"])
 app.include_router(websocket.router, tags=["websocket"])
 app.include_router(footswitch.router, prefix="/footswitch", tags=["footswitch"])
+app.include_router(setlists.router, prefix="/setlists", tags=["setlists"])
 
 
 if __name__ == "__main__":
