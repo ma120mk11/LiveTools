@@ -1,6 +1,7 @@
 import logging
 from typing import List, Union
 from datetime import datetime
+from app.constants import speech
 from app.osc.mixer import OSCMixer
 from app.osc.ligths import OSCLights
 from app.osc.playback import OSCPlayback
@@ -344,17 +345,8 @@ class Engine():
             if self._setlist['actions'][self._current_action_id + 1] == "speech":
                 logger.debug("Next action is speech, ignoring")
                 return
-
-        speech = {
-            "type": "speech",
-            "duration": 5,
-            "execution": {
-                "lights": {
-                    "cuelist": ["speaking"]
-                }
-            }
-        }
-        await self.add_to_cue(actions=[speech])
+        
+        await self.add_to_cue(actions=[speech.speech])
 
     async def add_action_next(self, actions: List[dict]):
         """
