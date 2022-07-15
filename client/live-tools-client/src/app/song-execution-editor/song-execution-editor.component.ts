@@ -23,6 +23,12 @@ export class SongExecutionEditorComponent implements OnInit {
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: {song: ISong, view: string}, private http: HttpClient, private dialogRef: MatDialogRef<SongExecutionEditorComponent>) {
     this.song = {...data.song}
+
+    this.song.execution.lights.cuelist = data.song.execution.lights.cuelist.map((cue: any) => {
+      if (cue.id) {
+        return cue.id
+      }
+    })
     this.fetchCuelists()
   }
 

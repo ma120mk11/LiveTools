@@ -95,7 +95,7 @@ class CRUDSong(CRUDBase[Song, SongCreate, SongUpdate]):
 
         
     def update_song_execution(self, id: int, execution_in: ExecutionUpdate, db: Session):
-        song = db.query(Song).filter(Song.id == id)
+        song = db.query(SongModel).filter(SongModel.id == id)
         if not song.first():
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"No song with id {id} found")
         
