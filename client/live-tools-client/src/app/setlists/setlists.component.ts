@@ -78,7 +78,7 @@ export class SetlistsComponent implements OnInit {
 
   onDeleteSet(set: ISetlist) {
     this.dialog.open(ConfirmModalComponent).afterClosed().subscribe(result => {
-      if (result === true) {
+      if (result) {
         this.http.delete(`${environment.apiEndpoint}/setlists/${set.id}`)
           .subscribe(() => this.getSetlists());
       }
