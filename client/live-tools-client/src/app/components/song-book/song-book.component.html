@@ -1,6 +1,10 @@
 
-<div *ngIf="cueList.length > 0" class="mat-elevation-z8 cuelist-container">
-    <div *ngFor="let song of cueList; let i = index" [attr.data-index]="i">
+<div *ngIf="cueList.length > 0" cdkDropList (cdkDropListDropped)="drop($event)" cdkDragLockAxis="y" class="mat-elevation-z8 cuelist-container">
+    <div *ngFor="let song of cueList; let i = index" [attr.data-index]="i" cdkDrag>
+        <!-- <div class="custom-drag-placeholder" *cdkDragPlaceholder></div> -->
+        <!-- <div class="drag-handle">
+            <mat-icon cdkDragHandle>drag_handle</mat-icon>
+        </div> -->
         <div *ngIf="song.type != 'speech'">
             <h3>{{song.title}}</h3>
             <i><p>{{song.artist}}</p></i>
@@ -8,8 +12,9 @@
         <div *ngIf="song.type == 'speech'">
             <i><p>Speech</p></i>
         </div>
-        <button mat-raised-button [color]="''" class="right" (click)="onRemoveFromCueByIndex(i)">
-            Remove
+        <button mat-icon-button [color]="''" class="right" (click)="onRemoveFromCueByIndex(i)">
+            <!-- Remove -->
+            <mat-icon>delete_sweep</mat-icon>
         </button>
         <hr>
     </div>
@@ -41,17 +46,13 @@
     </mat-form-field>
 
 
-    <!-- <mat-form-field>
-        <mat-label>a</mat-label>
-    </mat-form-field> -->
-
-
-    <!-- <button mat-icon-button>
+<!-- 
+    <button mat-icon-button>
         <mat-icon>view_column</mat-icon>
         <mat-menu #columns>
         </mat-menu>
     </button> -->
-    <button *ngIf="cueList.length > 3" mat-raised-button color="warn" (click)="saveAsSetlist()" [disabled]="isSetSaved">
+    <button *ngIf="cueList.length > 3" mat-raised-button color="warn" (click)="saveAsSetlist(true)" [disabled]="isSetSaved">
         <mat-icon>publish</mat-icon>
             Save as setlist
     </button>
@@ -68,6 +69,12 @@
         Toggle columns
     </button>
 
+    <button mat-button [matMenuTriggerFor]="menu" class="right align-btn" ><mat-icon>more_vert</mat-icon></button>
+    <mat-menu #menu="matMenu">
+        <section class="example-section">
+            <mat-checkbox class="" [(ngModel)]="showHiddenSongs">Show hidden</mat-checkbox>
+          </section>
+      </mat-menu>
     <!-- <button mat-raised-button color="warn" class="right" (click)="onCreateSong()">
         <mat-icon>add</mat-icon>
         Add Song

@@ -63,7 +63,8 @@ import { FsBtnEditorComponent } from './fs-btn-editor/fs-btn-editor.component';
 import { SetlistsComponent } from './setlists/setlists.component';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { ConfirmModalComponent } from './confirm-modal/confirm-modal.component';
-
+import { SetlistMetadataEditorComponent } from './setlist-metadata-editor/setlist-metadata-editor.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 @NgModule({
   declarations: [
     AppComponent,
@@ -93,7 +94,8 @@ import { ConfirmModalComponent } from './confirm-modal/confirm-modal.component';
     FootswitchComponent,
     FsBtnEditorComponent,
     SetlistsComponent,
-    ConfirmModalComponent
+    ConfirmModalComponent,
+    SetlistMetadataEditorComponent
   ],
   imports: [
     BrowserModule,
@@ -129,7 +131,8 @@ import { ConfirmModalComponent } from './confirm-modal/confirm-modal.component';
     AngularEditorModule,
     FormsModule,
     MatGridListModule,
-    MatExpansionModule
+    MatExpansionModule,
+    MatCheckboxModule
   ],
   providers: [
     WebSocketService,

@@ -11,7 +11,8 @@ import { environment } from 'src/environments/environment';
 import { CreateSongComponent } from './create-song/create-song.component';
 import { ISong } from './song';
 import { SongsService } from './songs.service';
-
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { SetlistMetadataEditorComponent } from 'src/app/setlist-metadata-editor/setlist-metadata-editor.component';
 
 @Component({
   selector: 'app-song-book',
@@ -42,7 +43,8 @@ export class SongBookComponent implements OnInit {
   constructor(
     private songService: SongsService, public ws: WebSocketService,
     private dialog: MatDialog, private http: HttpClient, 
-    private router: Router, private route: ActivatedRoute)
+    private router: Router, private route: ActivatedRoute,
+    private modalRef: MatDialog)
   {
     this.route.queryParams.subscribe(query => {
       console.log(query)
@@ -174,10 +176,9 @@ export class SongBookComponent implements OnInit {
     .subscribe((setlist) => this.cueList = setlist.actions)
   }
 
-  saveAsSetlist() {
+  saveAsSetlist(prompt = false) {
     let action_ids: number[] = []
     this.cueList.map((item) => action_ids.push(item.id))
-
 
     let now = new Date()
 
@@ -186,16 +187,48 @@ export class SongBookComponent implements OnInit {
       actions: action_ids,
       comments: "Auto generated"
     }
-    this.http.post(`${environment.apiEndpoint}/setlists`, setlist).subscribe(
-      () => {this.isSetSaved = true;}, 
-      () => { this.isSetSaved = false;}
-    )
+
+    if (prompt) {
+      this.modalRef.open(SetlistMetadataEditorComponent, {
+        data: {
+          name: setlist.name,
+          comments: setlist.comments
+        }
+      })
+      .afterClosed()
+      .subscribe((result) => {
+        if (result) {
+          setlist.name = result.name ?? setlist.name
+          setlist.comments = result.comments ?? setlist.comments
+
+          this.http.post(`${environment.apiEndpoint}/setlists`, setlist).subscribe(
+            () => {this.isSetSaved = true;}, 
+            () => { this.isSetSaved = false;}
+          )
+        }
+        else {
+          // On cancel
+          return;
+        }
+      })
+    } else {
+      this.http.post(`${environment.apiEndpoint}/setlists`, setlist).subscribe(
+        () => {this.isSetSaved = true;}, 
+        () => { this.isSetSaved = false;}
+      )
+    }
   }
 
   onAddSpeechToCue(): void {
     this.cueList.push({type: "speech", id: 1000})
     this.isSetSaved = false;
   }
+
+  drop(event: CdkDragDrop<string[]>) {
+    moveItemInArray(this.cueList, event.previousIndex, event.currentIndex);
+  }
+
+  // Helpers ///////////////////////////////////////////////////
 
   getNbrOfSongsInCue(): number {
     let nbr = 0

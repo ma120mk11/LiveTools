@@ -1,4 +1,23 @@
 
+/* Animate items as they're being sorted. */
+.cdk-drop-list-dragging .cdk-drag 
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1)
+
+
+/* Animate an item that has been dropped. */
+.cdk-drag-animating
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1)
+
+.custom-drag-placeholder
+    background: #ccc
+    border: dotted 3px #999
+    min-height: 60px
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1)
+
+.cdk-drag-preview
+    display: none
+
+
 .cuelist-container
     padding: 10px
     margin: auto
@@ -20,6 +39,13 @@
         border: 0 none
         color: #d9d9d931
         height: 1px
+
+    .drag-handle
+        position: relative
+        // background: blue
+        padding: 10px
+        right: 40px
+        top: 50px
 
     .metadata
         float: right
