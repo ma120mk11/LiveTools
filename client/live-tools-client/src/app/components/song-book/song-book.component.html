@@ -181,7 +181,8 @@
             <mat-cell mat-cell *matCellDef="let song">
                 <mat-chip-list aria-label="Cuelists">
                     <mat-chip *ngFor="let cue of song.execution.lights.cuelist" color="primary" (click)="onEditExecutionProperties(song, 'lights')">
-                        {{cue.name}}
+                        <div *ngIf="cue?.name">{{cue?.name}}</div>
+                        <!-- {{cue.name}} -->
                     </mat-chip>
                     <mat-chip *ngIf="!song.execution.lights.cuelist">+</mat-chip>
                 </mat-chip-list>

@@ -50,6 +50,7 @@
                 multiple
             >
                 <mat-option *ngFor="let cue of cuelistArray" [value]="cue.id">
+                    <!-- <div *ngIf="cue.name">{{cue.name}}</div> -->
                     {{cue.name}}
                     <mat-chip *ngIf="cue.type" color="accent" selected style="float:right;top:5px;">{{cue.type}}</mat-chip>
                 </mat-option>
