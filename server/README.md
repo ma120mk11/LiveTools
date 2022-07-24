@@ -9,7 +9,7 @@ uvicorn main:app --reload
 Dev:
 uvicorn main:app --host 0.0.0.0
 Prod:
-uvicorn main:app --host 192.168.1.40
+uvicorn app.main:app --host 192.168.1.40
 
 # Ngrok
 
