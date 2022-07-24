@@ -58,7 +58,7 @@ def update_song(
 @router.post('/', response_model=Song)
 def add_song(song: SongCreate, db: Session = Depends(dependencies.get_db)):
 
-    return crud.create_song(db, song)
+    return crud.song.create_song(db, song)
 
 
 @router.delete("/{song_id}", status_code=status.HTTP_202_ACCEPTED)
