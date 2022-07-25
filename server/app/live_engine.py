@@ -56,7 +56,7 @@ class Engine():
             status:
         """
 
-        action_id = int
+        action_id: int
         if self._in_preview:
             action_id = -2
         else:
@@ -101,7 +101,6 @@ class Engine():
             logger.error("Unable to start set: A set is already running")
             return
 
-        # self._current_action_id = 0            # First action
         self._status = "set_running"
         self._set_info['started_on'] = datetime.now()
     
@@ -243,7 +242,7 @@ class Engine():
     def goto_action(self, action_nbr: int):
         logger.debug("Going to action: " + action_nbr)
 
-    def action_btn_pressed(self, btn_id:int, btn_initiator=""):
+    def action_btn_pressed(self, btn_id: int, btn_initiator=""):
         logger.info(f"Executing song button {btn_id}")
 
     def get_next_song_id(self) -> int:
@@ -348,6 +347,7 @@ class Engine():
         
         await self.add_to_cue(actions=[speech.speech])
 
+
     async def add_action_next(self, actions: List[dict]):
         """
         Adds action to song cue
@@ -382,7 +382,7 @@ class Engine():
 
             await self.load_setlist(setlist)
 
-            await self.start_set()
+            # await self.start_set(db=db)
 
         await manager.broadcast(self._setlist, "load-set")
         await manager.broadcast(str(self._current_action_id), "executing-action-nbr")
@@ -406,7 +406,7 @@ class Engine():
         #Started set
         if self._current_action_id > -1:
             self._status = "set_running"
-            await self.next_event("Preview release", db=db)
+            await self.next_event(event_initiator="Preview release", db=db)
         #Set loaded, but not started
         elif self._setlist:
             await manager.broadcast(self._current_action_id, "executing-action-nbr")
