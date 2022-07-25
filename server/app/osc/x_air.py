@@ -1,15 +1,14 @@
-import asyncio
-from ipaddress import IPv4Address
-import logging
-import time
-import threading
-import socket
-from pythonosc.dispatcher import Dispatcher
+from pythonosc.osc_message_builder import OscMessageBuilder
 from pythonosc.osc_server import BlockingOSCUDPServer
 from pythonosc.osc_message import OscMessage
-from pythonosc.osc_message_builder import OscMessageBuilder
+from pythonosc.dispatcher import Dispatcher
+from ipaddress import IPv4Address
 from .osc import OSCBase
-from .osc_server import server
+
+import threading
+import logging
+import socket
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -22,15 +21,9 @@ class XairOSC(OSCBase):
     def __init__(self):
         super().__init__()
 
-
-    # def _init_heartbeat(self):
-    #     self.send_osc_msg(self._set_surface, 8)
-
     async def connect(self, ip: IPv4Address, port: int):
         await super().connect(ip, port)
-        # self.send_osc_msg("/xremote")
-        # server.add_heartbeat("/heartbeat", 3, self.connection_change_handler, self._device_id)
-        # self._init_heartbeat()
+
 
     def toogle_mute(self):
         self.send_osc_msg("/lr/mix/on", self.state)
@@ -59,53 +52,25 @@ class XairOSC(OSCBase):
         for i in range(1,5):
             self.send_osc_msg("/rtn/{}/mix/on".format(i), 0)
 
-    # async def connection_change_handler(self, *args, **kwargs):
-    #     """
-    #     Callback method to be called when a connection change is noted.
-    #     ``kwargs: connected: bool``
-    #     """
-    #     if kwargs.get('connected'):
-    #         logger.info("%s re-connected", self._name)
-    #         self._init_heartbeat()
-    #         await self.set_status(self._CONNECTED)
-    #     else:
-    #         logger.error("%s disconnected", self._name)
-    #         await self.set_status(self._NO_HEARTBEAT)
-    #         asyncio.create_task(self._connection_retry())
 
-    # async def _connection_retry(self):
-    #     """
-    #     Automaticly try to re-connect
-    #     """
-    #     while self.status != self._CONNECTED and self._enabled:
-    #         self._init_heartbeat()
-    #         await asyncio.sleep(5)
-
-    # async def test_connection(self) -> bool:
-    #     """
-    #     Ardour uses a heartbeat instead of test
-    #     """
-    #     return True
-
-    def find_mixer():
-        print('Searching for mixer...')
+    def find_mixer(self):
+        logger.info('Searching for mixer...')
         client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         client.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, True)
         client.settimeout(15)
         client.sendto("/xinfo\0\0".encode(), ("<broadcast>", XAirClient.XAIR_PORT))
         try:
             response = OscMessage(client.recv(512))
-            # print(response.params)
         except socket.timeout:
-            print('No server found')
+            logger.error('No server found')
             return None
         client.close()
 
         if response.address != '/xinfo':
-            print('Unknown response')
+            logger.info('Unknown response')
             return None
         else:
-            print('Found ' + response.params[1] + ' ('+response.params[2] + ')' + ' with firmware ' + response.params[3] + ' on IP ' + response.params[0])
+            logger.info('Found ' + response.params[1] + ' ('+response.params[2] + ')' + ' with firmware ' + response.params[3] + ' on IP ' + response.params[0])
             return response.params[0]
 
 
@@ -141,7 +106,7 @@ class XAirClient:
     info_response = []
     
     def __init__(self, address, state):
-        print("Init")
+        logger.info("Xair init")
         self.state = state
         dispatcher = Dispatcher()
         dispatcher.set_default_handler(self.msg_handler)
@@ -151,14 +116,14 @@ class XAirClient:
         worker.start()
     
     def validate_connection(self):
-        print("Validating connection")
+        logger.info("Validating connection")
         self.send('/xinfo')
         time.sleep(self._CONNECT_TIMEOUT)
         if len(self.info_response) > 0:
-            print('Successfully connected to %s with firmware %s at %s.' % (self.info_response[2], 
+            logger.info('Successfully connected to %s with firmware %s at %s.' % (self.info_response[2], 
                     self.info_response[3], self.info_response[0]))
         else:
-            print('Error: Failed to setup OSC connection to mixer. Please check for correct ip address.')
+            logger.info('Error: Failed to setup OSC connection to mixer. Please check for correct ip address.')
             exit()
         
     def run_server(self):
@@ -169,8 +134,7 @@ class XAirClient:
             exit()
         
     def msg_handler(self, addr, *data):
-        # print 'OSCReceived("%s", %s, %s)' % (addr, tags, data)
-        print('OSCReceived("%s", %s)' % (addr, data))
+        logger.info('OSCReceived("%s", %s)' % (addr, data))
         if addr.endswith('/fader') or addr.endswith('/on') or addr.endswith('/level') or addr.startswith('/config/mute') or addr.startswith('/fx/'):
             self.state.received_osc(addr, data[0])
         elif addr == '/xinfo':
