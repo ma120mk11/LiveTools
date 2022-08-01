@@ -5,7 +5,7 @@ import { map, shareReplay } from 'rxjs/operators';
 import { WebSocketService } from 'src/app/services/web-socket/web-socket.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
-
+import { NavigationStart, Router } from '@angular/router';
 
 @Component({
   selector: 'app-navigation',
@@ -16,17 +16,31 @@ export class NavigationComponent implements OnInit, OnDestroy {
 
   runningSetDuration: string
   timer: any
+  isOpened = false;
+  isHandset: boolean;
 
-  isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
+  isHandset$: Observable<boolean> = this.breakpointObserver.observe([Breakpoints.TabletPortrait, Breakpoints.Handset])
     .pipe(
-      map(result => result.matches),
+      map(result => {
+        if (result.matches) this.isHandset = true;
+        else this.isHandset = false;
+        return result.matches;
+      }),
       shareReplay()
     );
     
   constructor(
     private breakpointObserver: BreakpointObserver,
+    private router: Router,
     public ws: WebSocketService,
-    private http: HttpClient) {}
+    private http: HttpClient)
+  {
+    router.events.subscribe((next) => {
+      if (this.isHandset && next instanceof NavigationStart) {
+        this.isOpened = false;
+      }
+    });
+  }
 
   releasePreview(): void{
     this.http.post(environment.apiEndpoint+"/engine/action/preview/release", {}).subscribe()
@@ -44,11 +58,8 @@ export class NavigationComponent implements OnInit, OnDestroy {
   }
 
   getSetRunningDuration() {
-    let currentTime = new Date().getTime()
-    let startedOn = new Date(this.ws.setStartedOn).getTime()
-
-    // console.log("Started on " + new Date(this.ws.setStartedOn))
-
+    const currentTime = new Date().getTime();
+    const startedOn = new Date(this.ws.setStartedOn).getTime();
     let distance = Math.abs(startedOn - currentTime);
     const hours = Math.floor(distance / 3600000);
     distance -= hours * 3600000;
